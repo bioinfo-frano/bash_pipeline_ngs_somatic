@@ -3,8 +3,24 @@
 **Introduction**
 
 Many students and scientist who would like to start learning genomic analysis independently have computers, e.g. laptops, with limited computational power to run primary and secondary level of bioinformatic analysis. One excellent alternative is to
-set up a cloud instance, e.g AWS EC2, and create a conda environment, install dependencies, e.g. fastQC, etc.,
-and run analyses of fastq files. However, for those who would like to stick to the idea of learning genomic analysis in their local computer, let's say, one of 8 to 16 GB RAM and less than 60GB hard driver available, I would suggest the following: start with small fastq files.
+set up a cloud instance, e.g AWS EC2, with 64GB RAM and create and install conda environments and dependencies, e.g. fastQC, etc., to run analyses of fastq files. However, using cloud services imply financial costs. Then, for those who would like to stick to the idea of learning genomic analysis in their local computer, with limited 8 to 16 GB RAM and less than 60GB memory available, would be important to think what kind of sequencing (fastq) files to download, how to create a conda environment, how to set out a folder structure and pipelines for running the analyses.
+
+**Aims**
+
+I.	Create conda environment
+
+II.	Find & download small size FASTQ files
+
+III.	Find & download an indexed reference human genome
+
+IV.	Create folder structure (example)
+
+V.	Bash Scripting
+
+
+
+
+I would suggest the following: start with small fastq files.
 While small fastq files can be < 1GB, which contain sequences of few genes, big fastq files can be between >10 to > 100 GB (See table)
 
 
