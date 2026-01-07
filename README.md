@@ -1,12 +1,12 @@
 **WORK IN PROGRESS**
 
-**Introduction**
+# Introduction
 
-Many students and scientists who want to learn genomic data analysis independently often rely on personal computers (e.g., laptops) with limited computational resources. These constraints can make it challenging to run secondary and tertiary NGS analyses starting from FASTQ files.
-One alternative is to use cloud-based resources (e.g., AWS EC2 instances with large amounts of RAM), where software dependencies can be installed via Conda. However, cloud services imply financial costs. 
-Therefore, for learners who prefer to work locally — typically with 8–16 GB RAM and limited disk storage (<60 GB) — it becomes essential to carefully select small sequencing datasets and design lightweight Conda environments. Not less important is to create a simple and efficient pipeline analysis and to set out a folder structure.
+Many students and scientists who want to learn genomic data analysis independently often rely on personal computers (e.g., laptops) with limited computational resources. These constraints can make it challenging to run secondary and tertiary NGS analyses starting from FASTQ files through variant annotation.
+One alternative is to use cloud-based resources (e.g., AWS EC2 instances with large amounts of RAM), where software dependencies can be installed via Conda. However, cloud services incur financial costs. 
+Therefore, for learners who prefer to work locally — typically with 8–16 GB RAM and limited disk storage (<60 GB) — it becomes essential to carefully select small sequencing datasets and design lightweight Conda environments. Equally important is the creation of a simple and efficient analysis pipeline and a well-defined folder structure.
 
-**Creating the computing environment for NGS - DNA analysis: STEPS**
+**Creating the computing environment for NGS - DNA analysis**
 
 I.	Create conda environment
 
@@ -21,19 +21,20 @@ V.	Bash Scripting
 
 **Purpose**
 
-To make a small guide to help people to carry out independently DNA (NGS) sequencing analysis from their (local) computers.
+This repository provides a minimal, reproducible guide for running a DNA-seq (NGS) analysis pipeline locally, from FASTQ files to variant calling and annotation, using modest computational resources.
 
 **Disclaimer**
 
-Considering that this guide was created on macOS (Intel chip) most probably this guide will be adapted more to this specific Mac computers.
+This guide was developed and tested on macOS running on Intel processors. Users on Apple Silicon (M1/M2/…/M5) or Linux systems should adapt the present NGS workflow accordingly.
 
-** IMPORTANT**
-I assume that you have already installed miniconda in your computer. If not, please find in the Web/YouTube information o how to install it. This is a essential step prior to start the first step. Here, there are some examples:
+> **IMPORTANT: Conda prerequisites**
+I assume that you have already installed miniconda3 in your computer. If not, please find the documentation on how to install miniconda in the link below.
 
-<https://www.youtube.com/watch?v=QWta2QPUJ2E&t=69s>
+<https://docs.conda.io/projects/conda/en/stable/user-guide/install/macos.html>
+
 <https://www.youtube.com/watch?v=OH0E7FIHyQo>
 
-If you have it installed then you should activate conda environment in Terminal/Command line this (base).
+If Miniconda is already installed, you should see the (base) environment activated in your Terminal.
 
 
 I. Create a specific conda environment called "DNA"
@@ -43,7 +44,7 @@ a) Create environment with dependencies
 ** IMPORTANT **
 You don't need to deactivate from 'base' when creating a new env.
 
-conda create -n DNA \
+`conda create -n DNA \
   -c conda-forge -c bioconda -c defaults \
   python=3.9 \
   openjdk=17 \
@@ -68,10 +69,10 @@ conda create -n DNA \
   numpy \
   matplotlib \
   seaborn \
-  -y
+  -y`
 
 
-  b) Sanity checks - post instalation
+  b) Sanity checks - post installation
 
   1. Check the list of env. The new 'DNA' env should appear:
 
