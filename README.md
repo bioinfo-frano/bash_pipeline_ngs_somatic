@@ -2,7 +2,9 @@
 
 **Introduction**
 
-Many students and scientist who would like to start learning genomic analysis independently have computers, e.g. laptops, with limited computational power to run primary and secondary level of bioinformatic analysis. One excellent alternative is to set up a cloud instance, e.g AWS EC2, with 64GB RAM and create and install conda environments and dependencies, e.g. fastQC, etc., to run analyses of fastq files. However, using cloud services imply financial costs. Then, for those who would like to stick to the idea of learning genomic analysis in their local computer, with limited 8 to 16 GB RAM and less than 60GB memory available, would be important to think what kind of sequencing (fastq) files to download, how to create a conda environment, how to set out a folder structure and pipelines for running the analyses.
+Many students and scientists who want to learn genomic data analysis independently often rely on personal computers (e.g., laptops) with limited computational resources. These constraints can make it challenging to run secondary and tertiary NGS analyses starting from FASTQ files.
+One alternative is to use cloud-based resources (e.g., AWS EC2 instances with large amounts of RAM), where software dependencies can be installed via Conda. However, cloud services imply financial costs. 
+Therefore, for learners who prefer to work locally — typically with 8–16 GB RAM and limited disk storage (<60 GB) — it becomes essential to carefully select small sequencing datasets and design lightweight Conda environments. Not less important is to create a simple and efficient pipeline analysis and to set out a folder structure.
 
 **Steps**
 
