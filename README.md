@@ -96,11 +96,17 @@ conda create -n DNA \
 ```
 
   gatk --version
+  
   java -version
+  
   bwa
+  
   samtools --version
+  
   vep --help
+  
   snpEff -version
+  
 
 
 # Reference Genome
