@@ -155,6 +155,7 @@ Expected output:
 
 All FASTQ files and others like the reference (e.g. human) genome and scripts should be located in specific folders. Here there's a proposed example of folder structure:
 
+```bash
 Genomics_simple_2026/
 ├── reference/
 │   └── GRCh38/
@@ -170,7 +171,7 @@ Genomics_simple_2026/
 │       └── annotation/
 ├── scripts/
 └── logs/
-
+```
 
 
 # Reference Genome
