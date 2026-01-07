@@ -6,7 +6,7 @@ Many students and scientists who want to learn genomic data analysis independent
 One alternative is to use cloud-based resources (e.g., AWS EC2 instances with large amounts of RAM), where software dependencies can be installed via Conda. However, cloud services imply financial costs. 
 Therefore, for learners who prefer to work locally — typically with 8–16 GB RAM and limited disk storage (<60 GB) — it becomes essential to carefully select small sequencing datasets and design lightweight Conda environments. Not less important is to create a simple and efficient pipeline analysis and to set out a folder structure.
 
-**Steps**
+**Creating the computing environment for NGS - DNA analysis: STEPS**
 
 I.	Create conda environment
 
@@ -18,7 +18,6 @@ IV.	Create folder structure (example)
 
 V.	Bash Scripting
 
-I. Create a specific conda environment called "DNA"
 
 **Purpose**
 
@@ -35,6 +34,9 @@ I assume that you have already installed miniconda in your computer. If not, ple
 <https://www.youtube.com/watch?v=OH0E7FIHyQo>
 
 If you have it installed then you should activate conda environment in Terminal/Command line this (base).
+
+
+I. Create a specific conda environment called "DNA"
 
 a) Create environment with dependencies
 
