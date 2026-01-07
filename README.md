@@ -27,14 +27,14 @@ This repository provides a minimal, reproducible guide for running a DNA-seq (NG
 
 This guide was developed and tested on macOS running on Intel processors. Users on Apple Silicon (M1/M2/…/M5) or Linux systems should adapt the present NGS workflow accordingly.
 
-> **IMPORTANT: Conda prerequisites**
-I assume that you have already installed miniconda3 in your computer. If not, please find the documentation on how to install miniconda in the link below.
+> **IMPORTANT - Conda prerequisites:**
+I assume that you have already installed Miniconda3 in your computer. If not, please find the documentation on how to install miniconda in the link below.
 
 <https://docs.conda.io/projects/conda/en/stable/user-guide/install/macos.html>
 
 <https://www.youtube.com/watch?v=OH0E7FIHyQo>
 
-If Miniconda is already installed, you should see the (base) environment activated in your Terminal.
+If Miniconda is already installed, you should see the `(base)` environment activated in your Terminal.
 
 
 I. Create a specific conda environment called "DNA"
