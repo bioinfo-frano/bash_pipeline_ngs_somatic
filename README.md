@@ -6,7 +6,7 @@ Many students and scientists who want to learn genomic data analysis independent
 One alternative is to use cloud-based resources (e.g., AWS EC2 instances with large amounts of RAM), where software dependencies can be installed via Conda. However, cloud services incur financial costs. 
 Therefore, for learners who prefer to work locally — typically with 8–16 GB RAM and limited disk storage (<60 GB) — it becomes essential to carefully select small sequencing datasets and design lightweight Conda environments. Equally important is the creation of a simple and efficient analysis pipeline and a well-defined folder structure.
 
-**Creating the computing environment for NGS - DNA analysis**
+## Creating the computing environment for NGS - DNA analysis
 
 I.	Create conda environment
 
@@ -19,13 +19,11 @@ IV.	Create folder structure (example)
 V.	Bash Scripting
 
 
-**Purpose**
+## Purpose
 
 This repository provides a minimal, reproducible guide for running a DNA-seq (NGS) analysis pipeline locally, from FASTQ files to variant calling and annotation, using modest computational resources.
 
-**Disclaimer**
-
-This guide was developed and tested on macOS running on Intel processors. Users on Apple Silicon (M1/M2/…/M5) or Linux systems should adapt the present NGS workflow accordingly.
+> **Disclaimer**: This guide was developed and tested on macOS running on Intel processors. Users on Apple Silicon (M1/M2/…/M5) or Linux systems should adapt the present NGS workflow accordingly.
 
 > **IMPORTANT - Conda prerequisites:**
 I assume that you have already installed Miniconda3 in your computer. If not, please find the documentation on how to install miniconda in the link below.
@@ -34,15 +32,15 @@ I assume that you have already installed Miniconda3 in your computer. If not, pl
 
 <https://www.youtube.com/watch?v=OH0E7FIHyQo>
 
-If Miniconda is already installed, you should see the `(base)` environment activated in your Terminal.
+When Miniconda is already installed, you should see the `(base)` environment activated in your Terminal.
 
 
-I. Create a specific conda environment called "DNA"
+## I. Create a specific conda environment called "DNA"
 
-a) Create environment with dependencies
+### a) Create the environment with these dependencies.
 
-** IMPORTANT **
-You don't need to deactivate from 'base' when creating a new env.
+> **IMPORTANT**
+You don't need to deactivate from `(base)` when creating a new environment.
 
 ```bash
 conda create -n DNA \
@@ -73,9 +71,7 @@ conda create -n DNA \
   -y
 ```
 
-
-
-  b) Sanity checks - post installation
+### b) Sanity checks - post installation
 
   1. Check the list of env. The new 'DNA' env should appear:
 
