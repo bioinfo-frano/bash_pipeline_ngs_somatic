@@ -153,24 +153,32 @@ Expected output:
 
 ## II. Create folder structure
 
-All FASTQ files and others like the reference (e.g. human) genome and scripts should be located in specific folders. Here there's a proposed example of folder structure:
+All FASTQ files and others like the reference (e.g. human) genome and scripts should be located in specific folders. Here there's a proposed example of a folder structure:
 
 ```bash
 Genomics_simple_2026/
-├── reference/
+├── reference/                 # Reference genomes and known sites
 │   └── GRCh38/
-│       ├── fasta/
-│       └── known_sites/
+│       ├── fasta/             # Reference FASTA files
+│       └── known_sites/       # Known variant sites (e.g. dbSNP, Mills)
 ├── data/
-│   └── SRA_ID/
-│       ├── raw_fastq/
-│       ├── qc/
-│       ├── trimmed/
-│       ├── aligned/
-│       ├── variants/
-│       └── annotation/
-├── scripts/
-└── logs/
+│   └── SRA_ID/                # Sample-specific directory (e.g. SRX11805868)
+│       ├── raw_fastq/         # Original FASTQ files
+│       ├── qc/                # FastQC / MultiQC reports
+│       ├── trimmed/           # Adapter- and quality-trimmed FASTQ files
+│       ├── aligned/           # BAM files and indexes
+│       ├── variants/          # VCF files
+│       └── annotation/        # Annotated variants
+├── scripts/                   # scripts
+└── logs/                      # Log files from pipeline execution
+```
+
+Multiple samples can be processed by creating one directory per SRA accession under `data/`.
+
+In bash:
+
+```bash
+mkdir -p Genomics_simple_2026/{reference/GRCh38/{fasta,known_sites},data/SRA_ID/{raw_fastq,qc,trimmed,aligned,variants,annotation},scripts,logs}
 ```
 
 
