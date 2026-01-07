@@ -6,6 +6,26 @@ Many students and scientists who want to learn genomic data analysis independent
 One alternative is to use cloud-based resources (e.g., AWS EC2 instances with large amounts of RAM), where software dependencies can be installed via Conda. However, cloud services incur financial costs. 
 Therefore, for learners who prefer to work locally — typically with 8–16 GB RAM and limited disk storage (<60 GB) — it becomes essential to carefully select small sequencing datasets and design lightweight Conda environments. Equally important is the creation of a simple and efficient analysis pipeline and a well-defined folder structure.
 
+In practice, FASTQ file sizes vary widely depending on the sequencing strategy and target region. Small targeted sequencing panels may generate FASTQ files smaller than 1 GB, whereas larger experiments such as whole-exome sequencing (WES) or whole-genome sequencing (WGS) can easily produce tens to hundreds of gigabytes per sample. For users working on local machines with limited RAM and disk space, this variability has a direct impact on dataset selection and pipeline feasibility. Table 1 provides representative examples of FASTQ file sizes from cancer-related datasets available in the Sequence Read Archive (SRA).
+
+
+**Table 1. Representative FASTQ file sizes from cancer-related SRA datasets**
+
+**Table 1. Representative FASTQ file sizes from cancer-related SRA datasets**
+
+| **Size Category** | **Estimated FASTQ Download Size (GB)** | **Sequencing Strategy** | **Example SRA Run (approx.)** | **Comments** |
+|------------------|----------------------------------------|-------------------------|-------------------------------|-------------|
+| Small            | ~0.05 – 0.2                            | Targeted gene panel     | [SRX11805868](https://www.ncbi.nlm.nih.gov/sra/SRX11805868) (~0.2 GB) | Panel targeting ~95 cancer genes (Illumina NextSeq) |
+| Small            | ~0.05 – 0.1                            | Targeted gene panel     | [SRX18078826](https://www.ncbi.nlm.nih.gov/sra/SRX18078826) (~0.05 GB) | Targeted sequencing, adult breast cancer |
+| Small            | ~0.06 – 0.07                           | Targeted gene panel     | [SRX18078666](https://www.ncbi.nlm.nih.gov/sra/SRX18078666) (~0.065 GB) | Additional run from the same study |
+| Medium           | ~3 – 7                                 | Targeted panel / DNA-seq| [SRX28185140](https://www.ncbi.nlm.nih.gov/sra/SRX28185140) (~6 GB) | DNA panel from SCLC tumor sample |
+| Medium / Large   | ~3 – 12                                | WES                     | [SRX29598354](https://www.ncbi.nlm.nih.gov/sra/SRX29598354) (~3.4 GB raw) | Whole-exome sequencing of TNBC tumor |
+| Large            | >10                                    | WGS                     | e.g., TCGA WGS runs           | Typical WGS datasets often exceed 50 GB |
+
+
+For this reason, the examples and pipelines in this repository focus on small targeted sequencing datasets that can be processed comfortably on standard workstations or laptops.
+
+
 ## Creating the computing environment for NGS - DNA analysis
 
 I.	Create conda environment
@@ -23,14 +43,13 @@ V.	Bash Scripting
 
 This repository provides a minimal, reproducible guide for running a DNA-seq (NGS) analysis pipeline locally, from FASTQ files to variant calling and annotation, using modest computational resources.
 
-> **Disclaimer**: This guide was developed and tested on macOS running on Intel processors. Users on Apple Silicon (M1/M2/…/M5) or Linux systems should adapt the present NGS workflow accordingly.
+> **Note:**  
+> This guide was developed and tested on macOS running on Intel processors. Users on Apple Silicon (M1/M2/…/M5) or Linux systems may need to adapt the workflow accordingly.
 
-> **IMPORTANT - Conda prerequisites:**
-I assume that you have already installed Miniconda3 in your computer. If not, please find the documentation on how to install miniconda in the link below.
 
-<https://docs.conda.io/projects/conda/en/stable/user-guide/install/macos.html>
+> **IMPORTANT – Conda prerequisites:**  
+> I assume that you have already installed Miniconda3 on your computer. If not, please find the [documentation](https://docs.conda.io/projects/conda/en/stable/user-guide/install/macos.html) on how to install Miniconda and also check out this [YouTube](https://www.youtube.com/watch?v=OH0E7FIHyQo) video.
 
-<https://www.youtube.com/watch?v=OH0E7FIHyQo>
 
 When Miniconda is already installed, you should see the `(base)` environment activated in your Terminal.
 
@@ -104,6 +123,39 @@ conda create -n DNA \
   snpEff -version
   
 
+IT could happens that `snpEff -version` shows and error like this: 
+
+```bash
+Error: LinkageError
+UnsupportedClassVersionError
+class file version 65.0
+Java runtime only recognizes up to 61.0
+```
+Meaning: 
+snpEff 5.3 was compiled with Java 21
+You are running Java 17 (`openjdk=17`)
+Java 17 cannot run Java 21 bytecode
+
+Recommendation: Downgrade snpEff (this will guarantee stability)
+
+Then, in bash:
+
+`conda install -n DNA -c bioconda snpeff=5.1`
+
+Check again:
+
+`snpEff -version`
+
+Expected output:
+
+`SnpEff	5.1d	2022-04-19`
+
+
+## II. Find & download small size FASTQ files of gene panels for cancer diagnostics
+
+
+
+
 
 # Reference Genome
 
@@ -124,3 +176,8 @@ MD5: 3884c62eb0e53fa92459ed9bff133ae6
 
 
 Variant annotation was performed using Ensembl Variant Effect Predictor (VEP, GRCh38). Due to hardware and storage limitations, annotation was executed via the Ensembl web interface, enabling gnomAD allele frequencies, MANE/APPRIS transcripts, phenotype annotations, and pathogenicity predictors (REVEL, ClinPred). Command-line execution was tested but limited by local resource constraints.
+
+
+> **Note:**  
+> Table values are approximate and intended for educational purposes. Dataset sizes may vary depending on sequencing depth, platform, and compression.
+
