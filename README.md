@@ -44,7 +44,8 @@ a) Create environment with dependencies
 ** IMPORTANT **
 You don't need to deactivate from 'base' when creating a new env.
 
-`conda create -n DNA \
+```bash
+conda create -n DNA \
   -c conda-forge -c bioconda -c defaults \
   python=3.9 \
   openjdk=17 \
@@ -69,22 +70,30 @@ You don't need to deactivate from 'base' when creating a new env.
   numpy \
   matplotlib \
   seaborn \
-  -y`
+  -y
+```
+
 
 
   b) Sanity checks - post installation
 
   1. Check the list of env. The new 'DNA' env should appear:
 
+  ```bash
   conda env list
+  ```
 
   2. Activate the new env.
 
+```bash
   conda activate DNA
+```
 
-  3. Check the dependencies in 'DNA'
+  3. Check the dependencies in 'DNA' and the version of each of these dependencies:
 
+```bash
   conda list
+```
 
   gatk --version
   java -version
