@@ -6,22 +6,20 @@ Many students and scientists who want to learn genomic data analysis independent
 One alternative is to use cloud-based resources (e.g., AWS EC2 instances with large amounts of RAM), where software dependencies can be installed via Conda. However, cloud services incur financial costs. 
 Therefore, for learners who prefer to work locally — typically with 8–16 GB RAM and limited disk storage (<60 GB) — it becomes essential to carefully select small sequencing datasets and design lightweight Conda environments. Equally important is the creation of a simple and efficient analysis pipeline and a well-defined folder structure.
 
-In practice, FASTQ file sizes vary widely depending on the sequencing strategy and target region. Small targeted sequencing panels may generate FASTQ files smaller than 1 GB, whereas larger experiments such as whole-exome sequencing (WES) or whole-genome sequencing (WGS) can easily produce tens to hundreds of gigabytes per sample. For users working on local machines with limited RAM and disk space, this variability has a direct impact on dataset selection and pipeline feasibility. Table 1 provides representative examples of FASTQ file sizes from cancer-related datasets available in the Sequence Read Archive (SRA).
-
-
-**Table 1. Representative FASTQ file sizes from cancer-related SRA datasets**
+In practice, FASTQ file sizes vary widely depending on the sequencing strategy and target region. Small targeted sequencing panels may generate FASTQ files smaller than 1 GB, whereas larger experiments such as whole-exome sequencing (WES) or whole-genome sequencing (WGS) can easily produce tens to hundreds of gigabytes per sample. For users working on local machines with limited RAM and disk space, this variability has a direct impact on dataset selection and pipeline feasibility. Table 1 provides representative examples of FASTQ file sizes from cancer-related datasets deposited in the NCBI Sequence Read Archive (SRA).
 
 **Table 1. Representative FASTQ file sizes from cancer-related SRA datasets**
 
-| **Size Category** | **Estimated FASTQ Download Size (GB)** | **Sequencing Strategy** | **Example SRA Run (approx.)** | **Comments** |
-|------------------|----------------------------------------|-------------------------|-------------------------------|-------------|
-| Small            | ~0.05 – 0.2                            | Targeted gene panel     | [SRX11805868](https://www.ncbi.nlm.nih.gov/sra/SRX11805868) (~0.2 GB) | Panel targeting ~95 cancer genes (Illumina NextSeq) |
-| Small            | ~0.05 – 0.1                            | Targeted gene panel     | [SRX18078826](https://www.ncbi.nlm.nih.gov/sra/SRX18078826) (~0.05 GB) | Targeted sequencing, adult breast cancer |
-| Small            | ~0.06 – 0.07                           | Targeted gene panel     | [SRX18078666](https://www.ncbi.nlm.nih.gov/sra/SRX18078666) (~0.065 GB) | Additional run from the same study |
-| Medium           | ~3 – 7                                 | Targeted panel / DNA-seq| [SRX28185140](https://www.ncbi.nlm.nih.gov/sra/SRX28185140) (~6 GB) | DNA panel from SCLC tumor sample |
-| Medium / Large   | ~3 – 12                                | WES                     | [SRX29598354](https://www.ncbi.nlm.nih.gov/sra/SRX29598354) (~3.4 GB raw) | Whole-exome sequencing of TNBC tumor |
-| Large            | >10                                    | WGS                     | e.g., TCGA WGS runs           | Typical WGS datasets often exceed 50 GB |
+**Table 1. Representative FASTQ file sizes from cancer-related SRA datasets**
 
+| **Size Category** | **Estimated FASTQ Download Size (GB)** | **Sequencing Strategy** | **Example SRA Run (approx.)** | **Cancer Type / Comments** |
+|------------------|----------------------------------------|-------------------------|-------------------------------|---------------------------|
+| Small            | ~0.05 – 0.2                            | Targeted gene panel     | [SRX11805868](https://www.ncbi.nlm.nih.gov/sra/SRX11805868) (~0.2 GB) | Panel targeting ~95 cancer genes |
+| Small            | ~0.05 – 0.1                            | Targeted gene panel     | [SRX18078826](https://www.ncbi.nlm.nih.gov/sra/SRX18078826) (~0.05 GB) | Adult breast cancer |
+| Small            | ~0.06 – 0.07                           | Targeted gene panel     | [SRX18078666](https://www.ncbi.nlm.nih.gov/sra/SRX18078666) (~0.065 GB) | Adult breast cancer |
+| Medium           | ~3 – 7                                 | Targeted panel / DNA-seq| [SRX28185140](https://www.ncbi.nlm.nih.gov/sra/SRX28185140) (~6 GB) | SCLC tumor sample |
+| Medium / Large   | ~3 – 12                                | WES                     | [SRX29598354](https://www.ncbi.nlm.nih.gov/sra/SRX29598354) (~3.4 GB raw) | TNBC tumor |
+| Large            | >50                                    | WGS                     | [SRX160842](https://www.ncbi.nlm.nih.gov/sra/SRX160842) (>>50 GB) | Acute Lymphoblastic Leukemia (ALL) Phase II |
 
 For this reason, the examples and pipelines in this repository focus on small targeted sequencing datasets that can be processed comfortably on standard workstations or laptops.
 
