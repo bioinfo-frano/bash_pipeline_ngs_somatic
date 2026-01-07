@@ -121,7 +121,7 @@ conda create -n DNA \
   snpEff -version
   
 
-IT could happens that `snpEff -version` shows and error like this: 
+It could happens that `snpEff -version` shows and error like this: 
 
 ```bash
 Error: LinkageError
@@ -151,7 +151,25 @@ Expected output:
 
 ## II. Find & download small size FASTQ files of gene panels for cancer diagnostics
 
+## II. Create folder structure
 
+All FASTQ files and others like the reference (e.g. human) genome and scripts should be located in specific folders. Here there's a proposed example of folder structure:
+
+Genomics_simple_2026/
+├── reference/
+│   └── GRCh38/
+│       ├── fasta/
+│       └── known_sites/
+├── data/
+│   └── SRA_ID/
+│       ├── raw_fastq/
+│       ├── qc/
+│       ├── trimmed/
+│       ├── aligned/
+│       ├── variants/
+│       └── annotation/
+├── scripts/
+└── logs/
 
 
 
