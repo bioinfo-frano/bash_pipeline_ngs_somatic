@@ -429,7 +429,7 @@ AAFFFJJJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJFJJ
 ## IV. Find & download a reference human genome and index
 
 One good source of files, documentation, workflows (pipelines) and dependencies (tools), essential for DNA-NGS analysis can be found in [GATK - Broad Institute](https://gatk.broadinstitute.org/hc/en-us). In summary, GATK aims to: "*identify SNPs and indels in germline DNA and RNAseq data..., expanding to include somatic short variant calling, and to tackle copy number (CNV) and structural variation (SV). In addition to the variant callers themselves, the GATK also includes many utilities to perform related tasks such as processing and quality control of high-throughput sequencing data, and bundles the popular Picard toolkit.*"
-The reference human genome is actually a bundle of files that it can be found this GATK [website](https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle), specifically in the link provided in the Resource Bundle hosted on a Google Cloud [Buckets - genomics-public-data ](https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/)
+The reference human genome is actually a bundle of files and it can be found on the GATK [website](https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle), specifically in the link provided in the Resource Bundle hosted on a Google Cloud [Buckets - genomics-public-data ](https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/)
 
 In Google Cloud: ***Buckets/genomics-public-data/resources/broad/hg38/v0*** is possible to find part of the reference human genome bundle (called **hg38** (informal name) or **GRCh38** (Genome Reference Consortium human build 38)). There you can find the following files:
 
@@ -451,9 +451,21 @@ The other part of the hg38 bundle can be found in Google Cloud [Buckets - gcp-pu
 
 - Homo_sapiens_assembly38.fasta.sa
 
+These are BWA index components, but now in 64-bit addressing mode.
+
+| File      | Purpose                                   |
+| --------- | ----------------------------------------- |
+| `.64.amb` | Ambiguous bases (Ns)                      |
+| `.64.ann` | Sequence names & lengths                  |
+| `.64.bwt` | Burrows–Wheeler Transform                 |
+| `.64.pac` | Packed reference sequence                 |
+| `.64.sa`  | Suffix array (64-bit)                     |
+| `.64.alt` | ALT contig ↔ primary contig relationships |
+
+
 In Terminal, go to /Genomics_cancer/reference/GRCh38/fasta
 
-2. Start downloading each of files:
+2. Start downloading each of the bundle files:
 
 ```bash
 wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta
