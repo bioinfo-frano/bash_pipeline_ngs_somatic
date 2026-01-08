@@ -180,11 +180,11 @@ mkdir -p Genomics_simple_2026/{reference/GRCh38/{fasta,known_sites},data/SRA_ID/
 ## III. Find & download small size FASTQ files of gene panels for cancer diagnostics
 
 By clicking on any link from Table 1, you'll reach the SRA website where the information of the dataset is located. Next you can click on the 'RUN' ID, then click on 'FASTA/FASTQ download', and finally download the "FASTQ" file by clicking on 'FASTQ'. By doing so, one single `.fastq.gz` will be downloaded.
-This way of getting FATQ files **is not recommended**: 1) the downloaded `.fastq.gz` will be one file without knowing which correspond to R1 and R2, and 2) There's no certainty that this file is the real raw FASTQ file instead of a reconstructed aligned FASTQ file or pre-aligned BAM file.
+This way of getting FASTQ files **is not recommended**: 1) the downloaded `.fastq.gz` will be one file without knowing which correspond to R1 and R2, and 2) There's no certainty that this file is the real raw FASTQ file instead of a reconstructed aligned FASTQ file or pre-aligned BAM file.
 
 One better way to find & download raw FASTQ files is by following these steps:
 
-> 1. Use `SRA-tools`. To use it, install in a separate conda environment.
+1. Use `SRA-tools`. To use it, install in a separate conda environment.
 
 ```bash
 conda create -n sra \
@@ -212,13 +212,13 @@ Expected output:
 fasterq-dump : 3.2.1			# If output is 'fasterq-dump : 2.9.6', SRA-tools won't work. Update!
 ```
 
-> 2. Find small FASTQ files from [SRA](https://www.ncbi.nlm.nih.gov/sra)
+2. Find small FASTQ files from [SRA](https://www.ncbi.nlm.nih.gov/sra)
 
 > **Suggestion:**
-- As an example, use these keywords: targeted, illumina, cancer, genomic, Homo sapiens
+- As an example, use these keywords: **targeted, illumina, cancer, genomic, Homo sapiens**
 - As an example, you found the dataset: SRR30536566
 
-> 3. Verify dataset size and whether it contains real raw FASTQ files. **Remember**: you should be in `(sra)` environment.
+3. Verify dataset size and whether it contains real raw FASTQ files. **Remember**: you should be in `(sra)` environment.
 
 ```bash
 vdb-dump --info SRR30536566
@@ -242,12 +242,12 @@ LDRVER : 3.0.8
 LDRDATE: Sep 11 2023 (9/11/2023 0:0)
 ```
 > **IMPORTANT TO PAY ATTENTION:**
-- size   : 339,709,019                       # ~340 MB dataset. Good size! (But the actual size is bigger)
+- size   : 339,709,019                       # ~340 MB dataset. Good size! (But the actual not compressed size is bigger)
 - SCHEMA : NCBI:SRA:Illumina:db#2            # Illumina reads forward and reverse
 - FMT    : sharq                             # Compressed format
 
 
-**Table 2: Interpretation of SRA dataset information when using `vdb-dump --info`.
+**Table 2: Interpretation of SRA dataset information when using** `vdb-dump --info`.
 
 | **SCHEMA**                       | **FMT** | **What it really is**                              | **Suitable for FASTQ-first pipelines?** |
 | -------------------------------- | ------- | -------------------------------------------------- | --------------------------------------- |
@@ -261,7 +261,20 @@ LDRDATE: Sep 11 2023 (9/11/2023 0:0)
 
 If you want to work with raw FASTQ files, then better select those SRA datasets that do not show the message **align** in SCHEMA.
 
-> 4. Download the SRA dataset
+
+**Table 3: Example of SRA dataset with raw and aligned FASTQ files. 
+
+| Accession   | SCHEMA       | FMT   | Raw FASTQ? |
+| ----------- | ------------ | ----- | ---------- |
+| ERR12140864 | SRA:Illumina | sharq | ✅ Yes      | 
+| SRR20701732 | align        | FASTQ | ❌ No       | 
+| SRR35865210 | SRA:Illumina | sharq | ✅ Yes      | 
+| SRR35529667 | SRA:Illumina | sharq | ✅ Yes      | 
+| SRR32679397 | SRA:Illumina | sharq | ✅ Yes      | 
+
+As shown in Table 3, both raw and aligned FASTQ files can be used but only the `SRR20701732` is not really raw FASTQ file
+
+4. Download the SRA dataset
 - Go to working directory ~/data/SRA_ID
 
 ```bash
@@ -285,11 +298,12 @@ reads written   : 7,784,072
 Then, in folder `~/raw_fastq` there should be two fastq files:
 
 SRR30536566_1.fastq     # ~1.34 GB
+
 SRR30536566_2.fastq     # ~1.34 GB
 
 The discrepancy between 'size' shown in `vdb-dump --info` compared to reality is because the file in SRA is comprassed as "sharq".
 
->4. Compress the FASTQ files
+5. Compress the FASTQ files
 
 In ~/raw_fastq
 
@@ -300,6 +314,7 @@ gzip *.fastq
 Expected output:
 
 SRR30536566_1.fastq.gz      # 249 MB
+
 SRR30536566_2.fastq.gz      # 266 MB
 
 
@@ -326,9 +341,10 @@ Comparison between `fastq-dump` and `fasterq-dump`
 | `fasterq-dump` | Fast  | ❌ No                   | ✅ Preferred tool       |
 
 
-> 5. Verify the compressed FASTQ files
 
-- Counting the amount of reads faster and easier:
+6. Verify the compressed FASTQ files
+
+- Counting the amount of reads fast and easy:
 
 ```bash
 gzcat SRR30536566_1.fastq.gz | wc -l | awk '{print $1/4}'
@@ -362,6 +378,53 @@ CNCTATTCTACCGGAAGCTGGAAGCAGCCTGACAGGATGTGTGGTGCCCAAGTCTGCACAGTGAGGTGGGGAGTGAGGGC
 A#AFFFJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJFJFJJJJJJJJJJJJJJJJJJJAJJFJFJJJJJJJJJFJJJJJJJJJJJJJFJAFJJ7F<J
 ```
 
+```bash
+zless SRR30536566_1.fastq.gz| tail -n 8
+```
+Expected output:
+
+```bash
+@SRR30536566.3892035 K00133:507:H2N2NBBXY:7:2218:21339:47823 length=100
+GGAGGTGGGGCCCGGTGGAGGGTGATTGGATCATGGGGGTGGATTTCTCATCAGTGGTTTAGCACTATCCCCCTTAGTGCTGTGGTCACAATAGTGAGTG
++SRR30536566.3892035 K00133:507:H2N2NBBXY:7:2218:21339:47823 length=100
+AAFFFJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJFJJJ
+@SRR30536566.3892036 K00133:507:H2N2NBBXY:7:2218:23267:47823 length=100
+ATGGTGATTGCATCTAATGTTTTCCTGTTATAGGGCAAATAATAGTGGTGATCTGGGTAATAGTTTCTCCAAATAATGACAAGCAGAAGTATACTCTGAA
++SRR30536566.3892036 K00133:507:H2N2NBBXY:7:2218:23267:47823 length=100
+AAFFFJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ
+```
+
+```bash
+zless SRR30536566_2.fastq.gz | head -n 8
+```
+Expected output:
+
+```bash
+@SRR30536566.1 K00133:507:H2N2NBBXY:7:1101:1621:1068 length=100
+NCACAAAAACAGCAGATGAAAGAGTCCTGGAAAGCTGCCTTCAAACTACCTCAGGGTTTTCACTAACTTTTACATAGACAGCTTTGATCTTGACCAGGAA
++SRR30536566.1 K00133:507:H2N2NBBXY:7:1101:1621:1068 length=100
+#-AAFJ-F77J<<J<J-<FJJFJA--7-<FJJFJF-FA---7FJJF-FJA--F7A77AFJAJJ-AJJAA-7AAJ<J-FAF<7---7F-7----7--7)FF
+@SRR30536566.2 K00133:507:H2N2NBBXY:7:1101:2849:1086 length=100
+NGCCTCTCCGCTGCCCTCTGCCCTGTGCCCCCTGCCCCCTGTCCCCTGTCCCTTGCCCTCTGCCTGCGGCCCTCACTCCCCACCTCACTGTGCAGACTTG
++SRR30536566.2 K00133:507:H2N2NBBXY:7:1101:2849:1086 length=100
+#AAFFJFJJAJJAJJJJJJJJJJ-F<FJJJJJJ-AJJJJFJJJJJJF7FFJJJ7-FJJ<JFFJJ-FJFJJJJAJJJ7FJJJFFJAJFF7--<JF<AJAFF
+```
+
+```bash
+zless SRR30536566_2.fastq.gz| tail -n 8
+```
+Expected output:
+
+```bash
+@SRR30536566.3892035 K00133:507:H2N2NBBXY:7:2218:21339:47823 length=100
+TGGTTCTTTGGCCTATATAGACTTCTGCTTTTGGTGGGGTGGGGGGCCAGGAAGCTTCCAATCATGGCAGAAGGCAAAAAGGGAGGAGTCATCTTACACA
++SRR30536566.3892035 K00133:507:H2N2NBBXY:7:2218:21339:47823 length=100
+AAAFFJFFJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJFJJFJJJJJJJJJJJJFJJJJJJJJJJJJJJJ<7JJAAFFFJJJJJJFF77AFJF<JJJJJ
+@SRR30536566.3892036 K00133:507:H2N2NBBXY:7:2218:23267:47823 length=100
+TATACTTGCCCTGATATTCTAAAACACAGAGTTTTAGTTGTTCAGAGGATAGCAACATACTTCGAGTTTTTTTCCTGATTGCTTCAGCAATTACTTGTTC
++SRR30536566.3892036 K00133:507:H2N2NBBXY:7:2218:23267:47823 length=100
+AAFFFJJJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJ
+```
 
 
 
@@ -377,13 +440,6 @@ A#AFFFJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJFJFJJJJJJJJJJJJJJJJJJJAJJFJFJJJJJJJJJFJJJ
 
 
 
-| Accession   | SCHEMA       | FMT   | Raw FASTQ? | Use in repo |
-| ----------- | ------------ | ----- | ---------- | ----------- |
-| ERR12140864 | SRA:Illumina | sharq | ✅ Yes      | ✅ Yes       |
-| SRR20701732 | align        | FASTQ | ❌ No       | ❌ No        |
-| SRR35865210 | SRA:Illumina | sharq | ✅ Yes      | ✅ Yes       |
-| SRR35529667 | SRA:Illumina | sharq | ✅ Yes      | ✅ Yes       |
-| SRR32679397 | SRA:Illumina | sharq | ✅ Yes      | ✅ Yes       |
 
 
 
