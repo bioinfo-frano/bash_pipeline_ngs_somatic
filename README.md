@@ -28,13 +28,13 @@ For this reason, the examples and pipelines in this repository focus on small ta
 
 I.	Create conda environment
 
-II.	Find & download small size FASTQ files
+II.	Create folder structure (example)
 
-III.	Find & download an indexed reference human genome
+III.	Find & download small size FASTQ files
 
-IV.	Create folder structure (example)
+IV.	Find & download an indexed reference human genome
 
-V.	Bash Scripting
+V.	Bash shell Scripting
 
 
 ## Purpose
@@ -149,8 +149,6 @@ Expected output:
 `SnpEff	5.1d	2022-04-19`
 
 
-## II. Find & download small size FASTQ files of gene panels for cancer diagnostics
-
 ## II. Create folder structure
 
 All FASTQ files and others like the reference (e.g. human) genome and scripts should be located in specific folders. Here there's a proposed example of a folder structure:
@@ -180,6 +178,11 @@ In bash:
 ```bash
 mkdir -p Genomics_simple_2026/{reference/GRCh38/{fasta,known_sites},data/SRA_ID/{raw_fastq,qc,trimmed,aligned,variants,annotation},scripts,logs}
 ```
+
+## III. Find & download small size FASTQ files of gene panels for cancer diagnostics
+
+
+
 
 
 # Reference Genome
