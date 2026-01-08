@@ -30,7 +30,7 @@ II.	Create folder structure (example)
 
 III.	Find & download small size FASTQ files
 
-IV.	Find & download an indexed reference human genome
+IV. Find & download a reference human genome and index
 
 V.	Bash shell Scripting
 
@@ -134,7 +134,7 @@ Java 17 cannot run Java 21 bytecode
 
 Recommendation: Downgrade snpEff (this will guarantee stability)
 
-Then, in bash:
+Then, in Terminal:
 
 `conda install -n DNA -c bioconda snpeff=5.1`
 
@@ -152,7 +152,7 @@ Expected output:
 All FASTQ files and others like the reference (e.g. human) genome and scripts should be located in specific folders. Here there's a proposed example of a folder structure:
 
 ```bash
-Genomics_simple_2026/
+Genomics_cancer/
 ├── reference/                 # Reference genomes and known sites
 │   └── GRCh38/
 │       ├── fasta/             # Reference FASTA files
@@ -171,10 +171,10 @@ Genomics_simple_2026/
 
 Multiple samples can be processed by creating one directory per SRA accession under `data/`.
 
-In bash:
+In Terminal:
 
 ```bash
-mkdir -p Genomics_simple_2026/{reference/GRCh38/{fasta,known_sites},data/SRA_ID/{raw_fastq,qc,trimmed,aligned,variants,annotation},scripts,logs}
+mkdir -p Genomics_cancer/{reference/GRCh38/{fasta,known_sites},data/SRA_ID/{raw_fastq,qc,trimmed,aligned,variants,annotation},scripts,logs}
 ```
 
 ## III. Find & download small size FASTQ files of gene panels for cancer diagnostics
@@ -242,7 +242,7 @@ LDRVER : 3.0.8
 LDRDATE: Sep 11 2023 (9/11/2023 0:0)
 ```
 > **IMPORTANT TO PAY ATTENTION:**
-- size   : 339,709,019                       # ~340 MB dataset. Good size! (But the actual not compressed size is bigger)
+- size   : 339,709,019                       # ~340 MB dataset. Good size! (But the actual non-compressed size is bigger)
 - SCHEMA : NCBI:SRA:Illumina:db#2            # Illumina reads forward and reverse
 - FMT    : sharq                             # Compressed format
 
@@ -262,7 +262,7 @@ LDRDATE: Sep 11 2023 (9/11/2023 0:0)
 If you want to work with raw FASTQ files, then better select those SRA datasets that do not show the message **align** in SCHEMA.
 
 
-**Table 3: Example of SRA dataset with raw and aligned FASTQ files. 
+**Table 3: Example of SRA dataset with raw and aligned FASTQ files.**
 
 | Accession   | SCHEMA       | FMT   | Raw FASTQ? |
 | ----------- | ------------ | ----- | ---------- |
@@ -272,7 +272,7 @@ If you want to work with raw FASTQ files, then better select those SRA datasets 
 | SRR35529667 | SRA:Illumina | sharq | ✅ Yes      | 
 | SRR32679397 | SRA:Illumina | sharq | ✅ Yes      | 
 
-As shown in Table 3, both raw and aligned FASTQ files can be used but only the `SRR20701732` is not really raw FASTQ file
+As shown in Table 3, both raw and aligned FASTQ files can be used but the `SRR20701732` is not really a raw FASTQ file
 
 4. Download the SRA dataset
 - Go to working directory ~/data/SRA_ID
@@ -293,13 +293,13 @@ reads written   : 7,784,072
 ```
 
 > **Note:**  
-> The `fasterq-dump` command can be executed from any directory. However, FASTQ files should always be written to the `raw_fastq/` directory using the `--outdir` option to maintain a clean and reproducible folder structure.
+> The `fasterq-dump` command can be executed from any directory. However, FASTQ files should always be written to the `raw_fastq` directory using the `--outdir` option to maintain a clean and reproducible folder structure.
 
-Then, in folder `~/raw_fastq` there should be two fastq files:
+Then, in folder `~/raw_fastq` there should be two fastq files, each having ~1.34 GB:
 
-SRR30536566_1.fastq     # ~1.34 GB
+SRR30536566_1.fastq
 
-SRR30536566_2.fastq     # ~1.34 GB
+SRR30536566_2.fastq
 
 The discrepancy between 'size' shown in `vdb-dump --info` compared to reality is because the file in SRA is comprassed as "sharq".
 
@@ -313,16 +313,16 @@ gzip *.fastq
 
 Expected output:
 
-SRR30536566_1.fastq.gz      # 249 MB
+SRR30536566_1.fastq.gz
 
-SRR30536566_2.fastq.gz      # 266 MB
+SRR30536566_2.fastq.gz
 
 
 | Representation     | Approx size |
 | ------------------ | ----------- |
 | SRA (`sharq`)      | ~340 MB     |
-| FASTQ (plain text) | ~2.6 GB     |
-| FASTQ (gzipped)    | ~250 - 270 MB |
+| FASTQ (plain text) | ~2.6 GB (both) |
+| FASTQ (gzipped)    | ~530 MB (both) |
 
 
 Alternatively, compress during download with 'fastq-dump' (but it's slow, not recommended for large data)
@@ -425,6 +425,50 @@ TATACTTGCCCTGATATTCTAAAACACAGAGTTTTAGTTGTTCAGAGGATAGCAACATACTTCGAGTTTTTTTCCTGATT
 +SRR30536566.3892036 K00133:507:H2N2NBBXY:7:2218:23267:47823 length=100
 AAFFFJJJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJ
 ```
+
+## IV. Find & download a reference human genome and index
+
+One good source of files, documentation, workflows (pipelines) and dependencies (tools), essential for DNA-NGS analysis can be found in [GATK - Broad Institute](https://gatk.broadinstitute.org/hc/en-us). In summary, GATK aims to: "*identify SNPs and indels in germline DNA and RNAseq data..., expanding to include somatic short variant calling, and to tackle copy number (CNV) and structural variation (SV). In addition to the variant callers themselves, the GATK also includes many utilities to perform related tasks such as processing and quality control of high-throughput sequencing data, and bundles the popular Picard toolkit.*"
+The reference human genome is actually a bundle of files that it can be found this GATK [website](https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle), specifically in the link provided in the Resource Bundle hosted on a Google Cloud [Buckets - genomics-public-data ](https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/)
+
+In Google Cloud: ***Buckets/genomics-public-data/resources/broad/hg38/v0*** is possible to find part of the reference human genome bundle (called **hg38** (informal name) or **GRCh38** (Genome Reference Consortium human build 38)). There you can find the following files:
+
+- Homo_sapiens_assembly38.fasta 
+
+- Homo_sapiens_assembly38.dict 
+
+- Homo_sapiens_assembly38.fasta.fai
+
+The other part of the hg38 bundle can be found in Google Cloud [Buckets - gcp-public-data--broad-references](https://console.cloud.google.com/storage/browser/gcp-public-data--broad-references/hg38/v0)
+
+- Homo_sapiens_assembly38.fasta.amb
+
+- Homo_sapiens_assembly38.fasta.ann
+
+- Homo_sapiens_assembly38.fasta.bwt
+
+- Homo_sapiens_assembly38.fasta.pac 
+
+- Homo_sapiens_assembly38.fasta.sa
+
+In Terminal, go to /Genomics_cancer/reference/GRCh38/fasta
+
+2. Start downloading each of files:
+
+```bash
+wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta
+wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.fai
+wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dict
+
+wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.alt
+wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.amb
+wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.ann
+wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.bwt
+wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.pac
+wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.sa
+```
+
+
 
 
 
