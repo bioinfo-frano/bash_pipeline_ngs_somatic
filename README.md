@@ -26,13 +26,13 @@ For this reason, the examples and pipelines in this repository focus on small ta
 
 I.	Create conda environment
 
-II.	Create folder structure (example)
+II.	Create a folder structure
 
-III.	Find & download small size FASTQ files
+III.	Find & download small FASTQ datasets
 
-IV. Find & download a reference human genome and index
+IV. Download a reference human genome and indexes
 
-V.	Bash shell Scripting
+V.	Bash shell scripting
 
 
 ## Purpose
@@ -40,22 +40,22 @@ V.	Bash shell Scripting
 This repository provides a minimal, reproducible guide for running a DNA-seq (NGS) analysis pipeline locally, from FASTQ files to variant calling and annotation, using modest computational resources.
 
 > **Note:**  
-> This guide was developed and tested on macOS running on Intel processors. Users on Apple Silicon (M1/M2/…/M5) or Linux systems may need to adapt the workflow accordingly.
+> This guide was developed and tested on macOS running on Intel processors. Users on Apple Silicon (M1/M2/…/M5) or Linux systems may need to adapt certain steps.
 
 
 > **IMPORTANT – Conda prerequisites:**  
-> I assume that you have already installed Miniconda3 on your computer. If not, please find the [documentation](https://docs.conda.io/projects/conda/en/stable/user-guide/install/macos.html) on how to install Miniconda and also check out this [YouTube](https://www.youtube.com/watch?v=OH0E7FIHyQo) video.
+> This guide assumes that Miniconda3 is already installed on your computer. If not, please consult the official [documentation](https://docs.conda.io/projects/conda/en/stable/user-guide/install/macos.html) or watch this [YouTube](https://www.youtube.com/watch?v=OH0E7FIHyQo) video.
 
 
 When Miniconda is already installed, you should see the `(base)` environment activated in your Terminal.
 
 
-## I. Create a specific conda environment called "DNA"
+## I. Create a specific conda environment called `DNA`
 
 ### a) Create the environment with these dependencies.
 
 > **IMPORTANT**
-You don't need to deactivate from `(base)` when creating a new environment.
+You don't need to deactivate from `(base)` when creating a new Conda environment.
 
 ```bash
 conda create -n DNA \
@@ -88,19 +88,19 @@ conda create -n DNA \
 
 ### b) Sanity checks - post installation
 
-  1. Check the list of env. The new 'DNA' env should appear:
+  1. List Conda environments (the new `DNA` environment should appear):
 
   ```bash
   conda env list
   ```
 
-  2. Activate the new env.
+  2. Activate the new environment.
 
 ```bash
   conda activate DNA
 ```
 
-  3. Check the dependencies in 'DNA' and the version of each of these dependencies:
+  3. Verify dependencies in `DNA` and version:
 
 ```bash
   conda list
@@ -119,7 +119,7 @@ conda create -n DNA \
   snpEff -version
   
 
-It could happens that `snpEff -version` shows and error like this: 
+You may find the following error when running `snpEff -version`: 
 
 ```bash
 Error: LinkageError
@@ -127,29 +127,27 @@ UnsupportedClassVersionError
 class file version 65.0
 Java runtime only recognizes up to 61.0
 ```
-Meaning: 
+**Explanation**: 
 snpEff 5.3 was compiled with Java 21
 You are running Java 17 (`openjdk=17`)
 Java 17 cannot run Java 21 bytecode
 
-Recommendation: Downgrade snpEff (this will guarantee stability)
+**Recommendation (for stability)**: 
+Downgrade snpEff:
 
-Then, in Terminal:
-
-`conda install -n DNA -c bioconda snpeff=5.1`
-
-Check again:
-
-`snpEff -version`
+```bash
+conda install -n DNA -c bioconda snpeff=5.1
+```
 
 Expected output:
 
-`SnpEff	5.1d	2022-04-19`
+```bash
+SnpEff	5.1d	2022-04-19
+```
 
+## II. Create the folder structure
 
-## II. Create folder structure
-
-All FASTQ files and others like the reference (e.g. human) genome and scripts should be located in specific folders. Here there's a proposed example of a folder structure:
+All FASTQ files, reference (e.g. human) genome and scripts should be located into specific folders. Below is a recommended folder structure:
 
 ```bash
 Genomics_cancer/
@@ -157,6 +155,8 @@ Genomics_cancer/
 │   └── GRCh38/
 │       ├── fasta/             # Reference FASTA files
 │       └── known_sites/       # Known variant sites (e.g. dbSNP, Mills)
+│       └── bed/               # .bed files
+│       └── somatic_resources/ # e.g. 1000g, af-only-gnomad
 ├── data/
 │   └── SRA_ID/                # Sample-specific directory (e.g. SRX11805868)
 │       ├── raw_fastq/         # Original FASTQ files
@@ -171,20 +171,23 @@ Genomics_cancer/
 
 Multiple samples can be processed by creating one directory per SRA accession under `data/`.
 
-In Terminal:
+In Terminal, create all directories at once::
 
 ```bash
 mkdir -p Genomics_cancer/{reference/GRCh38/{fasta,known_sites},data/SRA_ID/{raw_fastq,qc,trimmed,aligned,variants,annotation},scripts,logs}
 ```
 
-## III. Find & download small size FASTQ files of gene panels for cancer diagnostics
+## III. Find & download small FASTQ datasets for cancer gene panels
 
-By clicking on any link from Table 1, you'll reach the SRA website where the information of the dataset is located. Next you can click on the 'RUN' ID, then click on 'FASTA/FASTQ download', and finally download the "FASTQ" file by clicking on 'FASTQ'. By doing so, one single `.fastq.gz` will be downloaded.
-This way of getting FASTQ files **is not recommended**: 1) the downloaded `.fastq.gz` will be one file without knowing which correspond to R1 and R2, and 2) There's no certainty that this file is the real raw FASTQ file instead of a reconstructed aligned FASTQ file or pre-aligned BAM file.
+Downloading FASTQ files directly from the SRA web interface is not recommended, because:
 
-One better way to find & download raw FASTQ files is by following these steps:
+1. R1 and R2 reads may be merged into a single file
 
-1. Use `SRA-tools`. To use it, install in a separate conda environment.
+2. There is no guarantee that the FASTQ files represent raw reads (they may be reconstructed from alignments)
+
+Instead, use **SRA-Tools**.
+
+**1. Install SRA-Tools in a separate Conda environment**
 
 ```bash
 conda create -n sra \
@@ -212,13 +215,13 @@ Expected output:
 fasterq-dump : 3.2.1			# If output is 'fasterq-dump : 2.9.6', SRA-tools won't work. Update!
 ```
 
-2. Find small FASTQ files from [SRA](https://www.ncbi.nlm.nih.gov/sra)
+**2. Find small FASTQ files from [SRA](https://www.ncbi.nlm.nih.gov/sra)**
 
 > **Suggestion:**
 - As an example, use these keywords: **targeted, illumina, cancer, genomic, Homo sapiens**
 - As an example, you found the dataset: SRR30536566
 
-3. Verify dataset size and whether it contains real raw FASTQ files. **Remember**: you should be in `(sra)` environment.
+**3. Verify dataset size and whether it contains real raw FASTQ files**. **Remember**: you should be in `(sra)` environment.
 
 ```bash
 vdb-dump --info SRR30536566
@@ -241,13 +244,13 @@ LDR    : general-loader.3.0.8
 LDRVER : 3.0.8
 LDRDATE: Sep 11 2023 (9/11/2023 0:0)
 ```
-> **IMPORTANT TO PAY ATTENTION:**
-- size   : 339,709,019                       # ~340 MB dataset. Good size! (But the actual non-compressed size is bigger)
+> **Key fields to inspect::**
+- size   : 339,709,019                       # ~340 MB dataset. Compressed SRA size
 - SCHEMA : NCBI:SRA:Illumina:db#2            # Illumina reads forward and reverse
 - FMT    : sharq                             # Compressed format
 
 
-**Table 2: Interpretation of SRA dataset information when using** `vdb-dump --info`.
+**Table 2: Interpretation of `vdb-dump --info`.
 
 | **SCHEMA**                       | **FMT** | **What it really is**                              | **Suitable for FASTQ-first pipelines?** |
 | -------------------------------- | ------- | -------------------------------------------------- | --------------------------------------- |
@@ -259,7 +262,7 @@ LDRDATE: Sep 11 2023 (9/11/2023 0:0)
 | `NCBI:align:db:alignment_sorted` | `BAM`   | Pre-aligned BAM                                    | ❌ No                                    |
 | `NCBI:align:db:alignment_sorted` | `CRAM`  | Pre-aligned CRAM                                   | ❌ No                                    |
 
-If you want to work with raw FASTQ files, then better select those SRA datasets that do not show the message **align** in SCHEMA.
+If `SCHEMA` contains `align`, the dataset is **not raw**.
 
 
 **Table 3: Example of SRA dataset with raw and aligned FASTQ files.**
@@ -272,10 +275,11 @@ If you want to work with raw FASTQ files, then better select those SRA datasets 
 | SRR35529667 | SRA:Illumina | sharq | ✅ Yes      | 
 | SRR32679397 | SRA:Illumina | sharq | ✅ Yes      | 
 
-As shown in Table 3, both raw and aligned FASTQ files can be used but the `SRR20701732` is not really a raw FASTQ file
+As shown in Table 3, both raw and aligned FASTQ datasets can be used but the `SRR20701732` is not really a raw FASTQ file.
 
-4. Download the SRA dataset
-- Go to working directory ~/data/SRA_ID
+**4. Download the SRA dataset**
+
+- Go to working directory `~/data/SRA_ID`
 
 ```bash
 fasterq-dump SRR30536566 \    # SRA Run accession ID
@@ -301,11 +305,10 @@ SRR30536566_1.fastq
 
 SRR30536566_2.fastq
 
-The discrepancy between 'size' shown in `vdb-dump --info` compared to reality is because the file in SRA is comprassed as "sharq".
 
-5. Compress the FASTQ files
+**5. Compress the FASTQ files**
 
-In ~/raw_fastq
+In `~/raw_fastq` directory:
 
 ```bash
 gzip *.fastq
@@ -342,9 +345,9 @@ Comparison between `fastq-dump` and `fasterq-dump`
 
 
 
-6. Verify the compressed FASTQ files
+**6. Verify FASTQ integrity**
 
-- Counting the amount of reads fast and easy:
+Count reads:
 
 ```bash
 gzcat SRR30536566_1.fastq.gz | wc -l | awk '{print $1/4}'
@@ -360,7 +363,7 @@ Expected output:
 
 3892036
 
-- Check the reads in both fastq files.
+Inspect read structure:
 
 ```bash
 zless SRR30536566_1.fastq.gz | head -n 8
@@ -426,9 +429,8 @@ TATACTTGCCCTGATATTCTAAAACACAGAGTTTTAGTTGTTCAGAGGATAGCAACATACTTCGAGTTTTTTTCCTGATT
 AAFFFJJJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJ
 ```
 
-## IV. Find & download a reference human genome and index
+## IV. Download a reference human genome (GRCh38) and indexes
 
-One good source of files, documentation, workflows (pipelines) and dependencies (tools), essential for DNA-NGS analysis can be found in [GATK - Broad Institute](https://gatk.broadinstitute.org/hc/en-us). In summary, GATK aims to: "*identify SNPs and indels in germline DNA and RNAseq data..., expanding to include somatic short variant calling, and to tackle copy number (CNV) and structural variation (SV). In addition to the variant callers themselves, the GATK also includes many utilities to perform related tasks such as processing and quality control of high-throughput sequencing data, and bundles the popular Picard toolkit.*"
 The reference human genome is actually a bundle of files and it can be found on the GATK [website](https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle), specifically in the link provided in the Resource Bundle hosted on a Google Cloud [Buckets - genomics-public-data ](https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/)
 
 In Google Cloud: ***Buckets/genomics-public-data/resources/broad/hg38/v0*** is possible to find part of the reference human genome bundle (called **hg38** (informal name) or **GRCh38** (Genome Reference Consortium human build 38)). There you can find the following files:
@@ -463,9 +465,9 @@ These are BWA index components, but now in 64-bit addressing mode.
 | `.64.alt` | ALT contig ↔ primary contig relationships |
 
 
-In Terminal, go to /Genomics_cancer/reference/GRCh38/fasta
+In Terminal, go to `/Genomics_cancer/reference/GRCh38/fasta`
 
-2. Start downloading each of the bundle files:
+Download the reference and indexes:
 
 ```bash
 wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta
