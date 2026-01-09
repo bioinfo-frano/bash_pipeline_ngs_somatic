@@ -33,13 +33,13 @@ Somatic analysis focuses on mutations acquired by a tumor. These variants are **
 
 Typical applications include:
 
-   > Identifying actionable mutations for targeted therapies (e.g. *PIK3CA, ERBB2, ESR1, AKT1* in breast cancer)
+   - Identifying actionable mutations for targeted therapies (e.g. *PIK3CA, ERBB2, ESR1, AKT1* in breast cancer)
 
-   > Monitoring disease progression and minimal residual disease (MRD), often via liquid biopsy and circulating tumor DNA (ctDNA)
+   - Monitoring disease progression and minimal residual disease (MRD), often via liquid biopsy and circulating tumor DNA (ctDNA)
 
-   > Clinical trials: Matching the patient to mutation-specific trials
+   - Clinical trials: Matching the patient to mutation-specific trials
 
-   > Understanding tumor biology: Subtyping the tumor more precisely, identifying driver vs passenger mutations and detecting resistance mutations
+   - Understanding tumor biology: Subtyping the tumor more precisely, identifying driver vs passenger mutations and detecting resistance mutations
     
 ---
 
@@ -49,11 +49,11 @@ Germline analysis aims to detect **inherited variants** present in all cells of 
 
 Common use cases include:
 
-  > Assessing hereditary cancer risk: early-onset cancer, strong family history, bilateral breast cancer, triple-negative breast cancer < 60 years
+  - Assessing hereditary cancer risk: early-onset cancer, strong family history, bilateral breast cancer, triple-negative breast cancer < 60 years
 
-  > Clinical decision-making when germline status influences treatment
+  - Clinical decision-making when germline status influences treatment
     
-  > Genetic counseling and family screening
+  - Genetic counseling and family screening
 
 **Sample types:** blood or saliva (non-tumor tissue)
 
@@ -115,7 +115,7 @@ Index BAM					                            ← 🔴 REQUIRED before GATK
 
 >**Note**: Base Quality Score Recalibration (BQSR) is often omitted for small targeted panels or UMI-based datasets and is therefore not included in this tutorial.
 
-### SOMATIC variant analysis pipeline 
+### Somatic variant analysis pipeline 
 
 ```bash
 [Preprocessed BAM]
