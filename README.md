@@ -155,8 +155,8 @@ Genomics_cancer/
 │   └── GRCh38/
 │       ├── fasta/             # Reference FASTA files
 │       └── known_sites/       # Known variant sites (e.g. dbSNP, Mills)
-│       └── bed/               # .bed files
-│       └── somatic_resources/ # e.g. 1000g, af-only-gnomad
+│       └── bed/               # Genomic interval files (.bed) 
+│       └── somatic_resources/ # Population and somatic reference (e.g. Panel of Normals, gnomAD allele frequencies).
 ├── data/
 │   └── SRA_ID/                # Sample-specific directory (e.g. SRX11805868)
 │       ├── raw_fastq/         # Original FASTQ files
@@ -167,6 +167,16 @@ Genomics_cancer/
 │       └── annotation/        # Annotated variants
 ├── scripts/                   # scripts
 └── logs/                      # Log files from pipeline execution
+
+bed/  
+# Genomic interval files (.bed) defining target regions (e.g. gene panels,
+# exons, amplicons). Used for read filtering, coverage calculation,
+# and restricting variant calling to clinically relevant regions.
+
+somatic_resources/  
+# Population and somatic reference resources required for somatic variant calling,
+# especially for GATK Mutect2 (e.g. Panel of Normals, gnomAD allele frequencies,
+# germline resource VCFs).
 ```
 
 Multiple samples can be processed by creating one directory per SRA accession under `data/`.
