@@ -517,9 +517,6 @@ wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Ho
 
 
 
-
-
-
 # Reference Genome
 
 **Genome:** GRCh38 / hg38  
