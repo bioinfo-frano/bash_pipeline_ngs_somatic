@@ -30,7 +30,7 @@ I.	Create conda environment
 
 II.	Create a folder structure
 
-III.	Find & download small FASTQ datasets
+III.	Find & download small-sized FASTQ datasets
 
 IV. Download a reference human genome and indexes
 
@@ -189,7 +189,7 @@ In Terminal, create all directories at once::
 mkdir -p Genomics_cancer/{reference/GRCh38/{fasta,known_sites},data/SRA_ID/{raw_fastq,qc,trimmed,aligned,variants,annotation},scripts,logs}
 ```
 
-## III. Find & download small FASTQ datasets for cancer gene panels
+## III. Find & download small-sized FASTQ datasets for cancer gene panels
 
 Downloading FASTQ files directly from the SRA web interface is not recommended, because:
 
