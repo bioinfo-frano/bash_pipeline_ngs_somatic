@@ -1,6 +1,8 @@
 **WORK IN PROGRESS**
 
-# Introduction
+# Part I – Preparation & setup
+
+## Introduction
 
 Many students and scientists who want to learn genomic data analysis independently often rely on personal computers (e.g., laptops) with limited computational resources. These constraints can make it challenging to run secondary and tertiary NGS analyses starting from FASTQ files through variant annotation.
 One alternative is to use cloud-based resources (e.g., AWS EC2 instances with large amounts of RAM), where software dependencies can be installed via Conda. However, cloud services incur financial costs. 
@@ -565,3 +567,5 @@ Genomics_cancer/
 ├── scripts/                   
 └── logs/                      
 ```
+
+If you have reached the end of **PART I**, I invite you to continue with the 👉 [Part II – Somatic analysis](README_somatic_analysis.md), where the DNA analysis will be explained step-by-step.

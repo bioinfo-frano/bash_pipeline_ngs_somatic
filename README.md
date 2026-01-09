@@ -2,15 +2,15 @@
 
 Welcome to my **DNA-NGS tutorial** 👋  
 
-This repository demonstrates how to analyze **DNA sequencing datasets**  
-(somatic variant analysis) using **Bash-based pipelines**, starting from raw data  
+This repository shows you how to analyze **DNA sequencing datasets**  
+using **Bash script pipelines**, starting from raw FASTQ data  
 and running everything on a **home workstation or laptop**.
 
 You can follow the tutorial step by step, or jump directly to the analysis part.
 
 ---
 
-## 📘 Tutorial structure
+## Tutorial structure
 
 ### 1️⃣ Part I – Preparation & setup  
 Learn how to prepare a clean and reproducible environment:
