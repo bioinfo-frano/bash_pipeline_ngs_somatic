@@ -156,7 +156,7 @@ Genomics_cancer/
 │       ├── fasta/             # Reference FASTA files
 │       └── known_sites/       # Known variant sites (e.g. dbSNP, Mills)
 │       └── bed/               # Genomic interval files (.bed) 
-│       └── somatic_resources/ # Population and somatic reference (e.g. Panel of Normals, gnomAD allele frequencies).
+│       └── somatic_resources/ # Population and somatic reference.
 ├── data/
 │   └── SRA_ID/                # Sample-specific directory (e.g. SRX11805868)
 │       ├── raw_fastq/         # Original FASTQ files
