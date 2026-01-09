@@ -533,7 +533,7 @@ f76371b113734a56cde236bc0372de0a  Homo_sapiens_assembly38.fasta.fai
 ```
 
 
-### Folder structure
+### (Final) Folder structure: before starting the analysis.
 
 ```bash
 Genomics_cancer/
