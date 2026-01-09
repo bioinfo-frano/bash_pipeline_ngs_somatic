@@ -454,6 +454,8 @@ In Google Cloud: ***Buckets/genomics-public-data/resources/broad/hg38/v0*** is p
 
 The other part of the hg38 bundle can be found in Google Cloud [Buckets - gcp-public-data--broad-references](https://console.cloud.google.com/storage/browser/gcp-public-data--broad-references/hg38/v0)
 
+- Homo_sapiens_assembly38.fasta.64.alt
+
 - Homo_sapiens_assembly38.fasta.64.amb
 
 - Homo_sapiens_assembly38.fasta.64.ann
@@ -496,42 +498,69 @@ wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Ho
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Reference Genome
 
 **Genome:** GRCh38 / hg38  
 **Source:** Broad Institute – GATK Resource Bundle  
 **Bucket:** gcp-public-data--broad-references/hg38/v0
 
-## Files and checksums
+> **Why verify reference genome integrity?**
+The reference genome FASTA and its associated index files (.fai and .dict) are foundational to all downstream NGS analyses. Any corruption or mismatch between these files can lead to alignment failures, GATK errors, or subtle coordinate inconsistencies that compromise variant calling results. Verifying file integrity using MD5 checksums ensures that the reference genome was downloaded correctly and that all associated index files correspond exactly to the same FASTA sequence, thereby guaranteeing reproducibility and analytical correctness.
 
-Homo_sapiens_assembly38.fasta  
-MD5: 7ff134953dcca8c8997453bbb80b6b5e
+MD5 checksums provide a fingerprint of a file.
+If the checksum matches the expected value, the file is bit-by-bit identical to the original.
 
-Homo_sapiens_assembly38.fasta.fai  
-MD5: f76371b113734a56cde236bc0372de0a
+**Step 1: Go to the reference FASTA directory**
 
-Homo_sapiens_assembly38.dict  
-MD5: 3884c62eb0e53fa92459ed9bff133ae6
+```bash
+cd Genomics_cancer/reference/GRCh38/fasta
+```
 
+**Step 2: Compute MD5 checksums**
+
+```bash
+md5 Homo_sapiens_assembly38.fasta
+md5 Homo_sapiens_assembly38.fasta.fai
+md5 Homo_sapiens_assembly38.dict
+```
+
+Expected output:
+
+```bash
+7ff134953dcca8c8997453bbb80b6b5e  Homo_sapiens_assembly38.fasta
+f76371b113734a56cde236bc0372de0a  Homo_sapiens_assembly38.fasta.fai
+3884c62eb0e53fa92459ed9bff133ae6  Homo_sapiens_assembly38.dict
+```
+
+
+### Folder structure
+
+Genomics_cancer/
+├── reference/                 
+│   └── GRCh38/
+│       ├── fasta/
+│       │   ├── Homo_sapiens_assembly38.fasta
+│       │   ├── Homo_sapiens_assembly38.fasta.fai
+│       │   └── Homo_sapiens_assembly38.dict
+│       │   └── Homo_sapiens_assembly38.fasta.64.amb     
+│       │   └── Homo_sapiens_assembly38.fasta.64.ann     
+│       │   └── Homo_sapiens_assembly38.fasta.64.bwt     
+│       │   └── Homo_sapiens_assembly38.fasta.64.pac    
+│       │   └── Homo_sapiens_assembly38.fasta.64.sa     
+│       │   └── Homo_sapiens_assembly38.fasta.64.alt                  
+│       └── known_sites/       
+│       └── bed/               
+│       └── somatic_resources/ 
+├── data/
+│   └── SRA_ID/                
+│       ├── raw_fastq/
+│       │   ├── SRR30536566_1.fastq.gz
+│       │   └── SRR30536566_2.fastq.gz
+│       ├── qc/                
+│       ├── trimmed/           
+│       ├── aligned/           
+│       ├── variants/          
+│       └── annotation/        
+├── scripts/                   
+└── logs/                      
 
