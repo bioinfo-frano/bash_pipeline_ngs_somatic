@@ -535,6 +535,7 @@ f76371b113734a56cde236bc0372de0a  Homo_sapiens_assembly38.fasta.fai
 
 ### Folder structure
 
+```bash
 Genomics_cancer/
 ├── reference/                 
 │   └── GRCh38/
@@ -563,4 +564,4 @@ Genomics_cancer/
 │       └── annotation/        
 ├── scripts/                   
 └── logs/                      
-
+```
