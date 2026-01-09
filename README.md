@@ -1,4 +1,4 @@
-# bash_pipeline_ngs
+# Bash_pipeline_NGS
 
 Welcome to my **DNA-NGS tutorial** 👋  
 
