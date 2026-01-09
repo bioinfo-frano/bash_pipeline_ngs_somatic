@@ -231,7 +231,7 @@ fasterq-dump : 3.2.1			# If output is 'fasterq-dump : 2.9.6', SRA-tools won't wo
 - As an example, use these keywords: **targeted, illumina, cancer, genomic, Homo sapiens**
 - As an example, you found the dataset: SRR30536566
 
-**3. Verify dataset size and whether it contains real raw FASTQ files**. **Remember**: you should be in `(sra)` environment.
+**3. Verify dataset size and whether it contains real raw FASTQ files**.
 
 ```bash
 vdb-dump --info SRR30536566
@@ -254,13 +254,14 @@ LDR    : general-loader.3.0.8
 LDRVER : 3.0.8
 LDRDATE: Sep 11 2023 (9/11/2023 0:0)
 ```
-> **Key fields to inspect::**
+**Key fields to inspect:**
+```bash
 - size   : 339,709,019                       # ~340 MB dataset. Compressed SRA size
 - SCHEMA : NCBI:SRA:Illumina:db#2            # Illumina reads forward and reverse
 - FMT    : sharq                             # Compressed format
+```
 
-
-**Table 2: Interpretation of `vdb-dump --info`.
+**Table 2: Interpretation of ** `vdb-dump --info`.
 
 | **SCHEMA**                       | **FMT** | **What it really is**                              | **Suitable for FASTQ-first pipelines?** |
 | -------------------------------- | ------- | -------------------------------------------------- | --------------------------------------- |
@@ -536,10 +537,4 @@ MD5: f76371b113734a56cde236bc0372de0a
 Homo_sapiens_assembly38.dict  
 MD5: 3884c62eb0e53fa92459ed9bff133ae6
 
-
-Variant annotation was performed using Ensembl Variant Effect Predictor (VEP, GRCh38). Due to hardware and storage limitations, annotation was executed via the Ensembl web interface, enabling gnomAD allele frequencies, MANE/APPRIS transcripts, phenotype annotations, and pathogenicity predictors (REVEL, ClinPred). Command-line execution was tested but limited by local resource constraints.
-
-
-> **Note:**  
-> Table values are approximate and intended for educational purposes. Dataset sizes may vary depending on sequencing depth, platform, and compression.
 
