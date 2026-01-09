@@ -256,12 +256,12 @@ LDRDATE: Sep 11 2023 (9/11/2023 0:0)
 ```
 **Key fields to inspect:**
 ```bash
-- size   : 339,709,019                       # ~340 MB dataset. Compressed SRA size
-- SCHEMA : NCBI:SRA:Illumina:db#2            # Illumina reads forward and reverse
-- FMT    : sharq                             # Compressed format
+size   : 339,709,019                       # ~340 MB dataset. Compressed SRA size
+SCHEMA : NCBI:SRA:Illumina:db#2            # Illumina reads forward and reverse
+FMT    : sharq                             # Compressed format
 ```
 
-**Table 2: Interpretation of ** `vdb-dump --info`.
+**Table 2: Interpretation of** `vdb-dump --info`.
 
 | **SCHEMA**                       | **FMT** | **What it really is**                              | **Suitable for FASTQ-first pipelines?** |
 | -------------------------------- | ------- | -------------------------------------------------- | --------------------------------------- |
@@ -454,15 +454,15 @@ In Google Cloud: ***Buckets/genomics-public-data/resources/broad/hg38/v0*** is p
 
 The other part of the hg38 bundle can be found in Google Cloud [Buckets - gcp-public-data--broad-references](https://console.cloud.google.com/storage/browser/gcp-public-data--broad-references/hg38/v0)
 
-- Homo_sapiens_assembly38.fasta.amb
+- Homo_sapiens_assembly38.fasta.64.amb
 
-- Homo_sapiens_assembly38.fasta.ann
+- Homo_sapiens_assembly38.fasta.64.ann
 
-- Homo_sapiens_assembly38.fasta.bwt
+- Homo_sapiens_assembly38.fasta.64.bwt
 
-- Homo_sapiens_assembly38.fasta.pac 
+- Homo_sapiens_assembly38.fasta.64.pac 
 
-- Homo_sapiens_assembly38.fasta.sa
+- Homo_sapiens_assembly38.fasta.64.sa
 
 These are BWA index components, but now in 64-bit addressing mode.
 
