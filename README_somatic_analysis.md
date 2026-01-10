@@ -134,7 +134,7 @@ According to [freeCodeCamp](https://www.freecodecamp.org/news/bash-scripting-tut
 
 Each step in the somatic DNA-NGS analysis will have its own script. It's not necessary that you figure out how to write the scripts; they will be linked so that you can download and run them on your computer.
 
-### Quality control (QC) 👉 [01_qc.sh](01_qc.sh)
+### Quality control (QC) 👉 [01_qc.sh](bash_scripts/01_qc.sh)
 
 #### FastQC & MultiQC
 
@@ -152,7 +152,7 @@ To get the documentation on how to interpret FastQC reports, check the documenta
   - The first and last ~5 bp show slightly reduced quality and will be trimmed (see **Figure 1**).
   
   **Figure 1.** Per-base sequence quality plots for R1 and R2 show high-quality base calls across most read positions.
-  ![Figure 1: Per-base sequence quality](images/FastQ_Per_base_sequence_quality)
+  ![Figure 1: Per-base sequence quality](~images/FastQ_Per_base_sequence_quality)
   
   
       
