@@ -144,12 +144,15 @@ To get the documentation on how to interpret FastQC reports, check the documenta
 - QC reports path: ~/Genomics_cancer/data/SRA_ID/qc
 - REPORTS: `SRR30536566_1_fastqc.html` (R1), `SRR30536566_2_fastqc.html` (R2), `multiqc_report.html`
 - Observations: 
-      - High content of duplicated reads (~60% and ~66% in R1 and R2, respectively) and high GC content. 
-      - Overall base quality is good across reads.
-      - The first and last ~5 bp show slightly reduced quality and will be trimmed (see **Figure 1**).
+
+  - High content of duplicated reads (~60% and ~66% in R1 and R2, respectively) and high GC content.
       
-      **Figure 1.** Per-base sequence quality plots for R1 and R2 show high-quality base calls across most read positions.
-      ![Figure 1: Per-base sequence quality](images/FastQ_Per_base_sequence_quality)
+  - Overall base quality is good across reads.
+      
+  - The first and last ~5 bp show slightly reduced quality and will be trimmed (see **Figure 1**).
+  
+  **Figure 1.** Per-base sequence quality plots for R1 and R2 show high-quality base calls across most read positions.
+  ![Figure 1: Per-base sequence quality](images/FastQ_Per_base_sequence_quality)
   
   
       
