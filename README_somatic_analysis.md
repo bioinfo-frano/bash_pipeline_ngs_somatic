@@ -149,21 +149,38 @@ To get the documentation on how to interpret FastQC reports, check the documenta
       
   - Overall base quality is good across reads.
       
-  - The first and last ~5 bp show slightly reduced quality and will be trimmed (see **Figure 1**).
+  - The first and last ~5 bp show slightly reduced quality and will be trimmed (see **Figure. 1**).
   
   **Figure 1.** Per-base sequence quality plots for R1 and R2 show high-quality base calls across most read positions.
+  
+  
   ![Figure 1: Per-base sequence quality](images/FastQ_Per_base_sequence_quality.png)
   
   
       
-- Regarding the **high content of duplicated reads**: The NCBI-SRA information of the dataset (RUN: SRR30536566) states: `Strategy: AMPLICON` and `Selection: PCR`. This is a **targeted amplicon sequencing**. The full-length of KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns were sequenced. These specific genomic regions were PCR-amplified many times to create enough material for sequencing. All reads derived from the same original fragment are **technical duplicates** (PCR duplicates). Therefore, a very high duplication rate is inherent to the technique. It does not reflect poor quality; it reflects the method.
-      - Regarding the **high GC content**: Usually, a bimodal curve often suggests contamination (e.g., bacteria in a human sample) or a mixed sample. However, this is explained by the experimental design.
-      You are not sequencing the whole human genome (which has a relatively uniform ~41% GC). You are sequencing a panel of specific amplicons. Different genes have different base compositions. The "camel" shape strongly suggests your targeted panel contains two distinct classes of amplicons:
-        1. First Hump (Peak ~35% GC): Likely corresponds to a subset of your amplicons that are GC-poor.
-        2. Second Hump (Peak ~62% GC): Likely corresponds to a subset of amplicons that are GC-rich (common in many coding regions).
-      The red warning is because FastQC compares your distribution to a unimodal model based on a normal genome. Your amplicon-based distribution violates this model, so it gets flagged. This is not a problem for your data.
+- Regarding the **high content of duplicated reads** (see **Figure. 2**): The NCBI-SRA information of the dataset (RUN: SRR30536566) states: `Strategy: AMPLICON` and `Selection: PCR`. This is a **targeted amplicon sequencing**. The full-length of KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns were sequenced. These specific genomic regions were PCR-amplified many times to create enough material for sequencing. All reads derived from the same original fragment are **technical duplicates** (PCR duplicates). Therefore, a very high duplication rate is inherent to the technique (see **Figure.3**). It does not reflect poor quality; it reflects the method.
+
+  **Figure 2.** Sequence Duplication Levels of reads
+  
+  
+  ![Figure 2: Sequence Duplication Levels](images/FastQ_Sequence_duplication_levels.png)
+  
+
+  **Figure 3.** Sequence Duplication Levels of reads: Proportion of Unique and duplicated reads 
+  
+  
+  ![Figure 3: Sequence Duplication Levels](images/FastQ_Sequence_Counts_Dupicated_Reads.png)
 
 
+- Regarding the **high GC content** (see **Figure 4**): Usually, a bimodal curve often suggests contamination (e.g., bacteria in a human sample) or a mixed sample. However, this is explained by the experimental design. You are not sequencing the whole human genome (which has a relatively uniform ~41% GC). You are sequencing a panel of specific amplicons. Different genes have different base compositions. The "camel" shape strongly suggests your targeted panel contains two distinct classes of amplicons:
+  1. First Hump (Peak ~35% GC): Likely corresponds to a subset of your amplicons that are GC-poor.
+  2. Second Hump (Peak ~62% GC): Likely corresponds to a subset of amplicons that are GC-rich (common in many coding regions).
+The red warning is because FastQC compares your distribution to a unimodal model based on a normal genome. Your amplicon-based distribution violates this model, so it gets flagged. This is not a problem for your data.
+
+  **Figure 4.** Per sequence GC content: Bimodal shape.
+  
+  
+  ![Figure 4: Per sequence GC content](images/FastQ_Per_Sequence_GC_content.png)
 
 
 
