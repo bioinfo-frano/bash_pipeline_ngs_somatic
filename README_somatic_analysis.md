@@ -152,7 +152,7 @@ To get the documentation on how to interpret FastQC reports, check the documenta
   - The first and last ~5 bp show slightly reduced quality and will be trimmed (see **Figure 1**).
   
   **Figure 1.** Per-base sequence quality plots for R1 and R2 show high-quality base calls across most read positions.
-  ![Figure 1: Per-base sequence quality](~images/FastQ_Per_base_sequence_quality)
+  ![Figure 1: Per-base sequence quality](images/FastQ_Per_base_sequence_quality.png)
   
   
       
