@@ -102,7 +102,7 @@ Trimming - Adapter/UMI trimming             # FastQC + MultiQC
  ↓
 QC                                          # FastQC + MultiQC
  ↓
-BWA-MEM (with Read Groups) → SAM		     # Alignment step (🔴 GATK requires read groups)
+BWA-MEM (with Read Groups) → SAM		    # Alignment step (🔴 GATK requires read groups)
  ↓
 Convert SAM → BAM
  ↓
@@ -191,7 +191,7 @@ The red warning is because FastQC compares your distribution to a unimodal model
 To get the documentation on how to use **Cutadapt**, check the documentation from [Cutadapt](https://github.com/marcelm/cutadapt/blob/main/doc/guide.rst). Go directly to sections "***Trimming paired-end reads***" and "***Cutadapt's output***" to understand "**02_trim.sh**" script.
 
 - OUTPUT: Trimmed FASTQ files path: ~/Genomics_cancer/data/SRA_ID/trimmed
-- OUTPUT: Cutadapt log report: ~/Genomics_cancer/logs
+- OUTPUT: Cutadapt log report: ~/Genomics_cancer/logs/cutadapt_SRR30536566.log
 - OUTPUT: QC reports: `SRR30536566_R1.trimmed_fastqc.html`, `SRR30536566_R2.trimmed_fastqc.html`, `multiqc_report_1.html`
 - Observations: 
 
@@ -268,7 +268,7 @@ Total written (filtered):    672,547,212 bp (86.4%)
 ```
   - It is the number of base pairs that: Survived all trimming steps, passed minimum length filtering (`-m 30`), were actually written to the output FASTQ (trimmed) files.
 
-Why is it only 86.4%?
+Why is retained 86.4% of bases?
 
 | Cause                         | Effect                         |
 | ----------------------------- | ------------------------------ |
@@ -277,6 +277,14 @@ Why is it only 86.4%?
 | Poly-A trimming (`A{10}`)     | Variable tail removal          |
 | Read removal (`-m 30`)        | 2.8% of reads dropped entirely |
 
+✔ Excellent base quality
+✔ Expected amplicon duplication
+✔ Minor poly-A contamination
+✔ Minimal read loss
 
-> **Note**: Fixed trimming (`-u 5 -u -5`) removes exactly 10 bp per read and is therefore not reported separately in the Cutadapt log. Its effect is included in the difference between total processed and total written bases.
+> **Note**
+Fixed trimming (`-u 5 -u -5`) removes exactly 10 bp per read and is therefore not reported separately in the Cutadapt log. Its effect is included in the difference between total processed and total written bases.
+
+***Conclusion***
+After trimming fixed bases, low-quality ends, and poly-A tails, 86.4% of the original bases were retained. This reflects expected trimming behavior for amplicon sequencing and indicates high overall data quality with minimal loss of informative reads.
 
