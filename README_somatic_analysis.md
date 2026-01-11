@@ -184,4 +184,4 @@ The red warning is because FastQC compares your distribution to a unimodal model
 
 
 
-With these documentation and the information in **Table 1** 
+### Trimming 👉 [01_qc.sh](bash_scripts/02_trim.sh)
