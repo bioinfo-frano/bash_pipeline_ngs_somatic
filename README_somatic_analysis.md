@@ -170,7 +170,7 @@ To learn how to interpret **FastQC** reports, check the official documentation f
   
   
       
-- Regarding the **high content of duplicated reads** (see **Figure. 2**): The NCBI-SRA metadata for the dataset (RUN: SRR30536566) reports: 
+- Regarding the **high content of duplicated reads** (see **Figure. 2**): The NCBI-SRA metadata for the dataset [RUN: SRR30536566](https://www.ncbi.nlm.nih.gov/sra/SRX25960056[accn]) reports: 
   
   - **Strategy**: `AMPLICON`
     
