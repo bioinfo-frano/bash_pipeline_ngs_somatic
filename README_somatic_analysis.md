@@ -278,4 +278,4 @@ This indicates **high-quality data** with minimal loss of informative reads.
 
 #### BWA-MEM
 
-Docummentation about **BWA-MEM** can be found at <https://bio-bwa.sourceforge.net/bwa.shtml>
+Documentation about **BWA-MEM** can be found at <https://bio-bwa.sourceforge.net/bwa.shtml>
