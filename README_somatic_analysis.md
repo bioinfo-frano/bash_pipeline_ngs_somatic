@@ -138,11 +138,11 @@ Each step in the somatic DNA-NGS analysis will have its own script. It's not nec
 
 #### FastQC & MultiQC
 
-To get the documentation on how to interpret FastQC reports, check the documentation from the [Babraham Bioinformatics](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+To get the documentation on how to interpret **FastQC** reports, check the documentation from the [Babraham Bioinformatics](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 
 - FASTQ file path: ~/Genomics_cancer/data/SRA_ID/raw_fastq
 - QC reports path: ~/Genomics_cancer/data/SRA_ID/qc
-- REPORTS: `SRR30536566_1_fastqc.html` (R1), `SRR30536566_2_fastqc.html` (R2), `multiqc_report.html`
+- OUTPUTS (QC reports): `SRR30536566_1_fastqc.html` (R1), `SRR30536566_2_fastqc.html` (R2), `multiqc_report.html`
 - Observations: 
 
   - High content of duplicated reads (~60% and ~66% in R1 and R2, respectively) and high GC content.
@@ -169,7 +169,7 @@ To get the documentation on how to interpret FastQC reports, check the documenta
   **Figure 3.** Sequence Duplication Levels of reads: Proportion of Unique and duplicated reads 
   
   
-  ![Figure 3: Sequence Duplication Levels](images/FastQ_Sequence_Counts_Dupicated_Reads.png)
+  ![Figure 3: Sequence Duplication Levels](images/FastQ_Sequence_Counts_Duplicated_Reads.png)
 
 
 - Regarding the **high GC content** (see **Figure 4**): Usually, a bimodal curve often suggests contamination (e.g., bacteria in a human sample) or a mixed sample. However, this is explained by the experimental design. You are not sequencing the whole human genome (which has a relatively uniform ~41% GC). You are sequencing a panel of specific amplicons. Different genes have different base compositions. The "camel" shape strongly suggests your targeted panel contains two distinct classes of amplicons:
@@ -185,3 +185,98 @@ The red warning is because FastQC compares your distribution to a unimodal model
 
 
 ### Trimming 👉 [02_trim.sh](bash_scripts/02_trim.sh)
+
+#### Cutadapt
+
+To get the documentation on how to use **Cutadapt**, check the documentation from [Cutadapt](https://github.com/marcelm/cutadapt/blob/main/doc/guide.rst). Go directly to sections "***Trimming paired-end reads***" and "***Cutadapt's output***" to understand "**02_trim.sh**" script.
+
+- OUTPUT: Trimmed FASTQ files path: ~/Genomics_cancer/data/SRA_ID/trimmed
+- OUTPUT: Cutadapt log report: ~/Genomics_cancer/logs
+- OUTPUT: (QC reports): `SRR30536566_R1.trimmed_fastqc.html`, `SRR30536566_R2.trimmed_fastqc.html`, `multiqc_report_1.html`
+- Observations: 
+
+  - Based on FastQC results, the first and last 5 bp showed slightly reduced quality and were trimmed. Low-quality bases (Q < 20) were removed, and reads shorter than 30 bp were discarded. A small fraction (<1%) of reads showed terminal poly-A tails, which were trimmed to improve alignment robustness. These steps are conservative and appropriate for targeted amplicon sequencing data.
+  
+  - To address a small fraction of reads showing terminal poly-A stretches, Cutadapt was instructed to remove runs of ≥10 consecutive adenines from the 3′ ends of both reads. This step is conservative without affecting genuine sequence content.
+  
+  - Cutadapt commands:
+
+```bash
+-u 5 -u -5      → trim 5 bp from 5′ and 3′ of R1
+-U 5 -U -5      → trim 5 bp from 5′ and 3′ of R2
+-q 20,20        → quality trimming from the 3′ end of reads (Q≥20). Reads with bases with Q < 20 are discarded
+-m 30           → discard reads <30 bp after trimming
+-a A{10}        → trim ≥10 A’s from 3′ end of R1
+-A A{10}        → trim ≥10 A’s from 3′ end of R2
+```
+
+***Cutadapt summary***:
+
+- Total bases before trimming
+
+```bash
+Total basepairs processed:   778,407,200 bp
+  Read 1:   389,203,600 bp
+  Read 2:   389,203,600 bp
+```
+  - 3,892,036 reads × 100 bp = 389,203,600 bp
+  
+  - Paired-end → ×2 = 778,407,200 bp
+  
+- Quality trimming (`-q 20,20`)
+
+```bash
+Quality-trimmed:               7,074,850 bp (0.9%)
+  Read 1:     2,013,807 bp
+  Read 2:     5,061,043 bp
+```
+
+  - Only 0.9% of bases were removed due to low quality
+
+  - R2 needed more trimming → common for Illumina data
+  
+> **Note**: Quality trimming was performed using `-q 20,20`, which removes low-quality bases (Phred < 20) from both the 5′ and 3′ ends of reads in both R1 and R2, ensuring high-confidence base calls while preserving read length.
+
+- Reads in vs reads out (`-m 30`)
+
+```bash
+Total read pairs processed:        3,892,036
+Pairs written (passing filters):   3,784,192 (97.2%)
+Pairs that were too short:           107,844 (2.8%)
+```
+  - Only 2.8% were discarded due to length (<30 bp), data quality is high, 97.2% survived all filters, and trimming parameters are not overly aggressive (excellent retention).
+  
+  - 🔑 Rule of thumb: Losing <5% after trimming = very healthy dataset.
+
+- Adapter / poly-A trimming (`-a A{10}` `-A A{10}`)
+
+```bash
+Read 1 with adapter: 167,116 (4.3%)
+Read 2 with adapter: 189,348 (4.9%)
+```
+
+  - Slightly higher in R2 → typical
+
+  - Low single-digit percentages → minor technical artifact
+  
+- Total written (filtered): FINAL output
+
+```bash
+Total written (filtered):    672,547,212 bp (86.4%)
+  Read 1:   337,085,529 bp
+  Read 2:   335,461,683 bp
+```
+  - It is the number of base pairs that: Survived all trimming steps, passed minimum length filtering (`-m 30`), were actually written to the output FASTQ (trimmed) files.
+
+Why is it only 86.4%?
+
+| Cause                         | Effect                         |
+| ----------------------------- | ------------------------------ |
+| Fixed trimming (`-u 5 -u -5`) | −10 bp per read                |
+| Quality trimming (`-q 20,20`) | −0.9%                          |
+| Poly-A trimming (`A{10}`)     | Variable tail removal          |
+| Read removal (`-m 30`)        | 2.8% of reads dropped entirely |
+
+
+> **Note**: Fixed trimming (`-u 5 -u -5`) removes exactly 10 bp per read and is therefore not reported separately in the Cutadapt log. Its effect is included in the difference between total processed and total written bases.
+
