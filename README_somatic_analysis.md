@@ -102,19 +102,19 @@ Raw FASTQ
  ↓
 Quality control (FastQC + MultiQC)
  ↓
-Trimming (adapters, low-quality bases, poly-A tails)             # FastQC + MultiQC
+Trimming (adapters, low-quality bases, poly-A tails)      # FastQC + MultiQC
  ↓
-Quality control (FastQC + MultiQC)                                         # FastQC + MultiQC
+Quality control (FastQC + MultiQC)                        # FastQC + MultiQC
  ↓
-Alignment (BWA-MEM with Read Groups) → SAM		    # 🔴 GATK requires read groups
+Alignment (BWA-MEM with Read Groups) → SAM                # 🔴 GATK requires read groups
  ↓
 Convertion SAM → BAM
  ↓
-Sort BAM (samtools / Picard)                # 🔴 REQUIRED before MarkDuplicates. Picard requires coordinate-sorted BAMs.)
+Sort BAM (samtools / Picard)                              # 🔴 REQUIRED before MarkDuplicates. Picard requires coordinate-sorted BAMs.)
  ↓
 MarkDuplicates (Picard) or UMI collapsing
  ↓
-Index BAM                                   # 🔴 REQUIRED before GATK
+Index BAM                                                 # 🔴 REQUIRED before GATK
 ```
 
 >**Note**: Base Quality Score Recalibration (BQSR) is often omitted for small targeted panels or UMI-based datasets and is therefore not included in this tutorial.
@@ -146,20 +146,21 @@ To learn how to interpret **FastQC** reports, check the official documentation f
 
 - **Input FASTQ files**: `~/Genomics_cancer/data/SRA_ID/raw_fastq`
 - **QC output path**: `~/Genomics_cancer/data/SRA_ID/qc`
-- Outputs (QC reports): 
-      - `SRR30536566_1_fastqc.html` (R1)
+- **QC reports**: 
+
+  - `SRR30536566_1_fastqc.html` (R1)
       
-      - `SRR30536566_2_fastqc.html` (R2)
+  - `SRR30536566_2_fastqc.html` (R2)
       
-      - `multiqc_report.html`
+  - `multiqc_report.html`
       
 **Observations**: 
 
-  - A high content of duplicated reads (~60% and ~66% in R1 and R2, respectively) and high GC content.
+- A high content of duplicated reads (~60% and ~66% in R1 and R2, respectively) and high GC content.
       
-  - Overall high base quality across reads.
+- Overall high base quality across reads.
       
-  - Slightly reduced quality in the first and last ~5 bp, which will be trimmed (**Figure. 1**).
+- Slightly reduced quality in the first and last ~5 bp, which will be trimmed (**Figure. 1**).
   
   
   **Figure 1.** Per-base sequence quality plots for R1 and R2 show high-quality base calls across most read positions.
@@ -169,10 +170,13 @@ To learn how to interpret **FastQC** reports, check the official documentation f
   
   
       
-  - Regarding the **high content of duplicated reads** (see **Figure. 2**): The NCBI-SRA metadata for the dataset (RUN: SRR30536566) reports: 
-    -**Strategy**: `AMPLICON`
-    -**Selection**: `PCR`. 
-    This means the dataset was generated using **targeted amplicon sequencing** of full-length genes including KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns were sequenced. These specific genomic regions were PCR-amplified many times to create enough material for sequencing. All reads derived from the same original fragment are **technical duplicates** (PCR duplicates), not biological duplicates. Therefore, a very high duplication rate is inherent to the technique (see **Figure.3**). It does not reflect poor quality; it reflects the method.
+- Regarding the **high content of duplicated reads** (see **Figure. 2**): The NCBI-SRA metadata for the dataset (RUN: SRR30536566) reports: 
+  
+  - **Strategy**: `AMPLICON`
+    
+  - **Selection**: `PCR`
+
+This means, the dataset was generated using **targeted amplicon sequencing** of full-length genes including KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns were sequenced. These specific genomic regions were PCR-amplified many times to create enough material for sequencing. All reads derived from the same original fragment are **technical duplicates** (PCR duplicates), not biological duplicates. Therefore, a very high duplication rate is inherent to the technique (see **Figure.3**). It does not reflect poor quality; it reflects the method.
 
   **Figure 2.** Sequence duplication levels of reads
   
@@ -186,9 +190,12 @@ To learn how to interpret **FastQC** reports, check the official documentation f
   ![Figure 3: Sequence Duplication Levels](images/FastQ_Sequence_Counts_Duplicated_Reads.png)
 
 
-  - Regarding the **high GC content** (see **Figure 4**): Usually, a bimodal curve often suggests contamination (e.g., bacteria in a human sample) or a mixed sample that would raise concerns for whole-genome sequencing. However, this is expected for targeted amplicon panels. You are not sequencing the whole human genome (which has a relatively uniform ~41% GC). You are sequencing a panel of specific amplicons. Different genes have different base compositions, resulting in multiple GC peaks. The "camel" shape strongly suggests your targeted panel contains two distinct classes of amplicons:
-    1. First Hump (Peak ~35% GC): Likely corresponds to a subset of your amplicons that are GC-poor.
-    2. Second Hump (Peak ~62% GC): Likely corresponds to a subset of amplicons that are GC-rich (common in many coding regions).
+- Regarding the **high GC content** (see **Figure 4**): Usually, a bimodal curve often suggests contamination (e.g., bacteria in a human sample) or a mixed sample that would raise concerns for whole-genome sequencing. However, this is expected for targeted amplicon panels. You are not sequencing the whole human genome (which has a relatively uniform ~41% GC). You are sequencing a panel of specific amplicons. Different genes have different base compositions, resulting in multiple GC peaks. The "camel" shape strongly suggests your targeted panel contains two distinct classes of amplicons:
+
+  1. First Hump (Peak ~35% GC): Likely corresponds to a subset of your amplicons that are GC-poor.
+  
+  2. Second Hump (Peak ~62% GC): Likely corresponds to a subset of amplicons that are GC-rich (common in many coding regions).
+  
 The red warning is because FastQC compares your distribution to a unimodal model based on a normal genome. Your amplicon-based distribution violates this model, so it gets flagged. This is not a problem for your data.
 
   **Figure 4.** Per sequence GC content showing a bimodal shape.
@@ -204,9 +211,9 @@ The red warning is because FastQC compares your distribution to a unimodal model
 
 Documentation for **Cutadapt** can be found in [Cutadapt](https://github.com/marcelm/cutadapt/blob/main/doc/guide.rst). Relevant sections include "***Trimming paired-end reads***" and "***Cutadapt's output***".
 
-- Trimmed FASTQ files output: `~/Genomics_cancer/data/SRA_ID/trimmed`
-- Cutadapt log report: `~/Genomics_cancer/logs/cutadapt_SRR30536566.log`
-- QC reports: 
+- **Trimmed FASTQ files output**: `~/Genomics_cancer/data/SRA_ID/trimmed`
+- **Cutadapt log report**: `~/Genomics_cancer/logs/cutadapt_SRR30536566.log`
+- **QC reports**: 
   -`SRR30536566_R1.trimmed_fastqc.html`
   -`SRR30536566_R2.trimmed_fastqc.html`
   -`multiqc_report_1.html`
@@ -232,7 +239,7 @@ This trimming strategy is conservative and well-suited for targeted amplicon seq
 
 >**Note**: Fixed trimming (-u, -U) removes a constant number of bases and is therefore not reported separately in the Cutadapt log. Its effect is included in the difference between total processed and total written bases.
 
-***Cutadapt summary interpretation*** (`cutadapt_SRR30536566.log`):
+**Cutadapt summary interpretation** (`cutadapt_SRR30536566.log`):
 
 After trimming and filtering:
 
@@ -263,7 +270,7 @@ Why is retained 86.4% of bases?
 
 ✔ Minimal read loss
 
-This indicates high-quality data with minimal loss of informative reads.
+This indicates **high-quality data** with minimal loss of informative reads.
 
 ---
 
@@ -271,4 +278,4 @@ This indicates high-quality data with minimal loss of informative reads.
 
 #### BWA-MEM
 
-Docummentation about **BWA-MEM** can be do found in [BWA-MEM](https://bio-bwa.sourceforge.net/bwa.shtml).
+Docummentation about **BWA-MEM** can be found at <https://bio-bwa.sourceforge.net/bwa.shtml>
