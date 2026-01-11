@@ -102,7 +102,7 @@ Trimming - Adapter/UMI trimming             # FastQC + MultiQC
  ↓
 QC                                          # FastQC + MultiQC
  ↓
-BWA-MEM (with Read Groups) → SAM		        # Alignment step (🔴 GATK requires read groups)
+BWA-MEM (with Read Groups) → SAM		     # Alignment step (🔴 GATK requires read groups)
  ↓
 Convert SAM → BAM
  ↓
@@ -118,7 +118,7 @@ Index BAM                                   # 🔴 REQUIRED before GATK
 ### Somatic variant analysis pipeline 
 
 ```bash
-[Preprocessed BAM]
+[Preprocess - Index BAM]
  ↓
 Mutect2 (somatic variant caller)
  ↓
@@ -192,7 +192,7 @@ To get the documentation on how to use **Cutadapt**, check the documentation fro
 
 - OUTPUT: Trimmed FASTQ files path: ~/Genomics_cancer/data/SRA_ID/trimmed
 - OUTPUT: Cutadapt log report: ~/Genomics_cancer/logs
-- OUTPUT: (QC reports): `SRR30536566_R1.trimmed_fastqc.html`, `SRR30536566_R2.trimmed_fastqc.html`, `multiqc_report_1.html`
+- OUTPUT: QC reports: `SRR30536566_R1.trimmed_fastqc.html`, `SRR30536566_R2.trimmed_fastqc.html`, `multiqc_report_1.html`
 - Observations: 
 
   - Based on FastQC results, the first and last 5 bp showed slightly reduced quality and were trimmed. Low-quality bases (Q < 20) were removed, and reads shorter than 30 bp were discarded. A small fraction (<1%) of reads showed terminal poly-A tails, which were trimmed to improve alignment robustness. These steps are conservative and appropriate for targeted amplicon sequencing data.
@@ -212,7 +212,7 @@ To get the documentation on how to use **Cutadapt**, check the documentation fro
 
 ***Cutadapt summary***:
 
-- Total bases before trimming
+a) Total bases before trimming
 
 ```bash
 Total basepairs processed:   778,407,200 bp
@@ -223,7 +223,7 @@ Total basepairs processed:   778,407,200 bp
   
   - Paired-end → ×2 = 778,407,200 bp
   
-- Quality trimming (`-q 20,20`)
+b) Quality trimming (`-q 20,20`)
 
 ```bash
 Quality-trimmed:               7,074,850 bp (0.9%)
@@ -237,7 +237,7 @@ Quality-trimmed:               7,074,850 bp (0.9%)
   
 > **Note**: Quality trimming was performed using `-q 20,20`, which removes low-quality bases (Phred < 20) from both the 5′ and 3′ ends of reads in both R1 and R2, ensuring high-confidence base calls while preserving read length.
 
-- Reads in vs reads out (`-m 30`)
+c) Reads in vs reads out (`-m 30`)
 
 ```bash
 Total read pairs processed:        3,892,036
@@ -248,7 +248,7 @@ Pairs that were too short:           107,844 (2.8%)
   
   - 🔑 Rule of thumb: Losing <5% after trimming = very healthy dataset.
 
-- Adapter / poly-A trimming (`-a A{10}` `-A A{10}`)
+d) Adapter / poly-A trimming (`-a A{10}` `-A A{10}`)
 
 ```bash
 Read 1 with adapter: 167,116 (4.3%)
@@ -259,7 +259,7 @@ Read 2 with adapter: 189,348 (4.9%)
 
   - Low single-digit percentages → minor technical artifact
   
-- Total written (filtered): FINAL output
+e) Total written (filtered): FINAL output
 
 ```bash
 Total written (filtered):    672,547,212 bp (86.4%)
