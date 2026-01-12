@@ -110,13 +110,13 @@ Alignment (BWA-MEM with Read Groups) → SAM                # 🔴 GATK requires
  ↓
 Conversion SAM → BAM
  ↓
-Sort BAM (samtools)                                  # 🔴 REQUIRED before MarkDuplicates. Picard requires coordinate-sorted BAMs.)
+Sort BAM (samtools)                                   # 🔴 REQUIRED before MarkDuplicates. Picard requires coordinate-sorted BAMs.)
  ↓
 MarkDuplicates (Picard) or UMI collapsing
  ↓
-MD/NM Tags (Samtools)                                # 🔴 REQUIRED before GATK
+MD/NM Tags (samtools)                                 # 🔴 REQUIRED before GATK
  ↓
-Index BAM (Samtools)
+Index BAM (samtools)
 ```
 
 >**Note**: Base Quality Score Recalibration (BQSR) is often omitted for small targeted panels or UMI-based datasets and is therefore not included in this tutorial.
