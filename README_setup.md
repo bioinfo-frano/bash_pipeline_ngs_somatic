@@ -160,7 +160,7 @@ Genomics_cancer/
 │       └── bed/               # Genomic interval files (.bed) 
 │       └── somatic_resources/ # Population and somatic reference.
 ├── data/
-│   └── SRA_ID/                # Sample-specific directory (e.g. SRX11805868)
+│   └── SRA_ID/                # Sample-specific directory (e.g. SRR30536566)
 │       ├── raw_fastq/         # Original FASTQ files
 │       ├── qc/                # FastQC / MultiQC reports
 │       ├── trimmed/           # Adapter- and quality-trimmed FASTQ files
@@ -186,7 +186,7 @@ Multiple samples can be processed by creating one directory per SRA accession un
 In Terminal, create all directories at once::
 
 ```bash
-mkdir -p Genomics_cancer/{reference/GRCh38/{fasta,known_sites},data/SRA_ID/{raw_fastq,qc,trimmed,aligned,variants,annotation},scripts,logs}
+mkdir -p Genomics_cancer/{reference/GRCh38/{fasta,known_sites},data/SRR30536566/{raw_fastq,qc,trimmed,aligned,variants,annotation},scripts,logs}
 ```
 
 ## III. Find & download small-sized FASTQ datasets for cancer gene panels
@@ -292,7 +292,7 @@ As shown in Table 3, both raw and aligned FASTQ datasets can be used but the `SR
 
 **4. Download the SRA dataset**
 
-- Go to working directory `~/data/SRA_ID`
+- Go to working directory `~/data/SRR30536566`
 
 ```bash
 fasterq-dump SRR30536566 \    # SRA Run accession ID
@@ -555,7 +555,7 @@ Genomics_cancer/
 │       └── bed/               
 │       └── somatic_resources/ 
 ├── data/
-│   └── SRA_ID/                
+│   └── SRR30536566/                
 │       ├── raw_fastq/
 │       │   ├── SRR30536566_1.fastq.gz
 │       │   └── SRR30536566_2.fastq.gz

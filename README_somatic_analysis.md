@@ -108,13 +108,13 @@ Quality control (FastQC + MultiQC)                        # FastQC + MultiQC
  ↓
 Alignment (BWA-MEM with Read Groups) → SAM                # 🔴 GATK requires read groups
  ↓
-Convertion SAM → BAM
+Conversion SAM → BAM
  ↓
-Sort BAM (samtools / Picard)                              # 🔴 REQUIRED before MarkDuplicates. Picard requires coordinate-sorted BAMs.)
+Sort BAM (samtools)                              # 🔴 REQUIRED before MarkDuplicates. Picard requires coordinate-sorted BAMs.)
  ↓
 MarkDuplicates (Picard) or UMI collapsing
  ↓
-Index BAM                                                 # 🔴 REQUIRED before GATK
+MD/NM Tags + Index BAM (Samtools)                            # 🔴 REQUIRED before GATK
 ```
 
 >**Note**: Base Quality Score Recalibration (BQSR) is often omitted for small targeted panels or UMI-based datasets and is therefore not included in this tutorial.
@@ -144,8 +144,8 @@ Each step in the somatic DNA-NGS analysis is implemented as a **separate bash sc
 
 To learn how to interpret **FastQC** reports, check the official documentation from the [Babraham Bioinformatics](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 
-- **Input FASTQ files**: `~/Genomics_cancer/data/SRA_ID/raw_fastq`
-- **QC output path**: `~/Genomics_cancer/data/SRA_ID/qc`
+- **Input FASTQ files**: `~/Genomics_cancer/data/SRR30536566/raw_fastq`
+- **QC output path**: `~/Genomics_cancer/data/SRR30536566/qc`
 - **QC reports**: 
 
   - `SRR30536566_1_fastqc.html` (R1)
@@ -163,7 +163,7 @@ To learn how to interpret **FastQC** reports, check the official documentation f
 - Slightly reduced quality in the first and last ~5 bp, which will be trimmed (**Figure. 1**).
   
   
-  **Figure 1.** Per-base sequence quality plots for R1 and R2 show high-quality base calls across most read positions.
+**Figure 1.** Per-base sequence quality plots for R1 and R2 show high-quality base calls across most read positions.
   
   
   ![Figure 1: Per-base sequence quality](images/FastQ_Per_base_sequence_quality.png)
@@ -178,13 +178,13 @@ To learn how to interpret **FastQC** reports, check the official documentation f
 
 This means that the dataset was generated using **targeted amplicon sequencing** of full-length genes including KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns. These specific genomic regions were PCR-amplified many times to create enough material for sequencing. All reads derived from the same original fragment are **technical duplicates** (PCR duplicates), not biological duplicates. Therefore, a very high duplication rate is inherent to the technique (see **Figure.3**). It does not reflect poor quality; it reflects the method.
 
-  **Figure 2.** Sequence duplication levels of reads
+**Figure 2.** Sequence duplication levels of reads
   
   
   ![Figure 2: Sequence Duplication Levels](images/FastQ_Sequence_duplication_levels.png)
   
 
-  **Figure 3.** Proportion of Unique and duplicated reads 
+**Figure 3.** Proportion of Unique and duplicated reads 
   
   
   ![Figure 3: Sequence Duplication Levels](images/FastQ_Sequence_Counts_Duplicated_Reads.png)
@@ -198,7 +198,7 @@ This means that the dataset was generated using **targeted amplicon sequencing**
   
 The red warning is because FastQC compares your distribution to a unimodal model based on a normal genome. Your amplicon-based distribution violates this model, so it gets flagged. This is not a problem for your data.
 
-  **Figure 4.** Per sequence GC content showing a bimodal shape.
+**Figure 4.** Per sequence GC content showing a bimodal shape.
   
   
   ![Figure 4: Per sequence GC content](images/FastQ_Per_Sequence_GC_content.png)
@@ -211,7 +211,7 @@ The red warning is because FastQC compares your distribution to a unimodal model
 
 Documentation for **Cutadapt** can be found in [Cutadapt](https://github.com/marcelm/cutadapt/blob/main/doc/guide.rst). Relevant sections include "***Trimming paired-end reads***" and "***Cutadapt's output***".
 
-- **Trimmed FASTQ files output**: `~/Genomics_cancer/data/SRA_ID/trimmed`
+- **Trimmed FASTQ files output**: `~/Genomics_cancer/data/SRR30536566/trimmed`
 - **Cutadapt log report**: `~/Genomics_cancer/logs/cutadapt_SRR30536566.log`
 - **QC reports**: 
   -`SRR30536566_R1.trimmed_fastqc.html`
@@ -274,8 +274,26 @@ This indicates **high-quality data** with minimal loss of informative reads.
 
 ---
 
-### Alignment (BWA-MEM with Read Groups) 👉 [03_align.sh](bash_scripts/03_align.sh)
+### Alignment and BAM preprocessing workflow 👉 [03_align_&_bam_preprocessing.sh](bash_scripts/03_align_&_bam_preprocessing.sh)
 
-#### BWA-MEM
+**Documentation**: 
 
-Documentation about **BWA-MEM** can be found at <https://bio-bwa.sourceforge.net/bwa.shtml>
+- **BWA**: <https://bio-bwa.sourceforge.net/bwa.shtml>
+- **samtools** (v. 1.23): <https://www.htslib.org/doc/samtools.html>
+- **Picard**: <https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard>
+
+**Table 2**: Alignment and BAM preprocessing workflow (Script: 03_align_conv_sort_mdup_index.sh)
+
+| Step | Step name                  | INPUT                                                                                                     | OUTPUT                                                                | Tool                    | Function / Role                                                                                                                                                                                                 |
+| ---: | -------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|    1 | Alignment                  | `SRR30536566_R1.trimmed.fastq.gz`<br>`SRR30536566_R2.trimmed.fastq.gz`<br>`Homo_sapiens_assembly38.fasta` | `SRR30536566.sam`                                                     | `bwa mem`               | Aligns paired-end reads to the reference genome. Adds **Read Group (RG)** information required by GATK and downstream tools. Output is an unsorted SAM alignment file.                                          |
+|    2 | Conversion SAM → BAM       | `SRR30536566.sam`                                                                                         | `SRR30536566.bam`                                                     | `samtools view`         | Converts human-readable SAM into compressed binary BAM format for efficiency and downstream processing.                                                                                                         |
+|    3 | Sort BAM (coordinate sort) | `SRR30536566.bam`                                                                                         | `SRR30536566.sorted.bam`                                              | `samtools sort`         | Sorts alignments by genomic coordinates (chromosome and position). **Required** for duplicate marking, indexing, and variant calling.                                                                           |
+|    4 | MarkDuplicates (Picard)    | `SRR30536566.sorted.bam`                                                                                  | `SRR30536566.sorted.markdup.bam`<br>`SRR30536566.markdup.metrics.txt` | `picard MarkDuplicates` | Identifies PCR/optical duplicates and **marks them in the BAM (FLAG + tags)** without removing reads. Duplicate sets are tagged (amplicon-aware), enabling variant callers to down-weight or ignore duplicates. |
+|    5 | Add MD/NM tags             | `SRR30536566.sorted.markdup.bam`<br>`Homo_sapiens_assembly38.fasta`                                       | `SRR30536566.sorted.markdup.md.bam`                                   | `samtools calmd`        | Recalculates and adds **MD** (mismatch positions) and **NM** (edit distance) tags. Improves robustness and compatibility with GATK and somatic variant callers.                                                 |
+|    6 | Index final BAM            | `SRR30536566.sorted.markdup.md.bam`                                                                       | `SRR30536566.sorted.markdup.md.bam.bai`                               | `samtools index`        | Creates a BAM index enabling **random genomic access**. Required for variant calling (e.g. Mutect2), visualization (IGV), and QC tools.                                                                         |
+
+
+
+
+
