@@ -110,11 +110,11 @@ Alignment (BWA-MEM with Read Groups) → SAM                # 🔴 GATK requires
  ↓
 Conversion SAM → BAM
  ↓
-Sort BAM (samtools)                                   # 🔴 REQUIRED before MarkDuplicates. Picard requires coordinate-sorted BAMs.)
+Sort BAM (samtools)                                      # 🔴 REQUIRED before MarkDuplicates. Picard requires coordinate-sorted BAMs.)
  ↓
 MarkDuplicates (Picard) or UMI collapsing
  ↓
-MD/NM Tags (samtools)                                 # 🔴 REQUIRED before GATK
+MD/NM Tags (samtools)                                    # 🔴 REQUIRED before GATK
  ↓
 Index BAM (samtools)
 ```
