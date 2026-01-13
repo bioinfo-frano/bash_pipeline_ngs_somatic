@@ -287,11 +287,12 @@ This indicates **high-quality data** with minimal loss of informative reads.
 - **Picard**: <https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard>
 
 
-**Table 2**: Alignment and BAM preprocessing workflow (Script: 03_align_conv_sort_mdup_index.sh)
+**Table 2**: Alignment and BAM preprocessing workflow 
+**Script**: `03_align_&_bam_preprocess.sh`
 
 | Step | Step name                  | INPUT                                                                                                     | OUTPUT                                                                | Tool                    | Function / Role                                                                                                                                                                                                 |
 | ---- | -------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  1 | Alignment                  | `SRR30536566_R1.trimmed.fastq.gz`<br>`SRR30536566_R2.trimmed.fastq.gz`<br>`Homo_sapiens_assembly38.fasta` | `SRR30536566.sam`                                                     | `bwa mem`               | Aligns paired-end reads to the reference genome. Adds **Read Group (RG)** information required by GATK and downstream tools. Output is an unsorted SAM alignment file.                                          |
+|  1 | Alignment                  | `SRR30536566_R1.trimmed.fastq.gz`<br>`SRR30536566_R2.trimmed.fastq.gz`<br>`Homo_sapiens_assembly38.fasta` | `SRR30536566.sam`                                                     | `bwa mem`               | Aligns paired-end reads to the reference genome. Adds **Read Group (RG)** information required by GATK and downstream tools. Output is an **unsorted SAM** alignment file.                                          |
 |  2 | Conversion SAM → BAM       | `SRR30536566.sam`                                                                                         | `SRR30536566.bam`                                                     | `samtools view`         | Converts human-readable SAM into compressed binary BAM format for efficiency and downstream processing.                                                                                                         |
 |  3 | Sort BAM (coordinate sort) | `SRR30536566.bam`                                                                                         | `SRR30536566.sorted.bam`                                              | `samtools sort`         | Sorts alignments by genomic coordinates (chromosome and position). **Required** for duplicate marking, indexing, and variant calling.                                                                           |
 |  4 | MarkDuplicates    | `SRR30536566.sorted.bam`                                                                                  | `SRR30536566.sorted.markdup.bam`<br>`SRR30536566.markdup.metrics.txt` |`picard MarkDuplicates` | Identifies PCR/optical duplicates and **marks them in the BAM (FLAG + tags)** without removing reads. Duplicate sets are tagged (amplicon-aware), enabling variant callers to down-weight or ignore duplicates. |
@@ -301,27 +302,36 @@ This indicates **high-quality data** with minimal loss of informative reads.
 
 ### Read Groups (RG): The "Birth Certificate" of Each Read
 
-BWA-MEM assigns a group of information to each read in the SAM file. This info is the RG, which is an essential metadata. See **Table 3** for more details.
+BWA-MEM assigns **Read Group (RG)** information to each read in the SAM/BAM file.
+Read groups provide essential metadata that allows downstream tools—especially GATK—to correctly interpret the origin of each read. See **Table 3** for details.
 
 **Table 3**: GATK-relevant read group fields
 
 | Field | Meaning       | Recommendation      | Script                   | Interpretation
 | ----- | ------------- | ------------------- |--------------------------|-----------------
-| `ID`  | Read group ID | Unique per lane/run | `RG_ID="SRR30536566"`    | Patient ID
+| `ID`  | Read group ID | Unique per lane/run | `RG_ID="SRR30536566"`    | Technical identifier
 | `SM`  | Sample        | Biological sample   | `RG_SM="DMBEL-EIDR-071"` | Reflects the biological sample
-| `LB`  | Library       | Library prep        | `RG_LB="AMPLICON"`       | Reflects library strategy
-| `PL`  | Platform      | Sequencing platform | `RG_PL="ILLUMINA"`       | Mandatory
+| `LB`  | Library       | Library preparation | `RG_LB="AMPLICON"`       | Reflects library strategy
+| `PL`  | Platform      | Sequencing platform | `RG_PL="ILLUMINA"`       | **Mandatory for GATK**
 | `PU`  | Platform unit | Flowcell + lane     | `RG_PU="HiSeq4000"`      | Uniquely identifies the sequencing unit
 
 
+### Picard MarkDuplicates
 
+After trimming and alignment of sample **SRR30536566**, a duplication level of **~54.6% of read pairs** was observed among ~7.7 million mapped reads (Figure 5).
+This high duplication rate is **expected** because the data originate from **PCR-amplified amplicon regions** targeting specific genes in colon cancer cells.
+Marked duplicates are **not removed**, but flagged so that downstream tools (e.g. Mutect2) can properly account for them.
+
+**Figure 5.** Percentage of reads categorized by duplication states.
+
+![Figure 5: Markduplicates_picard](images/Markduplicates_picard.png)
 
 ### Samtools – Troubleshooting
 
 When following this tutorial, it is very important to be aware of which version of samtools is installed in the conda environment.
-In this course, the environment provides samtools v0.1.19 (released in 2013), which is much older than current samtools versions (≥1.x).
+In this course, the environment provides **samtools v0.1.19 (released in 2013)**, which is much older than current samtools versions (≥1.x).
 
-Because of this, some command-line options shown in modern tutorials and online documentation do NOT exist in this older version. Using newer options with an old version will lead to errors, even if the command looks perfectly correct.
+Because of this, some command-line options shown in modern tutorials and online documentation **do NOT exist** in this older version. Using newer options with an old version will lead to errors, even if the command looks perfectly correct.
 
 You can always check the installed version with:
 
@@ -334,7 +344,7 @@ samtools
 During this tutorial, students often feel that using an old samtools version means lower-quality results.
 **This is not true**.
 
-✔️ The core algorithms used by samtools—such as:
+✔️ The core algorithms used by samtools such as:
 
 - coordinate sorting of BAM files
 
@@ -342,7 +352,7 @@ During this tutorial, students often feel that using an old samtools version mea
 
 - interpretation of alignments
 
-are conceptually identical across versions.
+are **conceptually identical across versions**.
 
 What has mainly improved in newer versions is:
 
@@ -354,7 +364,7 @@ What has mainly improved in newer versions is:
 
 - cleaner command-line syntax
 
-The result of the analysis and biological meaning (sorted BAM order, MD/NM tag values, alignment interpretation) remain the same.
+The **biological results and interpretation** (sorted BAM order, MD/NM values, variant evidence) remain the same.
 
 
 ### 🔹 Key version-related differences in samtools versions
@@ -411,7 +421,7 @@ SRR30536566.sorted.markdup.md.bam.bai
 
 >**Message about Samtools**:
 This pipeline uses an older samtools version (0.1.19), which does not support multithreading (-@).
-The MD and NM tags produced here are biologically identical to those generated by modern samtools versions; newer versions mainly improve speed and robustness, not the interpretation of variants.
+The MD and NM tags produced here are **biologically identical** to those generated by modern samtools versions; newer versions mainly improve speed and robustness, not the interpretation of variants.
 
 
 ### Folder structure: From QC → Trimming/Filtering → Alignment + BAM preprocessing.
@@ -441,7 +451,7 @@ Genomics_cancer/
 │       ├── qc/
 │           └── multiqc_report.html                               # QC
 │           └── multiqc_report_1.html                             # Trimm
-│           └── multiqc_report_2.html                             # Align+BAM_prepross
+│           └── multiqc_report_2.html                             # Align+BAM_preprocess
 │           └── SRR30536566_1_fastqc.html 
 │           └── SRR30536566_R1.trimmed_fastqc.html 
 │           └── SRR30536566_2_fastqc.html 
@@ -472,4 +482,4 @@ Genomics_cancer/
 ```
 
 >**Key idea**:
-Each step of the [03_align_&_bam_preprocess.sh](bash_scripts/03_align_&_bam_preprocess.sh) script transforms the data into a format that is progressively more structured, annotated, and analysis-ready. By the end of this script, the BAM file is sorted, duplicate-aware, MD/NM-tagged, and indexed, which is the expected starting point for somatic variant calling with GATK Mutect2.
+Each step of the [03_align_&_bam_preprocess.sh](bash_scripts/03_align_&_bam_preprocess.sh) script transforms the data into a format that is progressively **more structured, annotated, and analysis-ready**. By the end of this script, the BAM-generated file is sorted, duplicate-aware, MD/NM-tagged, and indexed, which is the expected starting point for somatic variant calling with GATK Mutect2. This pipeline is GATK-compatible, and intentionally uses a legacy samtools version to keep the environment simple.
