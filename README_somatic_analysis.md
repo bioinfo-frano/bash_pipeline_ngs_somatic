@@ -482,4 +482,11 @@ Genomics_cancer/
 ```
 
 >**Key idea**:
-Each step of the [03_align_&_bam_preprocess.sh](bash_scripts/03_align_&_bam_preprocess.sh) script transforms the data into a format that is progressively **more structured, annotated, and analysis-ready**. By the end of this script, the BAM-generated file is sorted, duplicate-aware, MD/NM-tagged, and indexed, which is the expected starting point for somatic variant calling with GATK Mutect2. This pipeline is GATK-compatible, and intentionally uses a legacy samtools version to keep the environment simple.
+Each step of the [03_align_&_bam_preprocess.sh](bash_scripts/03_align_&_bam_preprocess.sh) script transforms the data into a format that is progressively **more structured, annotated, and analysis-ready**. 
+By the end of this script, the BAM-generated file is:
+- sorted
+- duplicate-aware
+- MD/NM-tagged
+- indexed 
+This is the **expected starting point** for somatic variant calling with GATK **Mutect2**.
+The pipeline is fully GATK-compatible and intentionally uses a legacy samtools version to keep the computational environment simple and reproducible.
