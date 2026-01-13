@@ -295,7 +295,54 @@ This indicates **high-quality data** with minimal loss of informative reads.
 |  5 | Add MD/NM tags             | `SRR30536566.sorted.markdup.bam`<br>`Homo_sapiens_assembly38.fasta`                                       | `SRR30536566.sorted.markdup.md.bam`                                   |`samtools calmd`        | Recalculates and adds **MD** (mismatch positions) and **NM** (Number of mismatches) tags. Improves robustness and compatibility with GATK and somatic variant callers.                                                 |
 |  6 | Index final BAM            | `SRR30536566.sorted.markdup.md.bam`                                                                       | `SRR30536566.sorted.markdup.md.bam.bai`                               |`samtools index`        | Creates a BAM index enabling **random genomic access**. Required for variant calling (e.g. Mutect2), visualization (IGV), and QC tools.                                                                         |
 
+### Samtools – Troubleshooting
+
+When following this tutorial, it is very important to be aware of which version of samtools is installed in the conda environment.
+In this course, the environment provides samtools v0.1.19 (released in 2013), which is much older than current samtools versions (≥1.x).
+
+Because of this, some command-line options shown in modern tutorials and online documentation do NOT exist in this older version. Using newer options with an old version will lead to errors, even if the command looks perfectly correct.
+
+You can always check the installed version with:
+
+```bash
+samtools
+```
+
+### 🔹 A common student concern: “Is the old version worse?”
+
+During this tutorial, students often feel that using an old samtools version means lower-quality results.
+**This is not true**.
+
+✔️ The core algorithms used by samtools—such as:
+
+- coordinate sorting of BAM files
+
+- calculation of MD and NM tags
+
+- interpretation of alignments
+
+are conceptually identical across versions.
+
+What has mainly improved in newer versions is:
+
+- memory efficiency
+
+- speed
+
+- multi-threading support
+
+- cleaner command-line syntax
+
+The result of the analysis and biological meaning (sorted BAM order, MD/NM tag values, alignment interpretation) remain the same.
 
 
+### 🔹 Key version-related differences in samtools versions
 
+1. `samtools sort`
+
+samtools 0.1.19
+
+❌  No `-o` option for output files
+
+Output is defined using a prefix
 
