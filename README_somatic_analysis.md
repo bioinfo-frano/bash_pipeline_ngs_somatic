@@ -119,7 +119,8 @@ MD/NM Tags (samtools)                                    # 🔴 REQUIRED before 
 Index BAM (samtools)
 ```
 
->**Note**: Base Quality Score Recalibration (BQSR) is often omitted for small targeted panels or UMI-based datasets and is therefore not included in this tutorial.
+>**Note**: Base Quality Score Recalibration (BQSR) is often omitted for small targeted panels, UMI-based datasets or targeted amplicon sequencing and is therefore not included in this tutorial.
+According to [GATK](https://gatk.broadinstitute.org/hc/en-us/articles/360035890531-Base-Quality-Score-Recalibration-BQSR) "The main case figure where you really might need to skip BQSR is when you have too little data (some small gene panels have that problem), or you're working with a really weird organism that displays insane amounts of variation."
 
 ### Somatic variant analysis pipeline 
 
@@ -295,6 +296,21 @@ This indicates **high-quality data** with minimal loss of informative reads.
 |  5 | Add MD/NM tags             | `SRR30536566.sorted.markdup.bam`<br>`Homo_sapiens_assembly38.fasta`                                       | `SRR30536566.sorted.markdup.md.bam`                                   |`samtools calmd`        | Recalculates and adds **MD** (mismatch positions) and **NM** (Number of mismatches) tags. Improves robustness and compatibility with GATK and somatic variant callers.                                                 |
 |  6 | Index final BAM            | `SRR30536566.sorted.markdup.md.bam`                                                                       | `SRR30536566.sorted.markdup.md.bam.bai`                               |`samtools index`        | Creates a BAM index enabling **random genomic access**. Required for variant calling (e.g. Mutect2), visualization (IGV), and QC tools.                                                                         |
 
+
+
+**Table 3**: GATK-relevant read group fields
+
+| Field | Meaning       | Recommendation      | Script                   | Interpretation
+| ----- | ------------- | ------------------- |--------------------------|-----------------
+| `ID`  | Read group ID | Unique per lane/run | `RG_ID="SRR30536566"`    | Patient ID
+| `SM`  | Sample        | Biological sample   | `RG_SM="DMBEL-EIDR-071"` | Reflects the biological sample
+| `LB`  | Library       | Library prep        | `RG_LB="AMPLICON"`       | Reflects library strategy
+| `PL`  | Platform      | Sequencing platform | `RG_PL="ILLUMINA"`       | Mandatory
+| `PU`  | Platform unit | Flowcell + lane     | `RG_PU="HiSeq4000"`      | Uniquely identifies the sequencing unit
+
+
+
+
 ### Samtools – Troubleshooting
 
 When following this tutorial, it is very important to be aware of which version of samtools is installed in the conda environment.
@@ -340,9 +356,107 @@ The result of the analysis and biological meaning (sorted BAM order, MD/NM tag v
 
 1. `samtools sort`
 
-samtools 0.1.19
+Old version (v0.1.19) does not support `-o`
+```bash
+THREADS=4
+samtools sort -@ "$THREADS" \
+  "$ALIGN_DIR/${SAMPLE}.bam" \
+  "$ALIGN_DIR/${SAMPLE}.sorted"
+```
 
-❌  No `-o` option for output files
+Current version (≥1.x)
+```bash
+THREADS=4
+samtools sort -@ "$THREADS" \
+  -o "$ALIGN_DIR/${SAMPLE}.sorted.bam" \
+  "$ALIGN_DIR/${SAMPLE}.bam"
+```
 
-Output is defined using a prefix
+Output:
+```bash
+SRR30536566.sorted.bam
+```
 
+2. `samtools calmd`
+
+Old version (v0.1.19) does not support `-@`, `--threads`
+
+```bash
+FINAL_BAM="$ALIGN_DIR/${SAMPLE}.sorted.markdup.md.bam"
+samtools calmd -b \
+  "$ALIGN_DIR/${SAMPLE}.sorted.markdup.bam" \
+  "$REF_FASTA" \
+  > "$FINAL_BAM"
+```
+
+Current version (≥1.x)
+
+```bash
+FINAL_BAM="$ALIGN_DIR/${SAMPLE}.sorted.markdup.md.bam"
+samtools calmd -@ "$THREADS" -b \
+  "$ALIGN_DIR/${SAMPLE}.sorted.markdup.bam" \
+  "$REF_FASTA" \
+  > "$FINAL_BAM"
+```
+
+Output:
+```bash
+SRR30536566.sorted.markdup.md.bam.bai
+```
+
+### Folder structure: From QC → Trimming/Filtering → Alignment + BAM preprocessing.
+
+```bash
+Genomics_cancer/
+├── reference/                 
+│   └── GRCh38/
+│       ├── fasta/
+│       │   ├── Homo_sapiens_assembly38.fasta
+│       │   ├── Homo_sapiens_assembly38.fasta.fai
+│       │   └── Homo_sapiens_assembly38.dict
+│       │   └── Homo_sapiens_assembly38.fasta.64.amb     
+│       │   └── Homo_sapiens_assembly38.fasta.64.ann     
+│       │   └── Homo_sapiens_assembly38.fasta.64.bwt     
+│       │   └── Homo_sapiens_assembly38.fasta.64.pac    
+│       │   └── Homo_sapiens_assembly38.fasta.64.sa     
+│       │   └── Homo_sapiens_assembly38.fasta.64.alt                  
+│       └── known_sites/       
+│       └── bed/               
+│       └── somatic_resources/ 
+├── data/
+│   └── SRR30536566/                
+│       ├── raw_fastq/
+│       │   ├── SRR30536566_1.fastq.gz
+│       │   └── SRR30536566_2.fastq.gz
+│       ├── qc/
+│           └── multiqc_report.html                               # QC
+│           └── multiqc_report_1.html                             # Trimm
+│           └── multiqc_report_2.html                             # Align+BAM_prepross
+│           └── SRR30536566_1_fastqc.html 
+│           └── SRR30536566_R1.trimmed_fastqc.html 
+│           └── SRR30536566_2_fastqc.html 
+│           └── SRR30536566_R2.trimmed_fastqc.html                  
+│       ├── trimmed/
+│           └── SRR30536566_R1.trimmed.fastq.gz 
+│           └── SRR30536566_R2.trimmed.fastq.gz          
+│       ├── aligned/
+│           └── SRR30536566.sam                                 # Removed
+│           └── SRR30536566.bam                                 # Removed
+│           └── SRR30536566.sorted.bam                          # Removed
+│           └── SRR30536566.sorted.markdup.bam                  # Removed
+│           └── SRR30536566.markdup.metrics.txt
+│           └── SRR30536566.sorted.markdup.md.bam               # 
+│           └── SRR30536566.sorted.markdup.md.bam.bai
+│           
+│       ├── variants/          
+│       └── annotation/        
+├── scripts/
+│       └── 01_qc.sh
+│       └── 02_trim.sh
+│       └── 03_align_&bam_preprocessing.sh                  
+└── logs/
+        └── cutadapt_SRR30536566.log
+        └── bwa_mem.log
+        └── markduplicates.log
+        └── SRR30536566.flagstat.txt                     
+```
