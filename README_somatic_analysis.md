@@ -129,7 +129,7 @@ Indexed BAM
  ↓
 Mutect2 (somatic variant calling)
  ↓
-FilterMutectCalls
+FilterMutectCalls (variant filtering)
  ↓
 Variant Annotation (VEP, ClinVar, COSMIC, SnpEff)
 ```
@@ -490,3 +490,81 @@ By the end of this script, the BAM-generated file is:
 >- indexed 
 >This is the **expected starting point** for somatic variant calling with GATK **Mutect2**.
 The pipeline is fully GATK-compatible and intentionally uses a legacy samtools version to keep the computational environment simple and reproducible.
+
+---
+---
+
+### Variant calling with Mutect2 👉 [04_mutect2.sh](bash_scripts/04_mutect2.sh)
+
+Variant calling is a bioinformatics process that identifies differences (variants) between a sample's DNA sequence and a reference genome. These differences include:
+
+| Type | Example                       | Single nucleotide change   |
+| ----- | -----------------------------| ---------------------------|--------------------------|
+| **SNP**  | A → T                     | Unique per lane/run | `
+| **Indel**| Insert: ATG / Delete: C   | Small insertions/deletions
+| **CNV**  | Whole exon duplicated     | Copy number variation
+| **SV**   | Chromosome rearrangement  | Structural variation
+
+In Cancer Genomics, variant calling analysis helps to:
+
+1. Identify driver mutations that cause cancer
+
+2. Find therapeutic targets (like EGFR mutations for lung cancer)
+
+3. Track tumor evolution over time
+
+4. Guide precision medicine (matching drugs to mutations)
+
+Other applications:
+
+5. Diagnose genetic diseases (finding mutations causing rare diseases)
+
+6. Pharmacogenomics (predicting drug response)
+
+7. Population genetics (studying human evolution)
+
+8. Forensics (DNA fingerprinting)
+
+### Variat callers
+
+| Tool                | Best suited for                                             | Strengths                                                                                                                                     | Limitations                                                          |
+| ------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **Mutect2 (GATK)**  | **Somatic variants in cancer** (tumor-only or tumor–normal) | ✔ Excellent sensitivity at low VAF<br>✔ Sophisticated error modeling<br>✔ Uses PoN + population AFs<br>✔ Industry standard in cancer genomics | Requires multiple input resources; more complex                      |
+| **HaplotypeCaller** | Germline variant discovery                                  | ✔ Excellent for inherited variants<br>✔ Accurate diploid genotyping                                                                           | ❌ Not designed for somatic variants<br>❌ Poor sensitivity at low VAF |
+| **VarScan2**        | Simple germline/somatic calling                             | ✔ Works at low coverage<br>✔ Easy to run                                                                                                      | ❌ High false-positive rate<br>❌ Limited error modeling               |
+| **Strelka2**        | Somatic variants (especially indels)                        | ✔ Very accurate indel calling<br>✔ Fast in tumor–normal mode                                                                                  | ❌ Less robust in tumor-only mode<br>❌ Less transparent filtering     |
+| **FreeBayes**       | Germline / pooled samples                                   | ✔ Flexible calling models                                                                                                                     | ❌ Not optimized for cancer somatic variants                          |
+
+### Mutect2 is the correct choice for this tutorial
+
+✔ Designed specifically for somatic cancer mutations
+✔ Handles tumor-only data using PoN + gnomAD
+✔ Detects low-frequency variants typical of cfDNA and amplicon panels
+✔ Integrates seamlessly with GATK filtering and annotation steps
+✔ Widely used in research and clinical pipelines
+
+
+### Essential Files for Somatic Variant Calling with GATK Mutect2
+
+Mutect2 compares tumor sequencing data against a reference genome and multiple external resources to distinguish **true somatic mutations** from **technical artifacts** and **germline variation**.
+
+| #     | File category                          | Conceptual view (what this represents)                                                                                             | Purpose in somatic variant calling                                                                        | Example file(s)                                                                | Required                |
+| ----- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------- |
+| **1** | **Tumor BAM (aligned reads)**          | The *digital representation of the patient’s DNA*, where each read is a fragment sequenced from the tumor and mapped to the genome | Provides the raw evidence used to detect mismatches, insertions, and deletions relative to the reference  | `SRR30536566.sorted.markdup.md.bam`<br>`SRR30536566.sorted.markdup.md.bam.bai` | ✅ Yes                   |
+| **2** | **Reference genome**                   | The *coordinate system and “normal” genome* against which tumor reads are compared                                                 | Defines genomic positions, enables alignment interpretation, and serves as baseline for variant detection | `Homo_sapiens_assembly38.fasta`                                                | ✅ Yes                   |
+|       | Reference index files                  | The *navigation tools* that allow fast access to the reference genome                                                              | Required for efficient random access and full GATK compatibility                                          | `.fai` (samtools)<br>`.dict` (Picard)                                          | ✅ Yes                   |
+| **3** | **Germline variant resource (gnomAD)** | A *population-level catalogue of normal human variation*                                                                           | Helps Mutect2 estimate whether a variant is likely germline vs somatic by using allele frequencies        | `af-only-gnomad.hg38.vcf.gz`<br>`af-only-gnomad.hg38.vcf.gz.tbi`               | ✅ Yes (tumor-only mode) |
+| **4** | **Panel of Normals (PoN)**             | A *background noise model* built from many normal samples                                                                          | Removes recurrent technical artifacts that appear across samples but are not true mutations               | `1000g_pon.hg38.vcf.gz`<br>`1000g_pon.hg38.vcf.gz.tbi`                         | ⚠️ Strongly recommended |
+| **5** | **BED / interval file**                | The *map of genomic regions that were actually sequenced*                                                                          | Restricts variant calling to targeted regions, reducing false positives and runtime                       | `nsclc_12genes.hg38.bed`                                                       | ⚠️ Recommended          |
+| **6** | **dbSNP (optional)**                   | A *catalogue of known common polymorphisms*                                                                                        | Used mainly for annotation and interpretation, not required by Mutect2 itself                             | `dbsnp_146.hg38.vcf.gz`                                                        | ❌ Optional              |
+| **7** | **COSMIC (optional)**                  | A *knowledge base of known cancer mutations*                                                                                       | Enables biological interpretation and clinical relevance assessment after variant calling                 | `CosmicMutantExport.*`                                                         | ❌ Optional              |
+| **8** | **F1R2 artifact data**                 | A *model of strand-orientation sequencing artifacts*                                                                               | Required to filter FFPE and orientation bias artifacts in downstream filtering                            | `SRR30536566.f1r2.tar.gz`                                                      | ✅ Yes (for filtering)   |
+
+**Documentation**: 
+
+- **Mutect2**: <https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2>
+
+
+
+
+
