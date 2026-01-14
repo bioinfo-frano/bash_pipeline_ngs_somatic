@@ -680,13 +680,13 @@ gunzip gencode.v38.annotation.gtf.gz
 >**Note**: The authors of dataset "SRR15506490" in <https://www.ncbi.nlm.nih.gov/sra/SRX25960056> point out in the following: 
 "**Design**: Targeted sequencing of full-length, KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns."
 
-Use this code to verify genes individually:
+  Use this code to verify genes individually:
 
 ```bash
 less gencode.v38.annotation.gtf.gz | grep -w "gene" | head -n 3         # Copy/Paste the gene target in "gene" and hit Enter
 ```
 
-Use this code to verify all genes with a for-loop:
+  Use this code to verify all genes with a for-loop:
 
 ```bash
 
