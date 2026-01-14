@@ -482,7 +482,7 @@ These are BWA index components, but now in 64-bit addressing mode.
 
 In Terminal, go to `/Genomics_cancer/reference/GRCh38/fasta`
 
-Download the reference and indexes:
+**Download the reference and indexes**:
 
 ```bash
 wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta
@@ -496,8 +496,6 @@ wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Ho
 wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.pac
 wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.sa
 ```
-
-
 
 
 # Reference Genome

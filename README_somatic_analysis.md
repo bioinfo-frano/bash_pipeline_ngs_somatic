@@ -129,6 +129,8 @@ Indexed BAM
  ↓
 Mutect2 (somatic variant calling)
  ↓
+Learn read-orientation bias (LearnReadOrientationModel) 
+ ↓
 FilterMutectCalls (variant filtering)
  ↓
 Variant Annotation (VEP, ClinVar, COSMIC, SnpEff)
@@ -498,30 +500,46 @@ The pipeline is fully GATK-compatible and intentionally uses a legacy samtools v
 
 Variant calling is a bioinformatics process that identifies differences (variants) between a sample's DNA sequence and a reference genome. 
 
-**Type of genetic variants associated with disease**:
 
-| Variant Class                            | Typical Example           | Biological Meaning                             | Representative Disease                              |
-| ---------------------------------------- | ------------------------- | ---------------------------------------------- | --------------------------------------------------- |
-| **SNP** (Single Nucleotide Polymorphism) | A → T                     | Single-base substitution in DNA                | **Sickle cell anemia** (HBB: GAG → GTG, Glu6Val)    |
-| **Indel** (Insertion / Deletion)         | +ATG or −C                | Small insertion or deletion (1–50 bp)          | **Cystic fibrosis** (CFTR: ΔF508, 3-bp deletion)    |
-| **CNV** (Copy Number Variation)          | Exon duplication/deletion | Gain or loss of genomic segments (≈50 bp–5 Mb) | **Charcot–Marie–Tooth disease** (PMP22 duplication) |
-| **SV** (Structural Variant)              | t(9;22) translocation     | Large-scale chromosomal rearrangement (>50 bp) | **Chronic myeloid leukemia** (BCR–ABL1 fusion)      |
+**Types of genetic variants associated with disease**:
+
+| Variant Class      | Example          | Biological Meaning                    | Phenotypic Effect              | Example                         |
+| ------------------ | ---------------- | ------------------------------------- | ------------------------------ | ------------------------------- |
+| **Synonymous SNP** | GAA → GAG        | Base change without amino acid change | Usually none (neutral)         | Common population polymorphisms |
+| **Missense SNP**   | A → T            | Amino acid substitution               | Variable (mild → severe)       | Sickle cell anemia (HBB)        |
+| **Nonsense SNP**   | C → T            | Premature stop codon                  | Loss of protein function       | Duchenne muscular dystrophy     |
+| **Indel**          | −3 bp            | Small insertion/deletion              | Frameshift or in-frame         | Cystic fibrosis (ΔF508)         |
+| **CNV**            | Exon duplication | Copy number change                    | Gene dosage imbalance          | Charcot–Marie–Tooth disease     |
+| **SV**             | t(9;22)          | Large chromosomal rearrangement       | Fusion protein / misregulation | Chronic myeloid leukemia        |
+
+
 
 **Genetic Variant Types and Associated Diseases**
 
-| Level           | Variant Type           | Example          | Size       | Molecular Effect              | Disease Example             | Gene     |
-| --------------- | ---------------------- | ---------------- | ---------- | ----------------------------- | --------------------------- | -------- |
-| **DNA**         | **SNP**                | G → A            | 1 bp       | Base substitution             | Sickle cell anemia          | HBB      |
-| **Protein**     | **Missense**           | GAG → GTG        | 1 bp       | Amino acid change             | Sickle cell anemia          | HBB      |
-| **Protein**     | **Nonsense**           | CGA → TGA        | 1 bp       | Premature stop codon          | Duchenne muscular dystrophy | DMD      |
-| **DNA**         | **Indel**              | CTT deletion     | 1–50 bp    | Frameshift or in-frame change | Cystic fibrosis             | CFTR     |
-| **DNA**         | **Repeat expansion**   | CAG repeat       | Variable   | Toxic protein expansion       | Huntington’s disease        | HTT      |
-| **DNA**         | **CNV**                | Exon duplication | 50 bp–5 Mb | Gene dosage alteration        | Williams syndrome           | ELN      |
-| **Chromosomal** | **SV (Translocation)** | t(9;22)          | >50 bp     | Gene fusion                   | Chronic myeloid leukemia    | BCR–ABL1 |
-| **Chromosomal** | **Inversion**          | F8 inversion     | Variable   | Gene disruption               | Hemophilia A                | F8       |
+| Variant Type                      | Example          | Size Range | Molecular Consequence    | Disease Example                 | Gene Involved |
+| --------------------------------- | ---------------- | ---------- | ------------------------ | ------------------------------- | ------------- |
+| **Synonymous SNP (silent)**       | GAA → GAG        | 1 bp       | No amino acid change     | *None (neutral variant)*        | HBB           |
+| **Missense SNP (non-synonymous)** | GAG → GTG        | 1 bp       | Amino acid substitution  | **Sickle cell anemia**          | HBB           |
+| **Nonsense SNP (non-synonymous)** | CGA → TGA        | 1 bp       | Premature stop codon     | **Duchenne muscular dystrophy** | DMD           |
+| **Indel (frameshift)**            | CTT deletion     | 1–50 bp    | Reading-frame disruption | **Cystic fibrosis**             | CFTR          |
+| **Repeat expansion (Indel)**      | CAG expansion    | Variable   | Toxic protein elongation | **Huntington’s disease**        | HTT           |
+| **CNV (duplication/deletion)**    | Exon duplication | 50 bp–5 Mb | Gene dosage alteration   | **Williams syndrome**           | ELN           |
+| **SV (translocation)**            | t(9;22)          | >50 bp     | Fusion protein formation | **Chronic myeloid leukemia**    | BCR–ABL1      |
+| **SV (inversion)**                | F8 inversion     | Variable   | Gene disruption          | **Hemophilia A**                | F8            |
 
 
-In Cancer Genomics, variant calling analysis helps to:
+**Cancer-Related Genetic Variants**
+
+| Variant Type            | Cancer Example            | Oncogenic Mechanism   | Biological Consequence       | Targeted Therapy     |
+| ----------------------- | ------------------------- | --------------------- | ---------------------------- | -------------------- |
+| **Missense SNP**        | **BRAF V600E**            | Activating mutation   | Constitutive MAPK signaling  | Vemurafenib          |
+| **Indel**               | **EGFR exon 19 deletion** | Gain-of-function      | Persistent EGFR activation   | Erlotinib, Gefitinib |
+| **CNV (Amplification)** | **HER2 amplification**    | Increased gene dosage | Receptor overexpression      | Trastuzumab          |
+| **SV (Fusion)**         | **BCR–ABL1** t(9;22)      | Gene fusion           | Constitutive tyrosine kinase | Imatinib             |
+| **Missense SNP**        | **TP53 R175H**            | Loss-of-function      | Impaired DNA damage response | No direct therapy    |
+
+
+In **Cancer Genomics**, variant calling analysis helps to:
 
 1. Identify driver mutations that cause cancer
 
@@ -541,18 +559,8 @@ Other applications:
 
 8. Forensics (DNA fingerprinting)
 
-**Cancer-Related Genetic Variants**
 
-| Variant Type            | Cancer Example            | Oncogenic Mechanism   | Biological Consequence       | Targeted Therapy     |
-| ----------------------- | ------------------------- | --------------------- | ---------------------------- | -------------------- |
-| **Missense SNP**        | **BRAF V600E**            | Activating mutation   | Constitutive MAPK signaling  | Vemurafenib          |
-| **Indel**               | **EGFR exon 19 deletion** | Gain-of-function      | Persistent EGFR activation   | Erlotinib, Gefitinib |
-| **CNV (Amplification)** | **HER2 amplification**    | Increased gene dosage | Receptor overexpression      | Trastuzumab          |
-| **SV (Fusion)**         | **BCR–ABL1** t(9;22)      | Gene fusion           | Constitutive tyrosine kinase | Imatinib             |
-| **Missense SNP**        | **TP53 R175H**            | Loss-of-function      | Impaired DNA damage response | No direct therapy    |
-
-
-### Variat callers
+### Variant callers
 
 | Tool                | Best suited for                                             | Strengths                                                                                                                                     | Limitations                                                          |
 | ------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -565,9 +573,13 @@ Other applications:
 ### Mutect2 is the correct choice for this tutorial
 
 ✔ Designed specifically for somatic cancer mutations
+
 ✔ Handles tumor-only data using PoN + gnomAD
+
 ✔ Detects low-frequency variants typical of cfDNA and amplicon panels
+
 ✔ Integrates seamlessly with GATK filtering and annotation steps
+
 ✔ Widely used in research and clinical pipelines
 
 
@@ -582,7 +594,7 @@ Mutect2 compares tumor sequencing data against a reference genome and multiple e
 |       | Reference index files                  | The *navigation tools* that allow fast access to the reference genome                                                              | Required for efficient random access and full GATK compatibility                                          | `.fai` (samtools)<br>`.dict` (Picard)                                          | ✅ Yes                   |
 | **3** | **Germline variant resource (gnomAD)** | A *population-level catalogue of normal human variation*                                                                           | Helps Mutect2 estimate whether a variant is likely germline vs somatic by using allele frequencies        | `af-only-gnomad.hg38.vcf.gz`<br>`af-only-gnomad.hg38.vcf.gz.tbi`               | ✅ Yes (tumor-only mode) |
 | **4** | **Panel of Normals (PoN)**             | A *background noise model* built from many normal samples                                                                          | Removes recurrent technical artifacts that appear across samples but are not true mutations               | `1000g_pon.hg38.vcf.gz`<br>`1000g_pon.hg38.vcf.gz.tbi`                         | ⚠️ Strongly recommended |
-| **5** | **BED / interval file**                | The *map of genomic regions that were actually sequenced*                                                                          | Restricts variant calling to targeted regions, reducing false positives and runtime                       | `nsclc_12genes.hg38.bed`                                                       | ⚠️ Recommended          |
+| **5** | **BED / interval file**                | The *map of genomic regions that were actually sequenced*                                                                          | Restricts variant calling to targeted regions, reducing false positives and runtime                       | `crc_panel_7genes_sorted.hg38.bed`                                                       | ⚠️ Recommended          |
 | **6** | **dbSNP (optional)**                   | A *catalogue of known common polymorphisms*                                                                                        | Used mainly for annotation and interpretation, not required by Mutect2 itself                             | `dbsnp_146.hg38.vcf.gz`                                                        | ❌ Optional              |
 | **7** | **COSMIC (optional)**                  | A *knowledge base of known cancer mutations*                                                                                       | Enables biological interpretation and clinical relevance assessment after variant calling                 | `CosmicMutantExport.*`                                                         | ❌ Optional              |
 | **8** | **F1R2 artifact data**                 | A *model of strand-orientation sequencing artifacts*                                                                               | Required to filter FFPE and orientation bias artifacts in downstream filtering                            | `SRR30536566.f1r2.tar.gz`                                                      | ✅ Yes (for filtering)   |
@@ -592,6 +604,130 @@ Mutect2 compares tumor sequencing data against a reference genome and multiple e
 - **Mutect2**: <https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2>
 
 
+### Verify and download the essential files to run Mutect2
+
+1. **Check presence of these files**:
+
+✔ /Genomics_cancer/data/SRR30536566/aligned/SRR30536566.sorted.markdup.md.bam
+
+✔ /Genomics_cancer/data/SRR30536566/aligned/SRR30536566.sorted.markdup.md.bam.bai
+
+✔ /Genomics_cancer/reference/GRCh38/fasta/Homo_sapiens_assembly38.fasta
+
+✔ /Genomics_cancer/reference/GRCh38/fasta/Homo_sapiens_assembly38.dic
+
+✔ /Genomics_cancer/reference/GRCh38/fasta/Homo_sapiens_assembly38.fai
+
+❌  SRR30536566.f1r2.tar.gz -> It is an output from variant calling. The file will be used for **learn read-orientation bias**, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data).
+
+2. **Create folders**
+
+Go to: /Genomics_cfDNA_SRR15506490/Somatic_SRR15506490/reference/GRCh38
+
+Create these folders:
+
+```bash
+mkdir somatic_resources intervals
+```
+Go to: /Genomics_cfDNA_SRR15506490/Somatic_SRR15506490/reference/GRCh38/somatic_resources
+
+3. **Download these files to ~/somatic_resources**
+
+**gnomAD AF-only VCF**:
+wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz
+
+**gnomAD index**:
+wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz.tbi
+
+**PoN**:
+wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/1000g_pon.hg38.vcf.gz
+
+**PoN index**:
+wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/1000g_pon.hg38.vcf.gz.tbi
 
 
+4. **Generation of BED file (if authors provided no BED) using bash script**
+
+  1. Go to /Genomics_cfDNA_SRR15506490/Somatic_SRR15506490/reference/GRCh38/intervals
+
+  2. Link to download file with `wget`
+
+```bash
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/gencode.v38.annotation.gtf.gz
+```
+>**Note**: Do not download the 'GGF3' (from <https://www.gencodegenes.org/human/release_38.html>) nor the `Homo_sapiens_assembly38.contam.bed` (from <https://console.cloud.google.com/storage/browser/gcp-public-data--broad-references/hg38/v0?>) as BED files.
+>**Note2**: GTF file structure <http://www.ensembl.org/info/website/upload/gff.html>:
+field 1  chrom
+field 2  source - name of the program that generated this feature, or the data source (database or project name)
+field 3  feature (gene, transcript, exon, …)
+field 4  start - Start position* of the feature.
+field 5  end - End position* of the feature.
+field 6  score - A floating point value.
+field 7  strand - defined as + (forward) or - (reverse).
+field 8  frame
+field 9  attributes - a single long string semicolon-separated.
+
+  3. Decompress
+
+```bash
+gunzip gencode.v38.annotation.gtf.gz
+```
+  4. Verify the presence of gene targets KRAS, NRAS, BRAF, PIK3CA, PTEN, RRAS, and MAP2K1 (MEK1) in **.gtf** file
+
+>**Note**: The authors of dataset "SRR15506490" in <https://www.ncbi.nlm.nih.gov/sra/SRX25960056> point out in the following: "**Design**: Targeted sequencing of full-length, KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns."
+
+Use this code to verify genes individually:
+
+```bash
+less gencode.v38.annotation.gtf.gz | grep -w "gene" | head -n 3         # Copy/Paste the gene target in "gene" and hit Enter
+```
+
+Use this code to verify all genes with a for-loop:
+
+```bash
+
+```
+
+  5. Create the .bed file and sorted .bed file by running 👉 [make_crc_7genes_bed.sh](make_crc_7genes_bed.sh) 
+  The `crc_panel_7genes.hg38.bed` and `crc_panel_7genes_sorted.hg38.bed` are located in: /Genomics_cancer/reference/GRCh38/intervals
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1️⃣ How to obtain / generate SRR30536566.f1r2.tar.gz
+✅ Your intuition is 100% correct
+
+You do NOT obtain this file beforehand
+
+It is generated during the Mutect2 run
+
+It is not an input, but an intermediate output used for downstream filtering
+
+What this file is (conceptually)
+
+*.f1r2.tar.gz contains data used to learn read-orientation bias, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data).
+
+Conceptually:
+
+“Are false variants appearing preferentially on reads in one orientation (F1R2 vs F2R1)?”
+
+This information is learned from your sample, not from a database.
+
+📌 Key point:
+Mutect2 writes this file while scanning reads for candidate variants.
 
