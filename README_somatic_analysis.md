@@ -618,61 +618,61 @@ Mutect2 compares tumor sequencing data against a reference genome and multiple e
 
 ✔ /Genomics_cancer/reference/GRCh38/fasta/Homo_sapiens_assembly38.fai
 
-❌  SRR30536566.f1r2.tar.gz -> It is an output from variant calling. The file will be used for **learn read-orientation bias**, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data).
+❌  `SRR30536566.f1r2.tar.gz` is an output from variant calling. The file will be used for **learn read-orientation bias**, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data).
 
 2. **Create folders**
 
 Go to: /Genomics_cfDNA_SRR15506490/Somatic_SRR15506490/reference/GRCh38
 
-Create these folders:
+Create these folders "somatic_resources" and "intervals":
 
 ```bash
 mkdir somatic_resources intervals
 ```
-Go to: /Genomics_cfDNA_SRR15506490/Somatic_SRR15506490/reference/GRCh38/somatic_resources
 
 3. **Download these files to ~/somatic_resources**
 
-**gnomAD AF-only VCF**:
+```bash
+# gnomAD AF-only VCF
 wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz
 
-**gnomAD index**:
+# gnomAD index
 wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz.tbi
 
-**PoN**:
+# PoN
 wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/1000g_pon.hg38.vcf.gz
 
-**PoN index**:
+# PoN index
 wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/1000g_pon.hg38.vcf.gz.tbi
+```
 
+4. **Generation of BED file (if authors provided no BED)**
 
-4. **Generation of BED file (if authors provided no BED) using bash script**
+  >4.1. Go to /Genomics_cfDNA_SRR15506490/Somatic_SRR15506490/reference/GRCh38/intervals
 
-  1. Go to /Genomics_cfDNA_SRR15506490/Somatic_SRR15506490/reference/GRCh38/intervals
-
-  2. Link to download file with `wget`
+  >4.2. Link to download file with `wget`
 
 ```bash
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/gencode.v38.annotation.gtf.gz
 ```
 >**Note**: Do not download the 'GGF3' (from <https://www.gencodegenes.org/human/release_38.html>) nor the `Homo_sapiens_assembly38.contam.bed` (from <https://console.cloud.google.com/storage/browser/gcp-public-data--broad-references/hg38/v0?>) as BED files.
 >**Note2**: GTF file structure <http://www.ensembl.org/info/website/upload/gff.html>:
-field 1  chrom
-field 2  source - name of the program that generated this feature, or the data source (database or project name)
-field 3  feature (gene, transcript, exon, …)
-field 4  start - Start position* of the feature.
-field 5  end - End position* of the feature.
-field 6  score - A floating point value.
-field 7  strand - defined as + (forward) or - (reverse).
-field 8  frame
-field 9  attributes - a single long string semicolon-separated.
+>field 1  chrom
+>field 2  source - name of the program that generated this feature, or the data source (database or project name)
+>field 3  feature (gene, transcript, exon, …)
+>field 4  start - Start position* of the feature.
+>field 5  end - End position* of the feature.
+>field 6  score - A floating point value.
+>field 7  strand - defined as + (forward) or - (reverse).
+>field 8  frame
+>field 9  attributes - a single long string semicolon-separated.
 
-  3. Decompress
+  >4.3. Decompress
 
 ```bash
 gunzip gencode.v38.annotation.gtf.gz
 ```
-  4. Verify the presence of gene targets KRAS, NRAS, BRAF, PIK3CA, PTEN, RRAS, and MAP2K1 (MEK1) in **.gtf** file
+  >4.4. Verify the presence of gene targets KRAS, NRAS, BRAF, PIK3CA, PTEN, RRAS, and MAP2K1 (MEK1) in **.gtf** file
 
 >**Note**: The authors of dataset "SRR15506490" in <https://www.ncbi.nlm.nih.gov/sra/SRX25960056> point out in the following: "**Design**: Targeted sequencing of full-length, KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns."
 
@@ -688,8 +688,20 @@ Use this code to verify all genes with a for-loop:
 
 ```
 
-  5. Create the .bed file and sorted .bed file by running 👉 [make_crc_7genes_bed.sh](make_crc_7genes_bed.sh) 
+  >4.5. Create the .bed file and sorted .bed file by running 👉 [make_crc_7genes_bed.sh](make_crc_7genes_bed.sh) 
   The `crc_panel_7genes.hg38.bed` and `crc_panel_7genes_sorted.hg38.bed` are located in: /Genomics_cancer/reference/GRCh38/intervals
+  
+  >4.6. Lastly, check whether the `SRR30536566.sorted.markdup.md.bam` has RG (Read Groups)
+  
+  Run 
+  ```bash
+  samtools view -H SRR30536566.sorted.markdup.md.bam | grep "@RG"
+  ```
+  Expected output:
+  ```bash
+  @RG	ID:SRR30536566	SM:DMBEL-EIDR-071	LB:AMPLICON	PL:ILLUMINA	PU:HiSeq4000
+@PG	ID:bwa	PN:bwa	VN:0.7.19-r1273	CL:bwa mem -t 4 -R @RG\tID:SRR30536566\tSM:DMBEL-EIDR-071\tLB:AMPLICON\tPL:ILLUMINA\tPU:HiSeq4000
+  ```
 
 
 
