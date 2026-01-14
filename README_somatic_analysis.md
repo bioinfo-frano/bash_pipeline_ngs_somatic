@@ -678,6 +678,7 @@ gunzip gencode.v38.annotation.gtf.gz
   - 4.4. Verify the presence of gene targets KRAS, NRAS, BRAF, PIK3CA, PTEN, RRAS, and MAP2K1 (MEK1) in **.gtf** file
 
 >**Note**: The authors of dataset "SRR15506490" in <https://www.ncbi.nlm.nih.gov/sra/SRX25960056> point out in the following: 
+
 >"**Design**: Targeted sequencing of full-length, KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns."
 
   Use this code to verify genes individually:
@@ -693,6 +694,7 @@ less gencode.v38.annotation.gtf.gz | grep -w "gene" | head -n 3         # Copy/P
 ```
 
   - 4.5. Create the .bed file and sorted .bed file by running 👉 [make_crc_7genes_bed.sh](make_crc_7genes_bed.sh) 
+  
   The `crc_panel_7genes.hg38.bed` and `crc_panel_7genes_sorted.hg38.bed` are located in: /Genomics_cancer/reference/GRCh38/intervals
   
   - 4.6. Lastly, check whether the `SRR30536566.sorted.markdup.md.bam` has RG (Read Groups)
