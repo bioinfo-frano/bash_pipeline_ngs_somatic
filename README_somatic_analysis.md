@@ -496,14 +496,30 @@ The pipeline is fully GATK-compatible and intentionally uses a legacy samtools v
 
 ### Variant calling with Mutect2 👉 [04_mutect2.sh](bash_scripts/04_mutect2.sh)
 
-Variant calling is a bioinformatics process that identifies differences (variants) between a sample's DNA sequence and a reference genome. These differences include:
+Variant calling is a bioinformatics process that identifies differences (variants) between a sample's DNA sequence and a reference genome. 
 
-| Type | Example                       | Single nucleotide change   |
-| ----- | -----------------------------| ---------------------------|--------------------------|
-| **SNP**  | A → T                     | Unique per lane/run | `
-| **Indel**| Insert: ATG / Delete: C   | Small insertions/deletions
-| **CNV**  | Whole exon duplicated     | Copy number variation
-| **SV**   | Chromosome rearrangement  | Structural variation
+**Type of genetic variants associated with disease**:
+
+| Variant Class                            | Typical Example           | Biological Meaning                             | Representative Disease                              |
+| ---------------------------------------- | ------------------------- | ---------------------------------------------- | --------------------------------------------------- |
+| **SNP** (Single Nucleotide Polymorphism) | A → T                     | Single-base substitution in DNA                | **Sickle cell anemia** (HBB: GAG → GTG, Glu6Val)    |
+| **Indel** (Insertion / Deletion)         | +ATG or −C                | Small insertion or deletion (1–50 bp)          | **Cystic fibrosis** (CFTR: ΔF508, 3-bp deletion)    |
+| **CNV** (Copy Number Variation)          | Exon duplication/deletion | Gain or loss of genomic segments (≈50 bp–5 Mb) | **Charcot–Marie–Tooth disease** (PMP22 duplication) |
+| **SV** (Structural Variant)              | t(9;22) translocation     | Large-scale chromosomal rearrangement (>50 bp) | **Chronic myeloid leukemia** (BCR–ABL1 fusion)      |
+
+**Genetic Variant Types and Associated Diseases**
+
+| Level           | Variant Type           | Example          | Size       | Molecular Effect              | Disease Example             | Gene     |
+| --------------- | ---------------------- | ---------------- | ---------- | ----------------------------- | --------------------------- | -------- |
+| **DNA**         | **SNP**                | G → A            | 1 bp       | Base substitution             | Sickle cell anemia          | HBB      |
+| **Protein**     | **Missense**           | GAG → GTG        | 1 bp       | Amino acid change             | Sickle cell anemia          | HBB      |
+| **Protein**     | **Nonsense**           | CGA → TGA        | 1 bp       | Premature stop codon          | Duchenne muscular dystrophy | DMD      |
+| **DNA**         | **Indel**              | CTT deletion     | 1–50 bp    | Frameshift or in-frame change | Cystic fibrosis             | CFTR     |
+| **DNA**         | **Repeat expansion**   | CAG repeat       | Variable   | Toxic protein expansion       | Huntington’s disease        | HTT      |
+| **DNA**         | **CNV**                | Exon duplication | 50 bp–5 Mb | Gene dosage alteration        | Williams syndrome           | ELN      |
+| **Chromosomal** | **SV (Translocation)** | t(9;22)          | >50 bp     | Gene fusion                   | Chronic myeloid leukemia    | BCR–ABL1 |
+| **Chromosomal** | **Inversion**          | F8 inversion     | Variable   | Gene disruption               | Hemophilia A                | F8       |
+
 
 In Cancer Genomics, variant calling analysis helps to:
 
@@ -524,6 +540,17 @@ Other applications:
 7. Population genetics (studying human evolution)
 
 8. Forensics (DNA fingerprinting)
+
+**Cancer-Related Genetic Variants**
+
+| Variant Type            | Cancer Example            | Oncogenic Mechanism   | Biological Consequence       | Targeted Therapy     |
+| ----------------------- | ------------------------- | --------------------- | ---------------------------- | -------------------- |
+| **Missense SNP**        | **BRAF V600E**            | Activating mutation   | Constitutive MAPK signaling  | Vemurafenib          |
+| **Indel**               | **EGFR exon 19 deletion** | Gain-of-function      | Persistent EGFR activation   | Erlotinib, Gefitinib |
+| **CNV (Amplification)** | **HER2 amplification**    | Increased gene dosage | Receptor overexpression      | Trastuzumab          |
+| **SV (Fusion)**         | **BCR–ABL1** t(9;22)      | Gene fusion           | Constitutive tyrosine kinase | Imatinib             |
+| **Missense SNP**        | **TP53 R175H**            | Loss-of-function      | Impaired DNA damage response | No direct therapy    |
+
 
 ### Variat callers
 
