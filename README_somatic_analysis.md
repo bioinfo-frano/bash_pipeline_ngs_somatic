@@ -656,34 +656,29 @@ wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/1000g_pon.h
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/gencode.v38.annotation.gtf.gz
 ```
 >**Note**: Do not download the 'GGF3' (from <https://www.gencodegenes.org/human/release_38.html>) nor the `Homo_sapiens_assembly38.contam.bed` (from <https://console.cloud.google.com/storage/browser/gcp-public-data--broad-references/hg38/v0?>) as BED files.
+
 >**Note2**: GTF file structure <http://www.ensembl.org/info/website/upload/gff.html>:
+```bash
+field 1  chrom
+field 2  source - name of the program that generated this feature, or the data source (database or project name)
+field 3  feature (gene, transcript, exon, …)
+field 4  start - Start position* of the feature.
+field 5  end - End position* of the feature.
+field 6  score - A floating point value.
+field 7  strand - defined as + (forward) or - (reverse).
+field 8  frame
+field 9  attributes - a single long string semicolon-separated.
+```
 
->field 1  chrom
-
->field 2  source - name of the program that generated this feature, or the data source (database or project name)
-
->field 3  feature (gene, transcript, exon, …)
-
->field 4  start - Start position* of the feature.
-
->field 5  end - End position* of the feature.
-
->field 6  score - A floating point value.
-
->field 7  strand - defined as + (forward) or - (reverse).
-
->field 8  frame
-
->field 9  attributes - a single long string semicolon-separated.
-
-  >4.3. Decompress
+  - 4.3. Decompress
 
 ```bash
 gunzip gencode.v38.annotation.gtf.gz
 ```
   - 4.4. Verify the presence of gene targets KRAS, NRAS, BRAF, PIK3CA, PTEN, RRAS, and MAP2K1 (MEK1) in **.gtf** file
 
->**Note**: The authors of dataset "SRR15506490" in <https://www.ncbi.nlm.nih.gov/sra/SRX25960056> point out in the following: "**Design**: Targeted sequencing of full-length, KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns."
+>**Note**: The authors of dataset "SRR15506490" in <https://www.ncbi.nlm.nih.gov/sra/SRX25960056> point out in the following: 
+"**Design**: Targeted sequencing of full-length, KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns."
 
 Use this code to verify genes individually:
 
