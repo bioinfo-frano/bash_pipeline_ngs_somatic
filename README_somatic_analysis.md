@@ -812,7 +812,7 @@ Genomics_cancer/
 ```
 
 
-### Learn read-orientation bias 👉 [05_learn_read_orientation_model.sh](bash_scripts/05_learn_read_orientation_model.sh)
+### Orientation bias model 👉 [05_learn_read_orientation_model.sh](bash_scripts/05_learn_read_orientation_model.sh)
 
 **Documentation**
 
@@ -899,6 +899,7 @@ The ^@ characters are normal binary padding from the tar format. They are not co
 - **GetPileupSummaries**: <https://gatk.broadinstitute.org/hc/en-us/articles/27007916224539-GetPileupSummaries>
 
 Tabulates pileup metrics for inferring contamination.
+
 `GetPileupSummaries` does **NOT** filter variants itself — it informs the next step (`CalculateContamination`)
 
 **Outputs**
@@ -913,22 +914,21 @@ SUCCESS
 b) **Output files**: `~/variants/SRR30536566.pileups.table` (3.9 KB) and `~/logs/get_pileup_summaries.log`
 
 c) Sample identity consistency
+
 From `SRR30536566.pileups.table`:
 
 ```bash
 #<METADATA>SAMPLE=DMBEL-EIDR-071
 ```
-✔️ Matches:
+✔️ Confirms the **biological sample name (SM)**
 
-- BAM @RG SM
-
-- Mutect2 --tumor-sample
-
-- LearnReadOrientationModel
+✔️ Must match BAM `@RG SM` and Mutect2 `--tumor-sample`
 
 This avoids one of the most common GATK contamination failures.
 
+
 d) Read filtering statistics (NORMAL)
+
 From `get_pileup_summaries.log`:
 
 ```bash
@@ -960,8 +960,15 @@ Processed 88955 total loci in 0.2 minutes.
 
 This is a good number for robust contamination estimation.
 
-e) Pileup table content
-From `SRR30536566.pileups.table`:
+e) `SRR30536566.pileups.table` content:
+
+It is a **quality-control / modeling** table used **only** to estimate cross-sample contamination in tumor-only Mutect2 analyses.
+
+GATK is asking:
+
+>“At sites where the population allele frequency is known, does the observed data look like it came from one individual, or does it look like a mixture of multiple individuals?”
+
+This table contains summary counts at common germline SNPs (from gnomAD), restricted to your panel intervals.
 
 ```bash
 contig	position	ref_count	alt_count	other_alt_count	allele_frequency
@@ -973,25 +980,711 @@ As table:
 |-------|-----------|-------------|-----------|-------------------|------------------|
 |chr1	  | 114705427 |	809         |	0         | 0             	  | 0.034            | 
 
+```bash
+contig  position  ref_count  alt_count  other_alt_count  allele_frequency
+```
+These columns are **per-SNP pileup summaries**.
 
 **Interpretation**:
 
-`ref_count` ≫ `alt_count` → **good signal**
+🔹 contig, position
+```bash
+chr1	114705427	809	0	0	0.034
+```
+This is a **known common SNP site** from gnomAD
+It lies inside the 7-gene CRC panel
 
-`allele_frequency` matches gnomAD AF
+🔹 allele_frequency
+```bash
+0.034
+```
+This is the population allele frequency (from gnomAD):
 
-Sparse ALT reads are expected due to:
+> ~3.4% of people carry the ALT allele at this position
 
-- sequencing noise
+This is **not** your sample’s VAF (Variant Allele Frequency).
 
-- true somatic variation
+🔹 ref_count
+```bash
+809
+```
+Number of reads supporting the reference allele (after all filters: mapping quality, duplicates, etc.)
 
-- cfDNA stochasticity
+🔹 alt_count
+```bash
+0
+```
+Number of reads supporting the **ALT allele** (the gnomAD SNP allele)
 
-✔️ Nothing suspicious
+🔹 other_alt_count
+```bash
+0
+```
+Reads supporting neither REF nor expected ALT (usually sequencing noise or errors)
 
-✔️ No evidence of severe contamination
+At a SNP with population AF = 3.4%:
+
+- ~96.6% of individuals are **homozygous REF**
+
+- ~3.4% are **heterozygous**
+
+Homozygous ALT is extremely rare
+
+So in a **single uncontaminated individual**, most sites will show:
+
+```bash
+ref_count ≫ alt_count
+```
+That is **normal, healthy, and expected**. This is considered a **good signal**.
+
+✅ The observed data matches the  **single-individual model**
+
+Specifically:
+
+- High coverage
+
+- Very few unexpected ALT reads
+
+- No systematic inflation of ALT counts
+
+This tells GATK:
+
+“This locus behaves like it comes from one genome, not a mixture.”
+
+**What would bad signal look like?**. Examples of problematic pileups:
+
+🚨 **Contamination**
+```bash
+ref_count = 500
+alt_count = 40
+allele_frequency = 0.03
+```
+ALT fraction (~7%) ≫ expected (~1–3%)
+
+➡ suggests DNA from **another individual** mixed in
+
+🚨 **Severe technical artifacts**
+```bash
+other_alt_count = 50
+```
+
+Why there are low ALT counts?
+
+Even in tumor tissue, these effects still apply:
+
+🔹 1. Population SNPs are mostly absent
+
+Most gnomAD SNPs are not present in your patient.
+
+🔹 2. Tumor purity < 100%
+
+Normal stromal cells dilute tumor DNA.
+
+🔹 3. Somatic events ≠ gnomAD SNPs
+
+This table is not looking for tumor mutations.
+
+🔹 4. Sequencing noise
+
+Occasional ALT reads are normal.
 
 
+**More interpretations**
+
+Somatic variants are intentionally ignored in this step.
+
+`GetPileupSummaries`:
+
+- Only uses known germline SNPs
+
+- Uses population AF (allele frequency)
+
+- Does not attempt to detect cancer mutations
+
+So:
+
+- KRAS mutations?
+
+- PIK3CA mutations?
+
+- BRAF mutations?
+
+➡ **Irrelevant for this table**
 
 
+### Contamination estimation 👉 [06b_calculate_contamination.sh](bash_scripts/06b_calculate_contamination.sh)
+
+**Documentation**
+
+- **CalculateContamination**: <https://gatk.broadinstitute.org/hc/en-us/articles/360036888972-CalculateContamination>
+
+Given pileup data from `GetPileupSummaries`, calculates the fraction of reads coming from cross-sample contamination. The resulting contamination table is used with `FilterMutectCalls`. 
+This tool estimates contamination based on the signal from ref reads at hom alt sites.
+
+**Outputs**
+
+a) From Terminal:
+
+```bash
+Tool returned:
+SUCCESS
+```
+
+b) Output files: 
+
+`~variants/SRR30536566.contamination.table`
+`~logs/calculate_contamination.log`
+
+c) ⚠️ About the warnings in the log
+
+```bash
+WARN  KernelSegmenter - ... number of data points (1)
+WARN  KernelSegmenter - No changepoint candidates were found
+```
+✔ These are expected and harmless
+✔ They occur because you did not provide segmentation (by design)
+✔ GATK attempted segmentation, realized there is only one data point, and correctly fell back to a single global estimate
+
+👉 Nothing is wrong here
+
+> **Note**: Tumor segmentation is useful when:
+>
+>Whole exome (WES)
+>
+>Whole genome (WGS)
+>
+>Many thousands of loci
+>
+>Copy-number variation affects allele fractions
+>
+>Your data:
+>
+>7-gene amplicon panel
+>
+>No meaningful CNV inference possible
+
+d) **IMPORTNAT**: `SRR30536566.contamination.table`
+
+```bash
+sample              contamination          error
+DMBEL-EIDR-071       0.016233858827731117   0.027470745560259448
+```
+Meaning of each column
+
+| Column          | Meaning                                  |
+| --------------- | ---------------------------------------- |
+| `sample`        | Biological sample name (from `@RG:SM`)   |
+| `contamination` | Estimated fraction of contaminating DNA  |
+| `error`         | Statistical uncertainty of that estimate |
+
+**Interpreting contamination** = 0.0162 ≈ 1.62%
+
+This means:
+
+**~1.6% of reads behave like they come from another genome**
+
+This “**other genome**” is typically:
+
+- Normal DNA (blood, stromal cells)
+
+- Cross-sample contamination
+
+- Index hopping (minor contributor)
+
+**Is 1.6% contamination good or bad?**
+
+Context-dependent answer:
+
+| Context           | Interpretation                      |
+| ----------------- | ----------------------------------- |
+| WGS / WES         | Very good                           |
+| Tumor-only panels | Acceptable                          |
+| cfDNA             | Normal                              |
+| Amplicon panels   | Slightly on the high side, but fine |
+
+🔬 For **targeted cancer panels**, anything below:
+
+- 2–3% → acceptable
+
+- <1% → excellent
+
+- >5% → concerning
+
+👉 Your value is acceptable and usable
+
+What does the `**error = 0.027**` mean?
+
+It means:
+
+- There is high uncertainty
+
+- Due to limited loci
+
+- Expected for:
+
+  - Small panels
+
+  - Few gnomAD SNPs
+
+  - Targeted intervals
+
+Important:
+
+⚠️ Do **NOT** interpret the error literally as ±2.7%
+
+Instead:
+
+- It reflects low statistical power
+
+GATK is warning you:
+
+“I estimated contamination, but with limited confidence”
+
+This is normal for 7 genes.
+
+
+### Variant Filtering 👉 [07_filter_mutect_calls.sh](bash_scripts/07_filter_mutect_calls.sh)
+
+**Documentation**
+
+- **FilterMutectCalls**: <https://gatk.broadinstitute.org/hc/en-us/articles/360036888972-CalculateContamination>
+
+Filter somatic SNVs and indels called by Mutect2.  To filter based on sequence context artifacts, specify the `--orientation-bias-artifact-priors`. This input is generated by `LearnReadOrientationModel`. 
+If given a `--contamination-table` file, e.g. results from `CalculateContamination`, the tool will additionally filter variants due to contamination. This argument may be specified with a table for one or more tumor samples. 
+`FilterMutectCalls` can also be given one or more `--tumor-segmentation` files, which are also output by `CalculateContamination`. 
+
+**Outputs**
+`~/variants/SRR30536566.filtered.vcf.gz`  47 KB
+`~/variants/SRR30536566.filtered.vcf.gz.filteringStats.tsv`
+`~/variants/SRR30536566.filtered.vcf.gz.tbi`
+`~/logs/filter_mutect_calls.log`
+
+1️⃣ What FilterMutectCalls actually did
+
+From the log:
+```bash
+Processed 948 total variants
+```
+**Interpretation**
+
+- Mutect2 found 948 candidate variants in your 7-gene CRC panel
+
+- FilterMutectCalls evaluated each allele using:
+
+  - strand bias
+
+  - orientation bias
+
+  - contamination
+
+  - germline probability
+
+  - weak evidence model
+
+  - PON
+
+  - base quality
+
+  - haplotype consistency
+
+
+2️⃣ Why almost everything is FILTERED (important!)
+
+You will notice something striking: **Almost no variants are PASS**. This is expected and biologically correct for your dataset.
+
+3️⃣ Understanding the filteringStats.tsv (very important)
+
+This file answers:
+“Which filters removed variants, and how strong are they?”
+
+Key lines:
+```bash
+filter          FN     FNR
+weak_evidence   1.32   0.24
+contamination   1.32   0.24
+orientation     1.39   0.26
+germline        1.33   0.25
+```
+FN: false negatives
+
+**Interpretation**
+
+| Filter        | Meaning                                                  |
+| ------------- | -------------------------------------------------------- |
+| weak_evidence | Alt allele supported by too few reads given depth        |
+| contamination | Alt allele frequency consistent with ~1.6% contamination |
+| orientation   | F1R2 / F2R1 strand artifact                              |
+| germline      | Looks like constitutional variant                        |
+
+4️⃣ Let’s interpret real variants from your VCF (`SRR30536566.filtered.vcf.gz`)
+
+Example 1 — High-AF “germline” variant (AF: allele fraction)
+```bash
+chr1 114705278 A>G FILTER=germline
+AF=0.487
+DP=1013
+TLOD=1676.10
+```
+**Interpretation**
+
+- ~50% allele fraction
+
+- Very strong signal
+
+- Extremely **high TLOD** (Tumor Log Odds score in somatic variant calling: It is a statistical score that represents the confidence that a detected variant signal in a tumor sample is a true somatic mutation rather than just background noise or a sequencing artifact.Variants with a TLOD score below a certain threshold are typically filtered out, as they are considered to have insufficient evidence of presence in the tumor.)
+
+Example 2 — Low-AF somatic-looking but filtered
+```bash
+chr12 25227460 T>A
+AF=0.020
+DP=340
+FILTER=base_qual;contamination;orientation;strand_bias;weak_evidence
+```
+**Interpretation**
+
+- AF ~2%
+
+- Only 7 alt reads
+
+- Strong strand imbalance
+
+- Low alt base quality
+
+- Compatible with contamination + artifacts
+
+➡️ Not reliable enough
+Correctly filtered.
+
+Example 3 — PON + germline + STR
+```bash
+chr15 66387311 T>TC
+AF=0.549
+FILTER=germline;panel_of_normals;STR
+```
+This has a high AF
+
+➡️ Definitely not somatic
+
+5️⃣ Why you see MANY germline calls
+
+This is expected because:
+
+- You used tumor-only mode
+
+- There is no matched normal
+
+- CRC tissue still contains germline DNA
+
+Mutect2 therefore:
+
+- Calls germline variants
+
+- Labels them as germline
+
+- Removes them in filtering
+
+✔ This is exactly correct behavior.
+
+6️⃣ Do you have any PASS variants?
+
+Possible outcomes:
+
+**Case A — No PASS variants**
+
+This is plausible if:
+
+- No hotspot somatic mutations in these 7 genes
+
+- Or tumor purity is low
+
+- Or variants are below ~2–3% VAF
+
+**Case B — Few PASS variants**
+
+These are your high-confidence somatic mutations
+
+```bash
+zless ..//data/SRR30536566/variants/SRR30536566.filtered.vcf.gz | grep "PASS"
+```
+Output: There are 4 PASS variants.
+
+```bash
+##FILTER=<ID=PASS,Description="Site contains at least one allele that passes filters">
+##filtering_status=These calls have been filtered by FilterMutectCalls to label false positives with a list of failed filters and true positives with PASS.
+zless ..//data/SRR30536566/variants/SRR30536566.filtered.vcf.gz | grep "chr*" | grep "PASS"
+chr1	114713909	.	G	T	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=328,320|61,54;DP=817;ECNT=2;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=158,156;MMQ=60,60;MPOS=24;POPAF=5.60;ROQ=93;TLOD=323.24	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:648,115:0.154:763:241,52:289,43:567,103:328,320,61,54
+chr3	179210338	.	AGTAAGGTTTTTATTGTCATAAATTAGATATTTTTTATGGCAGTCAAACCTTCTCTCTTATGTATATATAATAGCTTTTCTTCCATCTCTTAG	A	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=1161,1314|78,88;DP=2641;ECNT=1;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=171,203;MMQ=60,60;MPOS=18;POPAF=5.60;ROQ=93;TLOD=106.19	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:2475,166:0.019:2641:397,35:411,27:1915,146:1161,1314,78,88
+chr3	179218294	.	G	A	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=454,461|162,185;DP=1324;ECNT=1;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=170,174;MMQ=60,60;MPOS=24;POPAF=5.60;ROQ=93;TLOD=1026.18	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:915,347:0.277:1262:363,138:382,148:786,300:454,461,162,185
+chr3	179226113	.	C	G	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=23,142|63,331;DP=589;ECNT=2;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=186,175;MMQ=60,60;MPOS=21;POPAF=1.34;ROQ=93;TLOD=1387.91	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:165,394:0.698:559:68,145:75,182:151,350:23,142,63,331
+```
+
+7️⃣ Is this a failure biologically?
+
+❌ No
+✅ This is a clean, conservative result
+
+In fact:
+
+- Over-filtering is preferred in clinical pipelines
+
+- **False positives are worse** than false negatives
+
+
+### Post-filter (amplicon-specific) 👉 [08_postfilter.sh](bash_scripts/08_postfilter.sh)
+
+**Documentation**
+
+- **bcftools**: <https://gatk.broadinstitute.org/hc/en-us/articles/360036888972-CalculateContamination>
+
+**Output files**
+`~/variants/SRR30536566.postfilter_summary.txt`
+`~/variants/SRR30536566.postfiltered.vcf.gz`
+`~/variants/SRR30536566.postfiltered.vcf.gz.csi`
+`~/logs/SRR30536566.postfilter.log`
+
+**Output important information**
+
+`SRR30536566.postfilter.log`
+```bash
+Variants retained after post-filtering: 3
+```
+
+`SRR30536566.postfiltered.vcf.gz`
+```bash
+zless ..//data/SRR30536566/variants/SRR30536566.postfiltered.vcf.gz | grep "chr*" | grep "PASS"
+chr1	114713909	.	G	T	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=328,320|61,54;DP=817;ECNT=2;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=158,156;MMQ=60,60;MPOS=24;POPAF=5.6;ROQ=93;TLOD=323.24	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:648,115:0.154:763:241,52:289,43:567,103:328,320,61,54
+chr3	179218294	.	G	A	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=454,461|162,185;DP=1324;ECNT=1;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=170,174;MMQ=60,60;MPOS=24;POPAF=5.6;ROQ=93;TLOD=1026.18	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:915,347:0.277:1262:363,138:382,148:786,300:454,461,162,185
+chr3	179226113	.	C	G	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=23,142|63,331;DP=589;ECNT=2;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=186,175;MMQ=60,60;MPOS=21;POPAF=1.34;ROQ=93;TLOD=1387.91	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:165,394:0.698:559:68,145:75,182:151,350:23,142,63,331
+```
+
+**Why 3 variants is the “right” answer**
+
+You started with 4 PASS calls from `FilterMutectCalls`.
+
+Your post-filter thresholds **removed** 1 borderline subclonal variant:
+
+| Variant        | AF        | Result                |
+| -------------- | --------- | --------------------- |
+| chr3:179210338 | **0.019** | ❌ dropped (AF < 0.02) |
+
+
+### Biological interpretation of the 3 retained variants
+
+✅ chr1:114713909 (AF 15%)
+
+```bash
+DP=763
+AD=648,115
+AF=0.154
+TLOD=323
+```
+**Interpretation**
+
+- Strong allelic signal
+
+- Balanced strand counts
+
+- High TLOD
+
+- Likely clonal or early driver
+
+✅ chr3:179218294 (AF 27%)
+
+```bash
+DP=1262
+AD=915,347
+AF=0.277
+TLOD=1026
+```
+**Interpretation**
+
+- Very strong variant
+
+- Likely founder clone
+
+- Excellent depth and support
+
+- Virtually impossible to be an artifact
+
+✅ chr3:179226113 (AF 70%)
+```bash
+DP=559
+AD=165,394
+AF=0.698
+TLOD=1387
+```
+**Interpretation**
+
+- Near-homozygous or LOH-associated
+
+- Possibly:
+
+  - copy-number loss of REF allele
+
+  - strong clonal expansion
+
+- Extremely strong confidence
+
+
+### Post-Filtering Results Summary
+
+Your post-filtering successfully removed 1 variant (chr3:179210338) while keeping 3 variants:
+
+    chr1:114713909 - G>T (VAF=15.4%, DP=763)
+
+    chr3:179218294 - G>A (VAF=27.7%, DP=1262)
+
+    chr3:179226113 - C>G (VAF=69.8%, DP=559)
+
+The removed variant failed because its VAF (1.9%) was below your 2% threshold.
+
+**VCF Format Field Explanations**
+**GT:AD:AF:DP:F1R2:F2R1:FAD:SB**
+
+This is the FORMAT field describing how the variant was called in your sample:
+
+    GT (Genotype): 0/1 = heterozygous variant
+
+    AD (Allele Depth): Reads supporting reference and alternate alleles
+
+        Format: REF,ALT (e.g., 648,115 = 648 ref reads, 115 alt reads)
+
+    AF (Allele Frequency): VAF = ALT/(REF+ALT)
+
+    DP (Depth): Total reads at this position
+
+    F1R2 & F2R1: Strand bias metrics
+
+        F1R2: Forward reads supporting ref/alt (read1 in forward orientation)
+
+        F2R1: Reverse reads supporting ref/alt (read2 in reverse orientation)
+
+        Used to detect PCR artifacts/strand bias
+
+    FAD (Filtered Allele Depth): AD after filtering low-quality reads
+
+    SB (Strand Bias Table): ref_forward,ref_reverse,alt_forward,alt_reverse
+
+**TLOD (Tumor LOD Score)**
+
+    What it is: Log-odds score comparing variant vs. no variant hypotheses
+
+    Interpretation:
+
+        Higher TLOD = stronger evidence for variant
+
+        TLOD > 6.3 is typical Mutect2 threshold for somatic variants
+
+        Your variants have very high TLODs (323-1387), indicating excellent confidence
+
+    Formula: TLOD = log₁₀[P(data|variant)/P(data|no variant)]
+
+**Clinical Relevance for Colorectal Cancer**
+
+Let me map these to your targeted genes:
+
+    chr1:114713909 = NRAS codon 61 (likely Q61K/L/R)
+
+        NRAS mutations in CRC (~3-5% of cases)
+
+        Predictive: Anti-EGFR resistance (similar to KRAS)
+
+    chr3:179218294 = PIK3CA exon 9 (likely E545K)
+
+        Common in CRC (~15-20%)
+
+        Associated with poor prognosis
+
+        Emerging therapeutic target (PI3K inhibitors)
+
+    chr3:179226113 = PIK3CA exon 20 (likely H1047R)
+
+        Most common PIK3CA mutation in CRC
+
+        Constitutively activates PI3K pathway
+
+        High VAF (69.8%) suggests clonal/dominant mutation
+
+**Quality Assessment**
+
+All 3 variants look high-quality:
+
+    ✅ High depth (>500x)
+
+    ✅ Good VAF (15-70%)
+
+    ✅ Strong strand balance (not strand-biased)
+
+    ✅ Excellent TLOD scores
+
+    ✅ Passed all Mutect2 filters
+
+**Key Implications for Your Patient**
+
+    NRAS mutation = Likely resistance to anti-EGFR therapies (cetuximab/panitumumab)
+
+    Dual PIK3CA mutations = Strong PI3K pathway activation
+
+        Consider PI3K/mTOR inhibitors in clinical trials
+
+        Associated with poorer outcomes
+
+    No KRAS/BRAF mutations detected = May still benefit from EGFR inhibitors if NRAS is wild-type (but you have NRAS mutation)
+
+
+### Folder structure: after running post-filtering variant.
+
+```bash
+Genomics_cancer/
+├── reference/                 
+│   └── GRCh38/
+│       ├── fasta/
+│       └── known_sites/       
+│       └── intervals/                                    
+│       └── somatic_resources/                                   
+├── data/
+│   └── SRR30536566/                
+│       ├── raw_fastq/
+│       ├── qc/
+│       ├── trimmed/
+│       ├── aligned/
+│       ├── variants/                                       
+│           └── SRR30536566.f1r2.tar.gz          
+│           └── SRR30536566.unfiltered.vcf.gz
+│           └── SRR30536566.unfiltered.vcf.gz.stats 
+│           └── SRR30536566.unfiltered.vcf.gz.tbi
+│           └── SRR30536566.read-orientation-model.tar.gz
+│           └── SRR30536566.pileups.table
+│           └── SRR30536566.contamination.table
+│           └── SRR30536566.filtered.vcf.gz.filteringStats.tsv
+│           └── SRR30536566.filtered.vcf.gz
+│           └── SRR30536566.filtered.vcf.gz.tbi
+│           └── SRR30536566.postfiltered.vcf.gz
+│           └── SRR30536566.postfiltered.vcf.gz.csi
+│           └── SRR30536566.postfilter_summary.txt
+│       └── annotation/        
+├── scripts/
+│       └── 0_wget_gnomad_PoN.sh
+│       └── 0_wget_Hsapiens_assem38.sh
+│       └── 01_qc.sh
+│       └── 02_trim.sh
+│       └── 03_align_&_bam_preprocess.sh
+│       └── 04_make_crc_7genes_bed.sh
+│       └── 04_mutect2.sh
+│       └── 05_learn_read_orientation_model.sh          
+│       └── 06a_get_pileup_summaries.sh            
+│       └── 06b_calculate_contamination.sh             
+│       └── 07_filter_mutect_calls.sh             
+│       └── 08_postfilter.sh                                              
+└── logs/
+        └── cutadapt_SRR30536566.log
+        └── bwa_mem.log
+        └── markduplicates.log
+        └── SRR30536566.flagstat.txt                     
+        └── mutect2.stderr.log                                  
+        └── mutect2.stdout.log                                  
+        └── learn_read_orientation_model.log                                  
+        └── get_pileup_summaries.log                                 
+        └── calculate_contamination.log                                 
+        └── filter_mutect_calls.log                             
+        └── SRR30536566.postfilter.log                                 
