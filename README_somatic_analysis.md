@@ -473,9 +473,10 @@ Genomics_cancer/
 │       ├── variants/          
 │       └── annotation/        
 ├── scripts/
+│       └── 0_wget_Hsapiens_assem38.sh
 │       └── 01_qc.sh
 │       └── 02_trim.sh
-│       └── 03_align_&_bam_preprocess.sh                  
+│       └── 03_align_&_bam_preprocess.sh
 └── logs/
         └── cutadapt_SRR30536566.log
         └── bwa_mem.log
@@ -630,9 +631,9 @@ Create these folders "somatic_resources" and "intervals":
 mkdir somatic_resources intervals
 ```
 
-3. **Download these files to ~/somatic_resources**. Run 👉 [0_wget_gnomad_PoN.sh](bash_scripts/0_wget_gnomad_PoN.sh) 
+3. **Download Germline variant resource (gnomAD) and Panel of Normals (PoN) files to ~/somatic_resources**. Run 👉 [0_wget_gnomad_PoN.sh](bash_scripts/0_wget_gnomad_PoN.sh) 
 
-4. **Download GTF file for BED file generation (if authors provided no BED)**
+4. **Download GTF file to BED file generation (if authors provided no BED)**
 
   - 4.1. Go to /Genomics_cfDNA_SRR15506490/Somatic_SRR15506490/reference/GRCh38/intervals
 
@@ -735,10 +736,13 @@ Genomics_cancer/
 │           └── SRR30536566.unfiltered.vcf.gz.tbi
 │       └── annotation/        
 ├── scripts/
+│       └── 0_wget_gnomad_PoN.sh
+│       └── 0_wget_Hsapiens_assem38.sh
 │       └── 01_qc.sh
 │       └── 02_trim.sh
 │       └── 03_align_&_bam_preprocess.sh
-│       └── 04_mutect2.sh                  
+│       └── 04_make_crc_7genes_bed.sh
+│       └── 04_mutect2.sh                                 
 └── logs/
         └── cutadapt_SRR30536566.log
         └── bwa_mem.log
