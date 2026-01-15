@@ -684,7 +684,7 @@ gunzip gencode.v38.annotation.gtf.gz
   Use this code to verify genes individually:
 
 ```bash
-less gencode.v38.annotation.gtf.gz | grep -w "gene" | head -n 3         # Copy/Paste the gene target in "gene" and hit Enter
+less gencode.v38.annotation.gtf.gz | grep -w "gene" | head -n 3     # Copy/Paste the gene target in "gene" and hit Enter
 ```
 
   Use this code to verify all genes with a for-loop:
