@@ -630,27 +630,13 @@ Create these folders "somatic_resources" and "intervals":
 mkdir somatic_resources intervals
 ```
 
-3. **Download these files to ~/somatic_resources**
+3. **Download these files to ~/somatic_resources**. Run 👉 [0_wget_gnomad_PoN.sh](bash_scripts/0_wget_gnomad_PoN.sh) 
 
-```bash
-# gnomAD AF-only VCF
-wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz
-
-# gnomAD index
-wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz.tbi
-
-# PoN
-wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/1000g_pon.hg38.vcf.gz
-
-# PoN index
-wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/1000g_pon.hg38.vcf.gz.tbi
-```
-
-4. **Generation of BED file (if authors provided no BED)**
+4. **Download GTF file for BED file generation (if authors provided no BED)**
 
   - 4.1. Go to /Genomics_cfDNA_SRR15506490/Somatic_SRR15506490/reference/GRCh38/intervals
 
-  - 4.2. Link to download file with `wget`
+  - 4.2. Download **GTF** file with `wget`
 
 ```bash
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/gencode.v38.annotation.gtf.gz
@@ -693,11 +679,14 @@ less gencode.v38.annotation.gtf.gz | grep -w "gene" | head -n 3     # Copy/Paste
 
 ```
 
-  - 4.5. Create the .bed file and sorted .bed file by running 👉 [make_crc_7genes_bed.sh](make_crc_7genes_bed.sh) 
+5. **Generation of BED file (if authors provided no BED)**
+
+Create the **.bed** file and **sorted.bed** file by running 👉 [04_make_crc_7genes_bed.sh](bash_scripts/04_make_crc_7genes_bed.sh) 
   
-  The `crc_panel_7genes.hg38.bed` and `crc_panel_7genes_sorted.hg38.bed` are located in: /Genomics_cancer/reference/GRCh38/intervals
+The `crc_panel_7genes.hg38.bed` and `crc_panel_7genes_sorted.hg38.bed` are located in: /Genomics_cancer/reference/GRCh38/intervals
   
-  - 4.6. Lastly, check whether the `SRR30536566.sorted.markdup.md.bam` has RG (Read Groups)
+
+6. Lastly, check whether the `SRR30536566.sorted.markdup.md.bam` has RG (Read Groups)
   
   Run 
   ```bash
@@ -708,6 +697,8 @@ less gencode.v38.annotation.gtf.gz | grep -w "gene" | head -n 3     # Copy/Paste
   @RG	ID:SRR30536566	SM:DMBEL-EIDR-071	LB:AMPLICON	PL:ILLUMINA	PU:HiSeq4000
 @PG	ID:bwa	PN:bwa	VN:0.7.19-r1273	CL:bwa mem -t 4 -R @RG\tID:SRR30536566\tSM:DMBEL-EIDR-071\tLB:AMPLICON\tPL:ILLUMINA\tPU:HiSeq4000
   ```
+7. Now run `04_mutect2.sh`
+
 
 ### Folder structure: necessary and output files from Mutect2-Variant calling
 
@@ -737,7 +728,11 @@ Genomics_cancer/
 │           └── SRR30536566.sorted.markdup.md.bam               # For Mutect2 analysis
 │           └── SRR30536566.sorted.markdup.md.bam.bai           # For Mutect2 analysis
 │           
-│       ├── variants/          
+│       ├── variants/                                           # Outputs
+│           └── SRR30536566.f1r2.tar.gz          
+│           └── SRR30536566.unfiltered.vcf.gz
+│           └── SRR30536566.unfiltered.vcf.gz.stats 
+│           └── SRR30536566.unfiltered.vcf.gz.tbi
 │       └── annotation/        
 ├── scripts/
 │       └── 01_qc.sh
@@ -749,6 +744,8 @@ Genomics_cancer/
         └── bwa_mem.log
         └── markduplicates.log
         └── SRR30536566.flagstat.txt                     
+        └── mutect2.stderr.log                                  # Output
+        └── mutect2.stdout.log                                  # Output
 ```
 
 
