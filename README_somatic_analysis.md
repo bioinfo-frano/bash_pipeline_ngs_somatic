@@ -709,7 +709,47 @@ less gencode.v38.annotation.gtf.gz | grep -w "gene" | head -n 3     # Copy/Paste
 @PG	ID:bwa	PN:bwa	VN:0.7.19-r1273	CL:bwa mem -t 4 -R @RG\tID:SRR30536566\tSM:DMBEL-EIDR-071\tLB:AMPLICON\tPL:ILLUMINA\tPU:HiSeq4000
   ```
 
+### Folder structure: necessary and output files from Mutect2-Variant calling
 
+```bash
+Genomics_cancer/
+├── reference/                 
+│   └── GRCh38/
+│       ├── fasta/
+│       └── known_sites/       
+│       └── intervals/                                           # BED files
+│           └── gencode.v38.annotation.gtf
+│           └── gencode.v38.annotation.gtf.gz
+│           └── crc_panel_7genes.hg38.bed
+│           └── crc_panel_7genes_sorted.hg38.bed                 # For Mutect2 analysis
+│       └── somatic_resources/                                   # PoN & GNOMAD: For Mutect2 analysis
+│           └── 1000g_pon.hg38.vcf.gz
+│           └── 1000g_pon.hg38.vcf.gz.tbi
+│           └── af-only-gnomad.hg38.vcf.gz
+│           └── af-only-gnomad.hg38.vcf.gz.tbi
+├── data/
+│   └── SRR30536566/                
+│       ├── raw_fastq/
+│       ├── qc/
+│       ├── trimmed/
+│       ├── aligned/
+│           └── SRR30536566.markdup.metrics.txt
+│           └── SRR30536566.sorted.markdup.md.bam               # For Mutect2 analysis
+│           └── SRR30536566.sorted.markdup.md.bam.bai           # For Mutect2 analysis
+│           
+│       ├── variants/          
+│       └── annotation/        
+├── scripts/
+│       └── 01_qc.sh
+│       └── 02_trim.sh
+│       └── 03_align_&_bam_preprocess.sh
+│       └── 04_mutect2.sh                  
+└── logs/
+        └── cutadapt_SRR30536566.log
+        └── bwa_mem.log
+        └── markduplicates.log
+        └── SRR30536566.flagstat.txt                     
+```
 
 
 
