@@ -700,7 +700,7 @@ The `crc_panel_7genes.hg38.bed` and `crc_panel_7genes_sorted.hg38.bed` are locat
   @RG	ID:SRR30536566	SM:DMBEL-EIDR-071	LB:AMPLICON	PL:ILLUMINA	PU:HiSeq4000
 @PG	ID:bwa	PN:bwa	VN:0.7.19-r1273	CL:bwa mem -t 4 -R @RG\tID:SRR30536566\tSM:DMBEL-EIDR-071\tLB:AMPLICON\tPL:ILLUMINA\tPU:HiSeq4000
   ```
-7. Now, run 👉 `04_mutect2.sh`
+7. Now, run 👉 [04_mutect2.sh](bash_scripts/04_mutect2.sh)
 
 
 ### Folder structure: necessary and output files from Mutect2-Variant calling
