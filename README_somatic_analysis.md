@@ -201,7 +201,7 @@ This means that the dataset was generated using **targeted amplicon sequencing**
   
   2. Second Hump (Peak ~62% GC): Likely corresponds to a subset of amplicons that are GC-rich (common in many coding regions).
   
-The red warning is because FastQC compares your distribution to a unimodal model based on a normal genome. Your amplicon-based distribution violates this model, so it gets flagged. This is not a problem for your data.
+The red warning is because FastQC compares your distribution to a unimodal model based on a normal genome. Your amplicon-based distribution violates this model, so it gets flagged. This is **NOT** a problem for your data.
 
 **Figure 4.** Per sequence GC content showing a bimodal shape.
   
@@ -214,7 +214,9 @@ The red warning is because FastQC compares your distribution to a unimodal model
 
 #### Cutadapt
 
-Documentation for **Cutadapt** can be found in [Cutadapt](https://github.com/marcelm/cutadapt/blob/main/doc/guide.rst). Relevant sections include "***Trimming paired-end reads***" and "***Cutadapt's output***".
+**Documentation for Cutadapt**:
+
+<https://github.com/marcelm/cutadapt/blob/main/doc/guide.rst> Relevant sections include "***Trimming paired-end reads***" and "***Cutadapt's output***".
 
 - **Trimmed FASTQ files output**: `~/Genomics_cancer/data/SRR30536566/trimmed`
 - **Cutadapt log report**: `~/Genomics_cancer/logs/cutadapt_SRR30536566.log`
@@ -747,7 +749,16 @@ Ignoring request for 4 threads
 ```
 **Interpretation**: Confirms MarkDuplicates worked; Mutect2 behaves as expected; 832807 duplicates removed.
 
+b) mutect2.stdout.log
+
+```bash
+Tool returned:
+SUCCESS
+```
+**Interpretation**: self explanatory.
+
 **Verdict on Mutect2 variant calling step**: There are no errors, no conceptual problems, and no missing inputs.
+
 
 ### Folder structure: necessary and output files from Mutect2-Variant calling
 
@@ -801,40 +812,186 @@ Genomics_cancer/
 ```
 
 
+### Learn read-orientation bias 👉 [05_learn_read_orientation_model.sh](bash_scripts/05_learn_read_orientation_model.sh)
+
+**Documentation**
+
+- **LearnReadOrientationModel**: <https://gatk.broadinstitute.org/hc/en-us/articles/360051305331-LearnReadOrientationModel>
+
+Learn the prior probability of read orientation artifact from the output of CollectF1R2Counts of Mutect2, which is `~/variants/SRR30536566.f1r2.tar.gz` file.
+The `*.f1r2.tar.gz` contains data used to **learn read-orientation bias**, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data).
+
+**Conceptually**: “Are false variants appearing preferentially on reads in one orientation (F1R2 vs F2R1)?”
+
+This information is learned from your sample, not from a database, enabling accurate read-orientation artifact filtering.
+
+**Outputs**
+
+a) From Terminal
+
+```bash
+Tool returned:
+SUCCESS
+```
+
+b) **Output files**: `~/variants/SRR30536566.read-orientation-model.tar.gz`  (4.8 KB). Orientation models are always small.
+
+c) Log file inspection (this is the most important part): `~/logs/learn_read_orientation_model.log`
+
+- `IOUtils - Extracting data from archive: file:/variants/SRR30536566.f1r2.tar.gz`
+
+- Sample name consistency
+
+```bash
+./DMBEL-EIDR-071.alt_histogram
+./DMBEL-EIDR-071.ref_histogram
+```
+**Interpretation**
+✔️ Sample name matches:
+
+BAM @RG SM:DMBEL-EIDR-071
+
+d) EM convergence (KEY QUALITY INDICATOR)
+
+```bash
+Context AAC: with 2316 ref and 459 alt examples, EM converged in 8 steps
+Context ACG: with 301 ref and 142 alt examples, EM converged in 15 steps
+Context AAA: with 7018 ref and 1195 alt examples, EM converged in 8 steps
+...
+```
+✔️ Excellent signs:
+
+- Hundreds to thousands of examples per context
+
+- EM algorithm converged normally (5–15 iterations)
+
+- No “failed to converge” warnings
+
+**Interpretation**: Enough data for modeling; suitable for cfDNA + amplicon data
+
+e) Orientation model contents
+
+```bash
+>SAMPLE=DMBEL-EIDR-071
+context rev_comp f1r2_* f2r1_* ...
+```
+
+```bash
+zless SRR30536566.read-orientation-model.tar.gz | head -n4
+./DMBEL-EIDR-071.orientation_priors0100644 0000765 0000024 00000035607 15132156174 022020 0ustar00Franostaff0000000 0000000 15132156174 15132156174 #<METADATA>SAMPLE=DMBEL-EIDR-071
+context	rev_comp	f1r2_a	f1r2_c	f1r2_g	f1r2_t	f2r1_a	f2r1_c	f2r1_g	f2r1_t	hom_ref	germline_het	somatic_het	hom_var	num_examples	num_alt_examples
+ATT	AAT	2.761677961939111E-4	2.122446680952301E-5	2.5886223424394114E-5	0.0	2.8843202841039807E-5	2.650355750455237E-4	2.096714156143896E-5	0.0	0.999028937511455	2.205326254098435E-5	2.9108978973800586E-4	1.9795030390106504E-5	5051	761
+CTT	AAG	4.629726714038336E-4	3.596216200562292E-5	3.370755788104045E-4	0.0	3.586133538480483E-4	5.915063999029915E-4	3.057171739011366E-5	0.0	0.9970301940849805	4.017032570311504E-5	5.413645457595304E-4	5.715691601958141E-4	3674	537
+...
+```
+**Interpretation**:  👍
+✔️ Correct metadata
+✔️ Correct probability tables
+The ^@ characters are normal binary padding from the tar format. They are not corruption.
+
+>**IMPORTANT**: The model in file `SRR30536566.read-orientation-model.tar.gz` must later on be passed to `FilterMutectCalls`
+
+
+### GetPileupSummaries 👉 [06a_get_pileup_summaries.sh](bash_scripts/06a_get_pileup_summaries.sh)
+
+**Documentation**
+
+- **GetPileupSummaries**: <https://gatk.broadinstitute.org/hc/en-us/articles/27007916224539-GetPileupSummaries>
+
+Tabulates pileup metrics for inferring contamination.
+`GetPileupSummaries` does **NOT** filter variants itself — it informs the next step (`CalculateContamination`)
+
+**Outputs**
+
+a) From Terminal
+
+```bash
+Tool returned:
+SUCCESS
+```
+
+b) **Output files**: `~/variants/SRR30536566.pileups.table` (3.9 KB) and `~/logs/get_pileup_summaries.log`
+
+c) Sample identity consistency
+From `SRR30536566.pileups.table`:
+
+```bash
+#<METADATA>SAMPLE=DMBEL-EIDR-071
+```
+✔️ Matches:
+
+- BAM @RG SM
+
+- Mutect2 --tumor-sample
+
+- LearnReadOrientationModel
+
+This avoids one of the most common GATK contamination failures.
+
+d) Read filtering statistics (NORMAL)
+From `get_pileup_summaries.log`:
+
+```bash
+901738 total reads filtered out of 1464279 reads processed
+```
+This is expected and healthy for:
+
+- Amplicon data
+
+- MarkDuplicates enabled
+
+- High mapping quality thresholds
+
+```bash
+797528 read(s) filtered by: NotDuplicateReadFilter 
+```
+✔️ Confirms duplicates were correctly marked earlier
+
+✔️ Confirms Mutect2 and downstream tools are respecting duplicate flags
+
+```bash
+Processed 88955 total loci in 0.2 minutes.
+```
+✔️ Exactly what we expect for:
+
+- gnomAD common sites
+
+- restricted to ~573 kb panel space
+
+This is a good number for robust contamination estimation.
+
+e) Pileup table content
+From `SRR30536566.pileups.table`:
+
+```bash
+contig	position	ref_count	alt_count	other_alt_count	allele_frequency
+chr1	114705427	809	0	0	0.034
+```
+As table:
+
+|contig |	position  |	ref_count 	| alt_count	| other_alt_count 	| allele_frequency |
+|-------|-----------|-------------|-----------|-------------------|------------------|
+|chr1	  | 114705427 |	809         |	0         | 0             	  | 0.034            | 
+
+
+**Interpretation**:
+
+`ref_count` ≫ `alt_count` → **good signal**
+
+`allele_frequency` matches gnomAD AF
+
+Sparse ALT reads are expected due to:
+
+- sequencing noise
+
+- true somatic variation
+
+- cfDNA stochasticity
+
+✔️ Nothing suspicious
+
+✔️ No evidence of severe contamination
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-1️⃣ How to obtain / generate SRR30536566.f1r2.tar.gz
-✅ Your intuition is 100% correct
-
-You do NOT obtain this file beforehand
-
-It is generated during the Mutect2 run
-
-It is not an input, but an intermediate output used for downstream filtering
-
-What this file is (conceptually)
-
-*.f1r2.tar.gz contains data used to learn read-orientation bias, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data).
-
-Conceptually:
-
-“Are false variants appearing preferentially on reads in one orientation (F1R2 vs F2R1)?”
-
-This information is learned from your sample, not from a database.
-
-📌 Key point:
-Mutect2 writes this file while scanning reads for candidate variants.
 
