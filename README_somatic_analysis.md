@@ -1133,6 +1133,7 @@ SUCCESS
 b) Output files: 
 
 `~variants/SRR30536566.contamination.table`
+
 `~logs/calculate_contamination.log`
 
 c) ⚠️ About the warnings in the log
@@ -1254,9 +1255,13 @@ If given a `--contamination-table` file, e.g. results from `CalculateContaminati
 `FilterMutectCalls` can also be given one or more `--tumor-segmentation` files, which are also output by `CalculateContamination`. 
 
 **Outputs**
+
 `~/variants/SRR30536566.filtered.vcf.gz`  47 KB
+
 `~/variants/SRR30536566.filtered.vcf.gz.filteringStats.tsv`
+
 `~/variants/SRR30536566.filtered.vcf.gz.tbi`
+
 `~/logs/filter_mutect_calls.log`
 
 1️⃣ What FilterMutectCalls actually did
@@ -1437,9 +1442,13 @@ In fact:
 - **bcftools**: <https://gatk.broadinstitute.org/hc/en-us/articles/360036888972-CalculateContamination>
 
 **Output files**
+
 `~/variants/SRR30536566.postfilter_summary.txt`
+
 `~/variants/SRR30536566.postfiltered.vcf.gz`
+
 `~/variants/SRR30536566.postfiltered.vcf.gz.csi`
+
 `~/logs/SRR30536566.postfilter.log`
 
 **Output important information**
