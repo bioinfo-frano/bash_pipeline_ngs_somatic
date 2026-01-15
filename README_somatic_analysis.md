@@ -703,6 +703,41 @@ The `crc_panel_7genes.hg38.bed` and `crc_panel_7genes_sorted.hg38.bed` are locat
 7. Now, run 👉 [04_mutect2.sh](bash_scripts/04_mutect2.sh)
 
 
+### Mutect2 output files (all expected, all correct)
+
+| File                            | Status | Meaning                  |
+| ------------------------------- | ------ | ------------------------ |
+| `SRR30536566.unfiltered.vcf.gz` | ✅      | Raw somatic calls        |
+| `.tbi`                          | ✅      | Indexed                  |
+| `.stats`                        | ✅      | Internal GATK statistics |
+| `SRR30536566.f1r2.tar.gz`       | ✅      | Strand artifact data     |
+| Logs                            | ✅      | Clean                    |
+
+### Mutect2 logs
+
+a) mutect2.stderr.log
+
+```bash
+Processing 573443 bp from intervals
+```
+
+**Interpretation**: It matches the 7-gene CRC panel, calculated from `crc_panel_7genes_sorted.hg38.bed`
+The "573443 bp" is the summ up of all 7-gene lengths.
+
+```bash
+Final CRC 7-gene BED file contents:
+Chr Gene_Start  Gene_End  Gene_Name
+chr1	114704468	114716771	NRAS
+chr10	87863624	87971930	PTEN
+chr12	25205245	25250936	KRAS
+chr15	66386836	66491544	MAP2K1
+chr19	49635291	49640143	RRAS
+chr3	179148113	179240093	PIK3CA
+chr7	140719326	140924929	BRAF
+```
+
+
+
 ### Folder structure: necessary and output files from Mutect2-Variant calling
 
 ```bash

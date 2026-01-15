@@ -62,4 +62,5 @@ ls -lh "$OUT_BED_SORTED"
 
 echo
 echo "Final CRC 7-gene BED file contents:"
+echo "Chr Gene_Start  Gene_End  Gene_Name"
 cat "$OUT_BED_SORTED"
