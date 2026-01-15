@@ -631,7 +631,9 @@ Create these folders "somatic_resources" and "intervals":
 mkdir somatic_resources intervals
 ```
 
-3. **Download Germline variant resource (gnomAD) and Panel of Normals (PoN) files to ~/somatic_resources**. Run 👉 [0_wget_gnomad_PoN.sh](bash_scripts/0_wget_gnomad_PoN.sh) 
+3. **Download Germline variant resource (gnomAD) and Panel of Normals (PoN) files to ~/somatic_resources**. 
+
+    Run 👉 [0_wget_gnomad_PoN.sh](bash_scripts/0_wget_gnomad_PoN.sh) 
 
 4. **Download GTF file to BED file generation (if authors provided no BED)**
 
@@ -698,7 +700,7 @@ The `crc_panel_7genes.hg38.bed` and `crc_panel_7genes_sorted.hg38.bed` are locat
   @RG	ID:SRR30536566	SM:DMBEL-EIDR-071	LB:AMPLICON	PL:ILLUMINA	PU:HiSeq4000
 @PG	ID:bwa	PN:bwa	VN:0.7.19-r1273	CL:bwa mem -t 4 -R @RG\tID:SRR30536566\tSM:DMBEL-EIDR-071\tLB:AMPLICON\tPL:ILLUMINA\tPU:HiSeq4000
   ```
-7. Now run `04_mutect2.sh`
+7. Now, run 👉 `04_mutect2.sh`
 
 
 ### Folder structure: necessary and output files from Mutect2-Variant calling
