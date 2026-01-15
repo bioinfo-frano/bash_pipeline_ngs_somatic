@@ -722,7 +722,7 @@ Processing 573443 bp from intervals
 ```
 
 **Interpretation**: It matches the 7-gene CRC panel, calculated from `crc_panel_7genes_sorted.hg38.bed`
-The "573443 bp" is the summ up of all 7-gene lengths.
+The "573443 bp" is the sum of all 7-gene lengths.
 
 ```bash
 Final CRC 7-gene BED file contents:
@@ -735,8 +735,19 @@ chr19	49635291	49640143	RRAS
 chr3	179148113	179240093	PIK3CA
 chr7	140719326	140924929	BRAF
 ```
+```bash
+Unable to find native library: native/libgkl_pairhmm_omp.dylib
+Ignoring request for 4 threads
+```
+**Interpretation**: Expected on macOS; Does NOT affect results, only speed.
 
+```bash
+832807 read(s) filtered by: NotDuplicateReadFilter 
+863479 total reads filtered out of 1479947 reads processed
+```
+**Interpretation**: Confirms MarkDuplicates worked; Mutect2 behaves as expected; 832807 duplicates removed.
 
+**Verdict on Mutect2 variant calling step**: There are no errors, no conceptual problems, and no missing inputs.
 
 ### Folder structure: necessary and output files from Mutect2-Variant calling
 
