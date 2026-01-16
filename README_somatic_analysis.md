@@ -304,6 +304,16 @@ This indicates **high-quality data** with minimal loss of informative reads.
 |  6 | Index final BAM            | `SRR30536566.sorted.markdup.md.bam`                                                                       | `SRR30536566.sorted.markdup.md.bam.bai`                               |`samtools index`        | Creates a BAM index enabling **random genomic access**. Required for variant calling (e.g. Mutect2), visualization (IGV), and QC tools.                                                                         |
 
 
+
+| Step | Step name                  | Function / Role                                                                                                                                                                                                 | INPUT                                                                                                     | OUTPUT                                                                | Tool                    |
+| ---- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------- |
+| 1    | Alignment                  | Aligns paired-end reads to the reference genome. Adds **Read Group (RG)** information required by GATK and downstream tools. Output is an **unsorted SAM** alignment file.                                          | `SRR30536566_R1.trimmed.fastq.gz`<br>`SRR30536566_R2.trimmed.fastq.gz`<br>`Homo_sapiens_assembly38.fasta` | `SRR30536566.sam`                                                     | `bwa mem`               |
+| 2    | Conversion SAM → BAM       | Converts human-readable SAM into compressed binary BAM format for efficiency and downstream processing.                                                                                                         | `SRR30536566.sam`                                                                                         | `SRR30536566.bam`                                                     | `samtools view`         |
+| 3    | Sort BAM (coordinate sort) | Sorts alignments by genomic coordinates (chromosome and position). **Required** for duplicate marking, indexing, and variant calling.                                                                           | `SRR30536566.bam`                                                                                         | `SRR30536566.sorted.bam`                                              | `samtools sort`         |
+| 4    | MarkDuplicates             | Identifies PCR/optical duplicates and **marks them in the BAM (FLAG + tags)** without removing reads. Duplicate sets are tagged (amplicon-aware), enabling variant callers to down-weight or ignore duplicates. | `SRR30536566.sorted.bam`                                                                                  | `SRR30536566.sorted.markdup.bam`<br>`SRR30536566.markdup.metrics.txt` | `picard MarkDuplicates` |
+| 5    | Add MD/NM tags             | Recalculates and adds **MD** (mismatch positions) and **NM** (Number of mismatches) tags. Improves robustness and compatibility with GATK and somatic variant callers.                                                 | `SRR30536566.sorted.markdup.bam`<br>`Homo_sapiens_assembly38.fasta`                                       | `SRR30536566.sorted.markdup.md.bam`                                   | `samtools calmd`        |
+| 6    | Index final BAM            | Creates a BAM index enabling **random genomic access**. Required for variant calling (e.g. Mutect2), visualization (IGV), and QC tools.                                                                         | `SRR30536566.sorted.markdup.md.bam`                                                                       | `SRR30536566.sorted.markdup.md.bam.bai`                               | `samtools index`        |
+
 ### Read Groups (RG): The "Birth Certificate" of Each Read
 
 BWA-MEM assigns **Read Group (RG)** information to each read in the SAM/BAM file.
@@ -487,7 +497,7 @@ Genomics_cancer/
 ```
 
 >**Key idea**:
->Each step of the [03_align_&_bam_preprocess.sh](bash_scripts/03_align_&_bam_preprocess.sh) script transforms the data into a format that is progressively **more structured, annotated, and analysis-ready**. 
+>Each step of the [alignment & BAM preprocessing](bash_scripts/03_align_&_bam_preprocess.sh) script transforms the data into a format that is progressively **more structured, annotated, and analysis-ready**. 
 By the end of this script, the BAM-generated file is:
 >- sorted
 >- duplicate-aware
@@ -501,48 +511,31 @@ The pipeline is fully GATK-compatible and intentionally uses a legacy samtools v
 
 ### Variant calling with Mutect2 👉 [04_mutect2.sh](bash_scripts/04_mutect2.sh)
 
-Variant calling is a bioinformatics process that identifies differences (variants) between a sample's DNA sequence and a reference genome. 
+**Variant calling** is the bioinformatics process of identifying positions in a sequenced genome where the sample’s DNA differs from a reference genome. See examples of variant types related to various diseases and in cancer in **Table 4** and **Table 5**.
+
+**Table 4**: Genetic Variant Types and Associated Diseases
+
+| Variant Type                               | Example          | Size Range | Molecular Consequence    | Typical Biological Effect               | Disease Example                | Gene     |
+| ------------------------------------------ | ---------------- | ---------- | ------------------------ | --------------------------------------- | ------------------------------ | -------- |
+| **Synonymous SNP (silent)**                | GAA → GAG        | 1 bp       | No amino acid change     | Usually neutral                         | None (population polymorphism) | HBB      |
+| **Missense SNP (non-synonymous)**          | GAG → GTG        | 1 bp       | Amino acid substitution  | Altered protein function (gain or loss) | Sickle cell anemia             | HBB      |
+| **Nonsense SNP (non-synonymous)**          | CGA → TGA        | 1 bp       | Premature stop codon     | Truncated protein, loss-of-function     | Duchenne muscular dystrophy    | DMD      |
+| **Indel (frameshift)**                     | CTT deletion     | 1–50 bp    | Reading-frame disruption | Severely altered protein                | Cystic fibrosis (ΔF508)        | CFTR     |
+| **Indel (in-frame / repeat expansion)**    | CAG expansion    | Variable   | Protein elongation       | Toxic gain-of-function                  | Huntington’s disease           | HTT      |
+| **Copy Number Variant (CNV)**<br>(duplication/deletion) | Exon duplication | 50 bp–5 Mb | Gene dosage alteration   | Overexpression or<br>haploinsufficiency    | Williams syndrome | ELN      |
+| **Structural Variant**<br>**(SV: translocation)** | t(9;22)   | >50 bp     | Fusion gene formation    | Constitutive signaling                  | Chronic myeloid leukemia       | BCR–ABL1 |
+| **Structural Variant**<br>**(SV: inversion)** | F8 inversion   | Variable   | Gene disruption          | Loss of gene function                   | Hemophilia A                   | F8       |
 
 
-**Types of genetic variants associated with disease**:
+In **cancer genomics**, variant calling focuses on identifying somatic variants:
 
-| Variant Class      | Example          | Biological Meaning                    | Phenotypic Effect              | Example                         |
-| ------------------ | ---------------- | ------------------------------------- | ------------------------------ | ------------------------------- |
-| **Synonymous SNP** | GAA → GAG        | Base change without amino acid change | Usually none (neutral)         | Common population polymorphisms |
-| **Missense SNP**   | A → T            | Amino acid substitution               | Variable (mild → severe)       | Sickle cell anemia (HBB)        |
-| **Nonsense SNP**   | C → T            | Premature stop codon                  | Loss of protein function       | Duchenne muscular dystrophy     |
-| **Indel**          | −3 bp            | Small insertion/deletion              | Frameshift or in-frame         | Cystic fibrosis (ΔF508)         |
-| **CNV**            | Exon duplication | Copy number change                    | Gene dosage imbalance          | Charcot–Marie–Tooth disease     |
-| **SV**             | t(9;22)          | Large chromosomal rearrangement       | Fusion protein / misregulation | Chronic myeloid leukemia        |
+- Mutations present in tumor cells
 
+- Absent (or rare) in the germline
 
+- Often present at subclonal allele frequencies
 
-**Genetic Variant Types and Associated Diseases**
-
-| Variant Type                      | Example          | Size Range | Molecular Consequence    | Disease Example                 | Gene Involved |
-| --------------------------------- | ---------------- | ---------- | ------------------------ | ------------------------------- | ------------- |
-| **Synonymous SNP (silent)**       | GAA → GAG        | 1 bp       | No amino acid change     | *None (neutral variant)*        | HBB           |
-| **Missense SNP (non-synonymous)** | GAG → GTG        | 1 bp       | Amino acid substitution  | **Sickle cell anemia**          | HBB           |
-| **Nonsense SNP (non-synonymous)** | CGA → TGA        | 1 bp       | Premature stop codon     | **Duchenne muscular dystrophy** | DMD           |
-| **Indel (frameshift)**            | CTT deletion     | 1–50 bp    | Reading-frame disruption | **Cystic fibrosis**             | CFTR          |
-| **Repeat expansion (Indel)**      | CAG expansion    | Variable   | Toxic protein elongation | **Huntington’s disease**        | HTT           |
-| **CNV (duplication/deletion)**    | Exon duplication | 50 bp–5 Mb | Gene dosage alteration   | **Williams syndrome**           | ELN           |
-| **SV (translocation)**            | t(9;22)          | >50 bp     | Fusion protein formation | **Chronic myeloid leukemia**    | BCR–ABL1      |
-| **SV (inversion)**                | F8 inversion     | Variable   | Gene disruption          | **Hemophilia A**                | F8            |
-
-
-**Cancer-Related Genetic Variants**
-
-| Variant Type            | Cancer Example            | Oncogenic Mechanism   | Biological Consequence       | Targeted Therapy     |
-| ----------------------- | ------------------------- | --------------------- | ---------------------------- | -------------------- |
-| **Missense SNP**        | **BRAF V600E**            | Activating mutation   | Constitutive MAPK signaling  | Vemurafenib          |
-| **Indel**               | **EGFR exon 19 deletion** | Gain-of-function      | Persistent EGFR activation   | Erlotinib, Gefitinib |
-| **CNV (Amplification)** | **HER2 amplification**    | Increased gene dosage | Receptor overexpression      | Trastuzumab          |
-| **SV (Fusion)**         | **BCR–ABL1** t(9;22)      | Gene fusion           | Constitutive tyrosine kinase | Imatinib             |
-| **Missense SNP**        | **TP53 R175H**            | Loss-of-function      | Impaired DNA damage response | No direct therapy    |
-
-
-In **Cancer Genomics**, variant calling analysis helps to:
+Therefore, **cancer genomics** is a disciplie that helps to:
 
 1. Identify driver mutations that cause cancer
 
@@ -561,6 +554,16 @@ Other applications:
 7. Population genetics (studying human evolution)
 
 8. Forensics (DNA fingerprinting)
+
+**Table 5**: Cancer-Related Genetic Variants
+
+| Variant Type            | Cancer Example            | Oncogenic Mechanism   | Biological Consequence       | Targeted Therapy     |
+| ----------------------- | ------------------------- | --------------------- | ---------------------------- | -------------------- |
+| **Missense SNP**        | **BRAF V600E**            | Activating mutation   | Constitutive MAPK signaling  | Vemurafenib          |
+| **Indel**               | **EGFR exon 19 deletion** | Gain-of-function      | Persistent EGFR activation   | Erlotinib, Gefitinib |
+| **CNV (Amplification)** | **HER2 amplification**    | Increased gene dosage | Receptor overexpression      | Trastuzumab          |
+| **SV (Fusion)**         | **BCR–ABL1** t(9;22)      | Gene fusion           | Constitutive tyrosine kinase | Imatinib             |
+| **Missense SNP**        | **TP53 R175H**            | Loss-of-function      | Impaired DNA damage response | No direct therapy    |
 
 
 ### Variant callers
