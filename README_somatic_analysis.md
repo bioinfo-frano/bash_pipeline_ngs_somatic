@@ -290,44 +290,9 @@ This indicates **high-quality data** with minimal loss of informative reads.
 - **samtools** (v. 1.23): <https://www.htslib.org/doc/samtools.html>
 - **Picard**: <https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard>
 
+The alignment steps and processing of BAM file are explained in **Table 2A** and the inputs/outputs files in **Table 2B**
 
-**Table 2**: Alignment and BAM preprocessing workflow 
-**Script**: `03_align_&_bam_preprocess.sh`
-
-| Step | Step name                  | INPUT                                                                                                     | OUTPUT                                                                | Tool                    | Function / Role                                                                                                                                                                                                 |
-| ---- | -------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  1 | Alignment                  | `SRR30536566_R1.trimmed.fastq.gz`<br>`SRR30536566_R2.trimmed.fastq.gz`<br>`Homo_sapiens_assembly38.fasta` | `SRR30536566.sam`                                                     | `bwa mem`               | Aligns paired-end reads to the reference genome. Adds **Read Group (RG)** information required by GATK and downstream tools. Output is an **unsorted SAM** alignment file.                                          |
-|  2 | Conversion SAM → BAM       | `SRR30536566.sam`                                                                                         | `SRR30536566.bam`                                                     | `samtools view`         | Converts human-readable SAM into compressed binary BAM format for efficiency and downstream processing.                                                                                                         |
-|  3 | Sort BAM (coordinate sort) | `SRR30536566.bam`                                                                                         | `SRR30536566.sorted.bam`                                              | `samtools sort`         | Sorts alignments by genomic coordinates (chromosome and position). **Required** for duplicate marking, indexing, and variant calling.                                                                           |
-|  4 | MarkDuplicates    | `SRR30536566.sorted.bam`                                                                                  | `SRR30536566.sorted.markdup.bam`<br>`SRR30536566.markdup.metrics.txt` |`picard MarkDuplicates` | Identifies PCR/optical duplicates and **marks them in the BAM (FLAG + tags)** without removing reads. Duplicate sets are tagged (amplicon-aware), enabling variant callers to down-weight or ignore duplicates. |
-|  5 | Add MD/NM tags             | `SRR30536566.sorted.markdup.bam`<br>`Homo_sapiens_assembly38.fasta`                                       | `SRR30536566.sorted.markdup.md.bam`                                   |`samtools calmd`        | Recalculates and adds **MD** (mismatch positions) and **NM** (Number of mismatches) tags. Improves robustness and compatibility with GATK and somatic variant callers.                                                 |
-|  6 | Index final BAM            | `SRR30536566.sorted.markdup.md.bam`                                                                       | `SRR30536566.sorted.markdup.md.bam.bai`                               |`samtools index`        | Creates a BAM index enabling **random genomic access**. Required for variant calling (e.g. Mutect2), visualization (IGV), and QC tools.                                                                         |
-
-
-
-| Step | Step name                  | Function / Role                                                                                                                                                                                                 | INPUT                                                                                                     | OUTPUT                                                                | Tool                    |
-| ---- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------- |
-| 1    | Alignment                  | Aligns paired-end reads to the reference genome. Adds **Read Group (RG)** information required by GATK and downstream tools. Output is an **unsorted SAM** alignment file.                                          | `SRR30536566_R1.trimmed.fastq.gz`<br>`SRR30536566_R2.trimmed.fastq.gz`<br>`Homo_sapiens_assembly38.fasta` | `SRR30536566.sam`                                                     | `bwa mem`               |
-| 2    | Conversion SAM → BAM       | Converts human-readable SAM into compressed binary BAM format for efficiency and downstream processing.                                                                                                         | `SRR30536566.sam`                                                                                         | `SRR30536566.bam`                                                     | `samtools view`         |
-| 3    | Sort BAM (coordinate sort) | Sorts alignments by genomic coordinates (chromosome and position). **Required** for duplicate marking, indexing, and variant calling.                                                                           | `SRR30536566.bam`                                                                                         | `SRR30536566.sorted.bam`                                              | `samtools sort`         |
-| 4    | MarkDuplicates             | Identifies PCR/optical duplicates and **marks them in the BAM (FLAG + tags)** without removing reads. Duplicate sets are tagged (amplicon-aware), enabling variant callers to down-weight or ignore duplicates. | `SRR30536566.sorted.bam`                                                                                  | `SRR30536566.sorted.markdup.bam`<br>`SRR30536566.markdup.metrics.txt` | `picard MarkDuplicates` |
-| 5    | Add MD/NM tags             | Recalculates and adds **MD** (mismatch positions) and **NM** (Number of mismatches) tags. Improves robustness and compatibility with GATK and somatic variant callers.                                                 | `SRR30536566.sorted.markdup.bam`<br>`Homo_sapiens_assembly38.fasta`                                       | `SRR30536566.sorted.markdup.md.bam`                                   | `samtools calmd`        |
-| 6    | Index final BAM            | Creates a BAM index enabling **random genomic access**. Required for variant calling (e.g. Mutect2), visualization (IGV), and QC tools.                                                                         | `SRR30536566.sorted.markdup.md.bam`                                                                       | `SRR30536566.sorted.markdup.md.bam.bai`                               | `samtools index`        |
-
-
-**Table 2**: Alignment and BAM preprocessing workflow  
-**Script**: `03_align_&_bam_preprocess.sh`
-
-| Step | Step Name | Function / Role | Tool | Input | Output |
-|------|-----------|-----------------|------|-------|--------|
-| **1** | **Alignment** | • Aligns paired-end reads to reference genome<br>• Adds Read Group (RG) information<br>• Output: unsorted SAM file | `bwa mem` | `SRR30536566_R1.trimmed.fastq.gz`<br>`SRR30536566_R2.trimmed.fastq.gz`<br>`Homo_sapiens_assembly38.fasta` | `SRR30536566.sam` |
-| **2** | **SAM → BAM Conversion** | • Converts SAM to compressed BAM format<br>• Improves efficiency for downstream processing | `samtools view` | `SRR30536566.sam` | `SRR30536566.bam` |
-| **3** | **Sort BAM** | • Sorts alignments by genomic coordinates<br>• Required for duplicate marking and variant calling | `samtools sort` | `SRR30536566.bam` | `SRR30536566.sorted.bam` |
-| **4** | **Mark Duplicates** | • Identifies PCR/optical duplicates<br>• Marks duplicates in BAM (without removal)<br>• Amplicon-aware tagging | `picard MarkDuplicates` | `SRR30536566.sorted.bam` | `SRR30536566.sorted.markdup.bam`<br>`SRR30536566.markdup.metrics.txt` |
-| **5** | **Add MD/NM Tags** | • Recalculates MD (mismatch) and NM (mismatch count) tags<br>• Improves GATK/somatic caller compatibility | `samtools calmd` | `SRR30536566.sorted.markdup.bam`<br>`Homo_sapiens_assembly38.fasta` | `SRR30536566.sorted.markdup.md.bam` |
-| **6** | **Index BAM** | • Creates BAM index for random access<br>• Required for variant calling and visualization | `samtools index` | `SRR30536566.sorted.markdup.md.bam` | `SRR30536566.sorted.markdup.md.bam.bai` |
-
-**Table 2A**: BAM Processing Workflow Steps
+**Table 2A**: Alignment and BAM Processing Workflow Steps
 | Step | Tool | Function / Role |
 |------|------|-----------------|
 | **1**<br>**Alignment** | `bwa mem` | Aligns paired-end reads to the reference genome.<br>Adds **Read Group (RG)** information required by GATK and downstream tools.<br> Output is an **unsorted SAM** alignment file. |
@@ -346,7 +311,6 @@ This indicates **high-quality data** with minimal loss of informative reads.
 | **4** | `SRR30536566.sorted.bam` | `SRR30536566.sorted.markdup.bam`, `*.markdup.metrics.txt` |
 | **5** | `SRR30536566.sorted.markdup.bam`, `Homo_sapiens_assembly38.fasta` | `SRR30536566.sorted.markdup.md.bam` |
 | **6** | `SRR30536566.sorted.markdup.md.bam` | `SRR30536566.sorted.markdup.md.bam.bai` |
-
 
 
 ### Read Groups (RG): The "Birth Certificate" of Each Read
