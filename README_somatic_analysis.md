@@ -290,7 +290,7 @@ This indicates **high-quality data** with minimal loss of informative reads.
 - **samtools** (v. 1.23): <https://www.htslib.org/doc/samtools.html>
 - **Picard**: <https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard>
 
-The alignment steps and processing of BAM file are explained in **Table 2A** and the inputs/outputs files in **Table 2B**
+The alignment steps and processing of BAM file are explained in **Table 2A** and the inputs/outputs files in **Table 2B**.
 
 **Table 2A**: Alignment and BAM Processing Workflow Steps
 | Step | Tool | Function / Role |
@@ -521,7 +521,7 @@ The pipeline is fully GATK-compatible and intentionally uses a legacy samtools v
 | **Nonsense SNP (non-synonymous)**          | CGA → TGA        | 1 bp       | Premature stop codon     | Truncated protein, loss-of-function     | Duchenne muscular dystrophy    | DMD      |
 | **Indel (frameshift)**                     | CTT deletion     | 1–50 bp    | Reading-frame disruption | Severely altered protein                | Cystic fibrosis (ΔF508)        | CFTR     |
 | **Indel (in-frame / repeat expansion)**    | CAG expansion    | Variable   | Protein elongation       | Toxic gain-of-function                  | Huntington’s disease           | HTT      |
-| **Copy Number Variant (CNV)**<br>(duplication/deletion) | Exon duplication | 50 bp–5 Mb | Gene dosage alteration   | Overexpression or<br>haploinsufficiency    | Williams syndrome | ELN      |
+| **Copy Number Variant (CNV)**<br>**(duplication/deletion)** | Exon duplication | 50 bp–5 Mb | Gene dosage alteration   | Overexpression or<br>haploinsufficiency    | Williams syndrome | ELN      |
 | **Structural Variant**<br>**(SV: translocation)** | t(9;22)   | >50 bp     | Fusion gene formation    | Constitutive signaling                  | Chronic myeloid leukemia       | BCR–ABL1 |
 | **Structural Variant**<br>**(SV: inversion)** | F8 inversion   | Variable   | Gene disruption          | Loss of gene function                   | Hemophilia A                   | F8       |
 
@@ -536,23 +536,23 @@ In **cancer genomics**, variant calling focuses on identifying somatic variants:
 
 Therefore, **cancer genomics** is a disciplie that helps to:
 
-1. Identify driver mutations that cause cancer
+- Identify driver mutations that cause cancer
 
-2. Find therapeutic targets (like EGFR mutations for lung cancer)
+- Find therapeutic targets (like EGFR mutations for lung cancer)
 
-3. Track tumor evolution over time
+- Reconstruction of tumor evolution and clonal architecture
 
-4. Guide precision medicine (matching drugs to mutations)
+- Support for precision oncology (matching drugs to mutations)
 
-Other applications:
+Additional applications include:
 
-5. Diagnose genetic diseases (finding mutations causing rare diseases)
+- Rare disease diagnosis (finding mutations causing rare diseases)
 
-6. Pharmacogenomics (predicting drug response)
+- Pharmacogenomics (predicting drug response)
 
-7. Population genetics (studying human evolution)
+- Population genetics (studying human evolution)
 
-8. Forensics (DNA fingerprinting)
+- Forensic genomics (DNA fingerprinting)
 
 **Table 5**: Cancer-Related Genetic Variants
 
@@ -569,23 +569,32 @@ Other applications:
 
 | Tool                | Best suited for                                             | Strengths                                                                                                                                     | Limitations                                                          |
 | ------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| **Mutect2 (GATK)**  | **Somatic variants in cancer** (tumor-only or tumor–normal) | ✔ Excellent sensitivity at low VAF<br>✔ Sophisticated error modeling<br>✔ Uses PoN + population AFs<br>✔ Industry standard in cancer genomics | Requires multiple input resources; more complex                      |
+| **Mutect2 (GATK)**  | **Somatic variants in cancer** (tumor-only or tumor–normal) | ✔ Excellent sensitivity at low VAF<br>✔ Sophisticated error modeling<br>✔ Uses PoN + population AFs<br>✔ Clinical standard in cancer genomics | Requires multiple input resources; more complex                      |
 | **HaplotypeCaller** | Germline variant discovery                                  | ✔ Excellent for inherited variants<br>✔ Accurate diploid genotyping                                                                           | ❌ Not designed for somatic variants<br>❌ Poor sensitivity at low VAF |
 | **VarScan2**        | Simple germline/somatic calling                             | ✔ Works at low coverage<br>✔ Easy to run                                                                                                      | ❌ High false-positive rate<br>❌ Limited error modeling               |
-| **Strelka2**        | Somatic variants (especially indels)                        | ✔ Very accurate indel calling<br>✔ Fast in tumor–normal mode                                                                                  | ❌ Less robust in tumor-only mode<br>❌ Less transparent filtering     |
+| **Strelka2**        | Somatic variants (especially indels)<br>(tumor–normal)      | ✔ Very accurate indel calling<br>✔ Fast in tumor–normal mode                                                                                  | ❌ Less robust in tumor-only mode<br>❌ Less transparent filtering     |
 | **FreeBayes**       | Germline / pooled samples                                   | ✔ Flexible calling models                                                                                                                     | ❌ Not optimized for cancer somatic variants                          |
 
 ### Mutect2 is the correct choice for this tutorial
 
 ✔ Designed specifically for somatic cancer mutations
 
-✔ Handles tumor-only data using PoN + gnomAD
+✔ Supports tumor-only analysis using PoN + gnomAD
 
-✔ Detects low-frequency variants typical of cfDNA and amplicon panels
+✔ Detects low-frequency variants (low-VAF) typical of cfDNA and amplicon panels
 
-✔ Integrates seamlessly with GATK filtering and annotation steps
+✔ Integrates downstream artifact and contamination filtering, seamlessly integrates with GATK filtering and annotation steps
 
-✔ Widely used in research and clinical pipelines
+✔ Widely adopted in research and clinical pipelines
+
+> **Key teaching point**
+> Mutect2 is designed primarily to detect:
+  - SNPs
+  - small indels
+> It is **not** intended for reliable detection of:
+  - large CNVs
+  - large structural variants
+> Those require different tools (e.g., CNVkit, DELLY, Manta).
 
 
 ### Essential Files for Somatic Variant Calling with GATK Mutect2
@@ -761,6 +770,19 @@ SUCCESS
 
 **Verdict on Mutect2 variant calling step**: There are no errors, no conceptual problems, and no missing inputs.
 
+>**Important**
+>Mutect2 does not “decide” whether a variant is cancer or not in isolation.
+>
+> It **models probabilities** using:
+> - sequencing evidence
+>
+> - population allele frequencies
+>
+> - technical artifact profiles
+>
+> - contamination estimates
+>
+> Final biological interpretation happens after filtering and annotation.
 
 ### Folder structure: necessary and output files from Mutect2-Variant calling
 
