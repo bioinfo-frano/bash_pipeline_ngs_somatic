@@ -327,7 +327,25 @@ This indicates **high-quality data** with minimal loss of informative reads.
 | **5** | **Add MD/NM Tags** | • Recalculates MD (mismatch) and NM (mismatch count) tags<br>• Improves GATK/somatic caller compatibility | `samtools calmd` | `SRR30536566.sorted.markdup.bam`<br>`Homo_sapiens_assembly38.fasta` | `SRR30536566.sorted.markdup.md.bam` |
 | **6** | **Index BAM** | • Creates BAM index for random access<br>• Required for variant calling and visualization | `samtools index` | `SRR30536566.sorted.markdup.md.bam` | `SRR30536566.sorted.markdup.md.bam.bai` |
 
+**Table 2A**: BAM Processing Workflow Steps
+| Step | Tool | Function / Role |
+|------|------|-----------------|
+| **1**<br>**Alignment** | `bwa mem` | Aligns paired-end reads to the reference genome.<br>Adds **Read Group (RG)** information required by GATK and downstream tools.<br> Output is an **unsorted SAM** alignment file. |
+| **2**<br>**SAM → BAM Conversion** | `samtools view` | Converts human-readable SAM into compressed binary BAM format for efficiency and downstream processing.  |
+| **3**<br>**Sort BAM** | `samtools sort` | Sorts alignments by genomic coordinates (chromosome and position).<br>**Required** for duplicate marking, indexing, and variant calling.  |
+| **4**<br>**Mark Duplicates** | `picard MarkDuplicates` | Identifies PCR/optical duplicates and **marks them in the BAM (FLAG + tags)** without removing reads.<br>Duplicate sets are tagged (amplicon-aware), enabling variant callers to down-weight or ignore duplicates. |
+| **5**<br>**Add MD/NM Tags** | `samtools calmd` | Recalculates and adds **MD** (mismatch positions) and **NM** (Number of mismatches) tags.<br>Improves robustness and compatibility with GATK and somatic variant callers. |
+| **6**<br>**Index BAM** | `samtools index` | Creates a BAM index enabling **random genomic access**.<br>Required for variant calling (e.g. Mutect2), visualization (IGV), and QC tools. |
 
+**Table 2B**: Input/Output Files
+| Step | Input Files | Output Files |
+|------|-------------|--------------|
+| **1** | `*_R1.trimmed.fastq.gz`, `*_R2.trimmed.fastq.gz`, `Homo_sapiens_assembly38.fasta` | `SRR30536566.sam` |
+| **2** | `SRR30536566.sam` | `SRR30536566.bam` |
+| **3** | `SRR30536566.bam` | `SRR30536566.sorted.bam` |
+| **4** | `SRR30536566.sorted.bam` | `SRR30536566.sorted.markdup.bam`, `*.markdup.metrics.txt` |
+| **5** | `SRR30536566.sorted.markdup.bam`, `Homo_sapiens_assembly38.fasta` | `SRR30536566.sorted.markdup.md.bam` |
+| **6** | `SRR30536566.sorted.markdup.md.bam` | `SRR30536566.sorted.markdup.md.bam.bai` |
 
 
 
