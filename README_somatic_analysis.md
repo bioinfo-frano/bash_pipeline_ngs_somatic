@@ -587,13 +587,13 @@ Additional applications include:
 
 ✔ Widely adopted in research and clinical pipelines
 
-> **Key teaching point**
+> **Important point**
 > Mutect2 is designed primarily to detect:
-  - SNPs
-  - small indels
+>  - SNPs
+>  - small indels
 > It is **not** intended for reliable detection of:
-  - large CNVs
-  - large structural variants
+>  - large CNVs
+>  - large structural variants
 > Those require different tools (e.g., CNVkit, DELLY, Manta).
 
 
@@ -770,7 +770,9 @@ SUCCESS
 
 **Verdict on Mutect2 variant calling step**: There are no errors, no conceptual problems, and no missing inputs.
 
->**Important**
+
+>**Important:**
+>
 >Mutect2 does not “decide” whether a variant is cancer or not in isolation.
 >
 > It **models probabilities** using:
