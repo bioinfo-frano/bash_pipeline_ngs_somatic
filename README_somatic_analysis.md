@@ -163,6 +163,115 @@ It provides a step-by-step framework (pipeline) from raw reads → variant calls
 
 Using GATK (particularly Mutect2 for somatic, HaplotypeCaller for germline) would be considered the gold standard in clinical genomics, providing the accuracy and reliability needed for treatment decisions. However, for non-human projects or quick analyses, simpler tools might be more appropriate.
 
+While GATK excels at SNP and small indel analysis, **structural variant (SV)** analysis requires specialized tools that use different algorithms and signal detection methods.
+
+### Structural Variant (SV) Analysis Tools
+
+| Tool | Description | Primary Use / Strength |
+|------|-------------|-------------------------|
+| **Manta** | Fast SV and indel caller for mapped sequencing reads | Excellent for germline and somatic SV detection in paired tumor-normal samples |
+| **Delly** | Integrated SV caller for paired-end, split-read, and read-pair signals | Good for both germline and somatic SV across multiple SV types (DEL, DUP, INV, BND) |
+| **Lumpy** | Probabilistic SV detection using multiple signals (split-read, read-pair) | High sensitivity for breakpoint detection, often used in research |
+| **GRIDSS** | Genome Rearrangement Identification Software Suite | Somatic SV calling with high precision, excellent for complex rearrangements |
+| **SvABA** | Genome-wide SV and indel caller using local assembly | Optimized for tumor samples, can detect ultra-rare somatic SVs |
+| **cn.MOPS** | Copy Number variation detection via Mixture Of PoissonS | CNV detection from NGS data, good for population-level analysis |
+| **ERDS** | Estimation by Read Depth with SNV | CNV detection specifically for whole-genome sequencing data |
+| **TARDIS** | Targeted Assembly for Rearrangement Detection in Sequencing | Local assembly-based SV calling, good for complex regions |
+| **WHAM** | Whole-genome Association Method | Integrates multiple SV signals, good for association studies |
+| **Sniffles2** | Fast SV caller for long-read sequencing (PacBio, ONT) | **For long-read data**, the gold standard for SV detection |
+
+### Integrated SV Analysis Platforms
+| **SURVIVOR** | Toolset for simulating, comparing, and merging SV calls | Post-processing of multiple SV callers to create consensus calls |
+| **Truvari** | SV benchmarking and comparison toolkit | Quality assessment and comparison of SV callers |
+| **VariantAnnotation** (R/Bioconductor) | R package for variant annotation and interpretation | Annotating and filtering SV calls in R environment |
+
+### When to Use These Instead of GATK:
+
+    Large deletions/duplications (>50 bp)
+
+    Chromosomal rearrangements (translocations, inversions)
+
+    Complex events (tandem duplications, breakend events)
+
+    Copy number variations (CNVs) across the genome
+
+    Long-read sequencing data (PacBio, Oxford Nanopore)
+
+
+## Different tools for GATK somatic and germline variant analysis: Mutect2 and HaplotypeCaller, respectively. WHY?
+
+The reason GATK has separate, specialized tools for somatic vs. germline analysis comes down to fundamental biological and technical differences that require different statistical models and filters.
+
+### Core Biological Differences between these tools:
+
+| Aspect | Germline Variants (HaplotypeCaller) | Somatic Variants (Mutect2) |
+|--------|-----------------------------------|---------------------------|
+| **Origin** | Inherited from parents, present in **every cell** of the body | Acquired during life, present **only in tumor/cancer cells** |
+| **Allele Frequency** | ~50% (heterozygous) or ~100% (homozygous) in normal tissue | Can be **very low** (5-20%) due to tumor heterogeneity & purity |
+| **"Normal" Sample** | No paired normal needed (but can use) | **REQUIRES matched normal** from same patient to subtract germline background |
+| **Goal** | Find **all** inherited variants at appreciable frequency | Find **new, cancer-driving** mutations against patient's germline background |
+
+### Why Different Algorithms Are Needed
+
+HaplotypeCaller (Germline)
+
+    - Assumes variants are at high frequency (~50% or 100%). 
+
+    - Optimized for sensitivity to catch all potential Mendelian variants
+
+    - Uses local de novo assembly to build haplotypes, excellent for tricky regions
+
+    - Joint genotyping allows calling across multiple samples to improve accuracy
+
+    - Filters common sequencing artifacts that appear at lower frequencies
+
+Mutect2 (Somatic)
+
+    - Designed to find needles in a haystack - very low allele frequency variants
+
+    - Extensive error modeling to distinguish real somatic mutations from:
+
+        - Sequencing errors
+
+        - PCR artifacts
+
+        - Mapping errors
+
+        - Normal cell contamination in tumor sample
+
+    - Panel of Normals (PON) - Uses data from many normal samples to identify and remove systematic artifacts
+
+    - Tumor-specific filters that consider:
+
+        - Tumor purity (what % of sample is actually cancer cells)
+
+        - Ploidy (is the tumor diploid or aneuploid?)
+
+        - Clonality (is the mutation present in all or just some tumor cells?)
+        
+Key Technical Divergences
+
+    - Statistical Models:
+
+        - HaplotypeCaller: Bayesian genotype likelihood model assuming diploidy
+
+        - Mutect2: Somatic likelihood model that doesn't assume diploidy in tumor
+
+    - Error Handling:
+
+        - HaplotypeCaller: Filters out low-frequency noise (assumes real variants are high frequency)
+
+        - Mutect2: Aggressively models and removes noise at ALL frequencies
+
+    - Output Differences:
+
+        - HaplotypeCaller: Outputs genotypes (0/0, 0/1, 1/1)
+
+        - Mutect2: Outputs somatic status (REF, SOMATIC, GERMLINE) and tumor LOD scores
+
+>*Bottom line*: The biological and technical differences between inherited and acquired mutations are so profound that specialized tools with different statistical foundations are necessary. GATK provides both because in clinical cancer genomics, you typically need to perform *both analyses* on the same patient—somatic for treatment targets, germline for inherited risk assessment.
+
+
 In this **Part II**, bash scripting is used to perform a **somatic DNA-NGS analysis** on the small FASTQ dataset introduced in [Part I – Preparation & setup](README_setup.md) and find SNP and Indels using GATK toolkit.
 
 ---
