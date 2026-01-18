@@ -79,6 +79,8 @@ DNA-NGS analysis can be automated using several workflow approaches, including:
 - Galaxy
 - Others (Cromwell/WDL, Toil, Airflow, Argo Workflows, Make, Ruffus, Bpipe)
 
+>**Note**: Nextflow, Snakemake, Cromwell+WDL, CWL, and Galaxy are all considered workflow managers or workflow management systems. Bash scripting is not considered a workflow manager. It is a shell scripting language. 
+
 
 **Table 1**: Advantages and disadvantages of selected workflow approaches.
 
