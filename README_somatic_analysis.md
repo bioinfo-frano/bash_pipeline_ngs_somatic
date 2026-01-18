@@ -217,7 +217,7 @@ The reason GATK has separate, specialized tools for somatic vs. germline analysi
 
 ### Why Different Algorithms Are Needed
 
-HaplotypeCaller (Germline)
+**HaplotypeCaller (Germline)**
 
    - Assumes variants are at high frequency (~50% or 100%). 
 
@@ -227,9 +227,9 @@ HaplotypeCaller (Germline)
 
    - Joint genotyping allows calling across multiple samples to improve accuracy
 
-    - Filters common sequencing artifacts that appear at lower frequencies
+   - Filters common sequencing artifacts that appear at lower frequencies
 
-Mutect2 (Somatic)
+**Mutect2 (Somatic)**
 
    - Designed to find needles in a haystack - very low allele frequency variants
 
@@ -253,7 +253,7 @@ Mutect2 (Somatic)
 
        - Clonality (is the mutation present in all or just some tumor cells?)
         
-Key Technical Divergences
+**Key Technical Divergences**
 
    - Statistical Models:
 
@@ -273,7 +273,7 @@ Key Technical Divergences
 
         - Mutect2: Outputs somatic status (REF, SOMATIC, GERMLINE) and tumor LOD scores
 
->*Bottom line*: The biological and technical differences between inherited and acquired mutations are so profound that specialized tools with different statistical foundations are necessary. GATK provides both because in clinical cancer genomics, you typically need to perform *both analyses* on the same patient—somatic for treatment targets, germline for inherited risk assessment.
+>**Bottom line**: The biological and technical differences between inherited and acquired mutations are so profound that specialized tools with different statistical foundations are necessary. GATK provides both because in clinical cancer genomics, you typically need to perform **both analyses** on the same patient—somatic for treatment targets, germline for inherited risk assessment.
 
 
 In this **Part II**, bash scripting is used to perform a **somatic DNA-NGS analysis** on the small FASTQ dataset introduced in [Part I – Preparation & setup](README_setup.md) and find SNP and Indels using GATK toolkit.
