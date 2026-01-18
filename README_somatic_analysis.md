@@ -1088,8 +1088,8 @@ That is exactly the regime where orientation artifacts can:
 
 - Inflate false positives
 
-**Orientation bias model** learns the prior probability of read orientation artifact from the output of CollectF1R2Counts of Mutect2, which is `~/variants/SRR30536566.f1r2.tar.gz` file.
-The `*.f1r2.tar.gz` file is used by **learn read-orientation bias**, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data) and contains, **for every candidate variant**:
+**Orientation bias model** learns the prior probability of read orientation artifact, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data), from the output of CollectF1R2Counts of Mutect2, which is `~/variants/SRR30536566.f1r2.tar.gz` file.
+The `*.f1r2.tar.gz` file contains, **for every candidate variant**:
 
 - Counts of ALT-supporting reads split by:
 
@@ -1099,7 +1099,7 @@ The `*.f1r2.tar.gz` file is used by **learn read-orientation bias**, a common ar
 
 This preserves orientation-specific evidence, not just strand. 
 
-**Conceptually**: Across ALL candidate variants, do certain mutation types appear preferentially in one orientation pattern (F1R2 vs F2R1)?”
+**Conceptually**: "Across ALL candidate variants, do certain mutation types appear preferentially in one orientation pattern (F1R2 vs F2R1)?”
 
 This information is learned from your sample, not from a database, enabling accurate read-orientation artifact filtering.
 
@@ -1187,8 +1187,11 @@ CTT	AAG	4.629726714038336E-4	3.596216200562292E-5	3.370755788104045E-4	0.0	3.586
 ...
 ```
 **Interpretation**:  👍
+
 ✔️ Correct metadata
+
 ✔️ Correct probability tables
+
 The ^@ characters are normal binary padding from the tar format. They are not corruption.
 
 >**IMPORTANT**: The model in file `SRR30536566.read-orientation-model.tar.gz` must later on be passed to `FilterMutectCalls`
