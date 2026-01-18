@@ -70,7 +70,7 @@ In many clinical settings, tumor (somatic) and matched normal (germline) samples
 
 ---
 
-## Bioinformatic DNA-NGS workflows
+## Bioinformatic workflows/pipelines
 
 DNA-NGS analysis can be automated using several workflow approaches, including:
 - Bash scripting
@@ -88,10 +88,84 @@ DNA-NGS analysis can be automated using several workflow approaches, including:
 | **Snakemake** | • Python-based and readable<br>• Explicit file dependencies<br>• Excellent for complex workflows | • Scaling requires configuration<br>• Less cloud-native by default |
 | **Nextflow** | • Highly portable (“write once, run anywhere”)<br>• Built-in parallelization and resume<br>• Strong community (nf-core) | • Learning curve (Groovy DSL)<br>• Debugging channels can be challenging |
 
+---
 
+## Bioiformatics tools
+
+**GATK** (Genome Analysis Toolkit) is a comprehensive **software package** developed by the Broad Institute for analyzing high-throughput sequencing data, with a primary **focus on variant discovery** (**SNPs and indels**) in human genetics and medical genomics. 
+It provides a step-by-step framework (pipeline) from raw reads → variant calls. To achieve that, GATK has a collection of tools specialized for:
+
+- Data preprocessing (BQSR, MarkDuplicates)
+
+- Variant calling (HaplotypeCaller, Mutect2)
+
+- Variant filtering and refinement (VQSR, CNN)
+
+- Variant manipulation (SelectVariants, CombineVariants)
+
+
+### Why GATK Has More Advantages for SNP/Indel Analysis
+
+1. Comprehensive, Validated Best Practices
+
+    End-to-end pipeline: GATK provides a complete, battle-tested workflow from raw FASTQ to final VCF
+
+    Constantly updated: Regular releases incorporating latest research (e.g., CNN filtering)
+
+    Extensive documentation: The "GATK Best Practices" guides are the de facto standard in clinical genomics
+
+2. Sophisticated Error Modeling & Correction
+
+    Base Quality Score Recalibration (BQSR): Corrects systematic errors in base quality scores
+
+    Variant Quality Score Recalibration (VQSR): Machine learning approach to filter variants using known resources (HapMap, 1000 Genomes, etc.)
+
+    Local realignment around indels: Critical for accurate indel calling in repetitive regions
+
+3. Specialized Calling Algorithms
+
+    HaplotypeCaller: Uses local de novo assembly of haplotypes, which is superior for:
+
+        Calling in difficult regions (low complexity, repeats)
+
+        Resolving phase (which variants are on same chromosome)
+
+        Accurate indel calling (by realigning reads to candidate haplotypes)
+
+    Mutect2: State-of-the-art somatic caller with advanced tumor heterogeneity modeling
+
+4. Extensive Quality Control & Filtering
+
+    Multiple filtering tiers: Hard filters, VQSR, and CNN-based filters
+
+    Rich annotation: Adds >100 annotations to each variant (QD, FS, MQ, etc.) for informed filtering
+
+    Joint genotyping: Enables population-level analysis by calling variants across multiple samples simultaneously
+
+5. Industry Adoption & Validation
+
+    Clinical validation: Used in thousands of clinical labs and research studies
+
+    Benchmarking: Regularly tops precisionFDA challenges and other benchmarks
+
+    Integration: Works seamlessly with other Broad tools (Cromwell, WDL, Terra)
+
+6. Active Community & Support
+
+    Forum support: Active community with Broad engineers answering questions
+
+    Training: Regular workshops and detailed online materials
+
+    Interoperability: Compatible with major public databases (gnomAD, dbSNP, ClinVar)
+
+
+**GATK dominates clinical and population-scale human genomics because it offers a rigorously validated, end-to-end solution with sophisticated error correction that's essential for reliable variant calling**. Its "Best Practices" represent 10+ years of accumulated knowledge about NGS artifacts and how to mitigate them.
+
+For your 60-year-old breast cancer patient's data, using GATK (particularly Mutect2 for somatic, HaplotypeCaller for germline) would be considered the gold standard in clinical genomics, providing the accuracy and reliability needed for treatment decisions. However, for non-human projects or quick analyses, simpler tools might be more appropriate.
 
 In this **Part II**, bash scripting is used to perform a **somatic DNA-NGS analysis** on the small FASTQ dataset introduced in [Part I – Preparation & setup](README_setup.md).
 
+---
 
 ## Bioinformatics overview: step-by-step somatic DNA-NGS pipeline
 
