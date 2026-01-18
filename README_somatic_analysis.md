@@ -1031,12 +1031,101 @@ Genomics_cancer/
 
 - **LearnReadOrientationModel**: <https://gatk.broadinstitute.org/hc/en-us/articles/360051305331-LearnReadOrientationModel>
 
-Learn the prior probability of read orientation artifact from the output of CollectF1R2Counts of Mutect2, which is `~/variants/SRR30536566.f1r2.tar.gz` file.
-The `*.f1r2.tar.gz` contains data used to **learn read-orientation bias**, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data).
+Modern NGS data—especially **amplicon-based, PCR-enriched panels** (like of this tutorial) contain systematic sequencing artifacts that:
 
-**Conceptually**: “Are false variants appearing preferentially on reads in one orientation (F1R2 vs F2R1)?”
+- Look like real variants
+
+- Occur reproducibly
+
+- Survive naive depth/VAF filtering
+
+One of the **most dangerous artifacts** is **read-orientation bias**.
+
+**What is read-orientation bias?**
+
+In paired-end sequencing:
+
+Each DNA fragment is sequenced twice:
+
+- Read 1 (R1)
+
+- Read 2 (R2)
+
+Reads can align in **different orientations** relative to the reference strand.
+
+Certain artifacts appear preferentially:
+
+In R1 but not R2
+
+Or only when read is aligned in one orientation
+
+This is **not biological**.
+It is caused by:
+
+- PCR chemistry
+
+- End-repair
+
+- Adapter ligation
+
+- DNA damage (e.g., deamination)
+
+- Amplicon design asymmetries
+
+**Why this matters in cancer variant calling**
+
+Somatic variants often have:
+
+- Low VAF (1–10%)
+
+- Few supporting reads
+
+That is exactly the regime where orientation artifacts can:
+
+- Mimic subclonal mutations
+
+- Pass simple filters
+
+- Inflate false positives
+
+**Orientation bias model** learns the prior probability of read orientation artifact from the output of CollectF1R2Counts of Mutect2, which is `~/variants/SRR30536566.f1r2.tar.gz` file.
+The `*.f1r2.tar.gz` file is used by **learn read-orientation bias**, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data) and contains, **for every candidate variant**:
+
+- Counts of ALT-supporting reads split by:
+
+  - F1R2 (forward read1 / reverse read2)
+
+  - F2R1 (forward read2 / reverse read1)
+
+This preserves orientation-specific evidence, not just strand. 
+
+**Conceptually**: Across ALL candidate variants, do certain mutation types appear preferentially in one orientation pattern (F1R2 vs F2R1)?”
 
 This information is learned from your sample, not from a database, enabling accurate read-orientation artifact filtering.
+
+This is **not variant-specific**. It is a **global artifact model** for your library.
+
+Without orientation bias modeling:
+
+- False positives explode
+
+- Low-VAF calls become unreliable
+
+👉 **This step dramatically improves specificity**
+
+If you omit:
+
+```bash
+--orientation-bias-artifact-priors
+```
+
+Then:
+
+- Orientation artifacts are treated as real signal
+
+- Many false positives survive filtering
+
+- Post-filter thresholds become unreliable
 
 **Outputs**
 
