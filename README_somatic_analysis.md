@@ -870,17 +870,14 @@ gunzip gencode.v38.annotation.gtf.gz
 
 >"**Design**: Targeted sequencing of full-length, KRAS NRAS BRAF PIK3CA PTEN RRAS and MEK1 including UTR, exons, and introns."
 
-  Use this code to verify genes individually:
+  - Use this code to verify genes individually:
 
 ```bash
-less gencode.v38.annotation.gtf.gz | grep -w "gene" | head -n 3     # Copy/Paste the gene target in "gene" and hit Enter
+zless gencode.v38.annotation.gtf.gz | grep "chr*" | grep -w "KRAS" | head -n1     # Copy/Paste the gene target in "gene" and hit Enter
 ```
 
-  Use this code to verify all genes with a for-loop:
+  - Use this bash script containing a for-loop to retrieve all target genes at once 👉 [04_for_loop_gtf.sh](bash_scripts/04_for_loop_gtf.sh)
 
-```bash
-
-```
 
 5. **Generation of BED file (if authors provided no BED)**
 
@@ -1196,6 +1193,7 @@ The ^@ characters are normal binary padding from the tar format. They are not co
 
 >**IMPORTANT**: The model in file `SRR30536566.read-orientation-model.tar.gz` must later on be passed to `FilterMutectCalls`
 
+---
 
 ### GetPileupSummaries 👉 [06a_get_pileup_summaries.sh](bash_scripts/06a_get_pileup_summaries.sh)
 
