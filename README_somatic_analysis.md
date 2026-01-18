@@ -106,7 +106,7 @@ It provides a step-by-step framework (pipeline) from raw reads → variant calls
 
 ### Why GATK has more advantages for SNP/Indel analysis
 
-1. Comprehensive, Validated Best Practices
+1. **Comprehensive, Validated Best Practices**
 
     - End-to-end pipeline: GATK provides a complete, battle-tested workflow from raw FASTQ to final VCF
 
@@ -114,7 +114,7 @@ It provides a step-by-step framework (pipeline) from raw reads → variant calls
 
     - Extensive documentation: The "GATK Best Practices" guides are the de facto standard in clinical genomics
 
-2. Sophisticated Error Modeling & Correction
+2. **Sophisticated Error Modeling & Correction**
 
     - Base Quality Score Recalibration (BQSR): Corrects systematic errors in base quality scores
 
@@ -122,7 +122,7 @@ It provides a step-by-step framework (pipeline) from raw reads → variant calls
 
     - Local realignment around indels: Critical for accurate indel calling in repetitive regions
 
-3. Specialized Calling Algorithms
+3. **Specialized Calling Algorithms**
 
     - HaplotypeCaller: Uses local de novo assembly of haplotypes, which is superior for:
 
@@ -134,7 +134,7 @@ It provides a step-by-step framework (pipeline) from raw reads → variant calls
 
     - Mutect2: State-of-the-art somatic caller with advanced tumor heterogeneity modeling
 
-4. Extensive Quality Control & Filtering
+4. **Extensive Quality Control & Filtering**
 
     - Multiple filtering tiers: Hard filters, VQSR, and CNN-based filters
 
@@ -142,7 +142,7 @@ It provides a step-by-step framework (pipeline) from raw reads → variant calls
 
     - Joint genotyping: Enables population-level analysis by calling variants across multiple samples simultaneously
 
-5. Industry Adoption & Validation
+5. **Industry Adoption & Validation**
 
     - Clinical validation: Used in thousands of clinical labs and research studies
 
@@ -150,7 +150,7 @@ It provides a step-by-step framework (pipeline) from raw reads → variant calls
 
     - Integration: Works seamlessly with other Broad tools (Cromwell, WDL, Terra)
 
-6. Active Community & Support
+6. **Active Community & Support**
 
     - Forum support: Active community with Broad engineers answering questions
 
@@ -181,24 +181,26 @@ While GATK excels at SNP and small indel analysis, **structural variant (SV)** a
 | **Sniffles2** | Fast SV caller for long-read sequencing (PacBio, ONT) | **For long-read data**, the gold standard for SV detection |
 
 ### Integrated SV Analysis Platforms
+| Tool | Description |
+|------|-------------|
 | **SURVIVOR** | Toolset for simulating, comparing, and merging SV calls | Post-processing of multiple SV callers to create consensus calls |
 | **Truvari** | SV benchmarking and comparison toolkit | Quality assessment and comparison of SV callers |
 | **VariantAnnotation** (R/Bioconductor) | R package for variant annotation and interpretation | Annotating and filtering SV calls in R environment |
 
-### When to Use These Instead of GATK:
+### When to use these toos instead of GATK:
 
-    Large deletions/duplications (>50 bp)
+  - Large deletions/duplications (>50 bp)
 
-    Chromosomal rearrangements (translocations, inversions)
+  - Chromosomal rearrangements (translocations, inversions)
 
-    Complex events (tandem duplications, breakend events)
+  - Complex events (tandem duplications, breakend events)
 
-    Copy number variations (CNVs) across the genome
+  - Copy number variations (CNVs) across the genome
 
-    Long-read sequencing data (PacBio, Oxford Nanopore)
+   - Long-read sequencing data (PacBio, Oxford Nanopore)
 
 
-## Different tools for GATK somatic and germline variant analysis: Mutect2 and HaplotypeCaller, respectively. WHY?
+### Why GATK offers different tools for somatic and germline variant analysis?
 
 The reason GATK has separate, specialized tools for somatic vs. germline analysis comes down to fundamental biological and technical differences that require different statistical models and filters.
 
@@ -215,21 +217,21 @@ The reason GATK has separate, specialized tools for somatic vs. germline analysi
 
 HaplotypeCaller (Germline)
 
-    - Assumes variants are at high frequency (~50% or 100%). 
+   - Assumes variants are at high frequency (~50% or 100%). 
 
-    - Optimized for sensitivity to catch all potential Mendelian variants
+   - Optimized for sensitivity to catch all potential Mendelian variants
 
-    - Uses local de novo assembly to build haplotypes, excellent for tricky regions
+   - Uses local de novo assembly to build haplotypes, excellent for tricky regions
 
-    - Joint genotyping allows calling across multiple samples to improve accuracy
+   - Joint genotyping allows calling across multiple samples to improve accuracy
 
     - Filters common sequencing artifacts that appear at lower frequencies
 
 Mutect2 (Somatic)
 
-    - Designed to find needles in a haystack - very low allele frequency variants
+   - Designed to find needles in a haystack - very low allele frequency variants
 
-    - Extensive error modeling to distinguish real somatic mutations from:
+   - Extensive error modeling to distinguish real somatic mutations from:
 
         - Sequencing errors
 
@@ -237,33 +239,33 @@ Mutect2 (Somatic)
 
         - Mapping errors
 
-        - Normal cell contamination in tumor sample
+       - Normal cell contamination in tumor sample
 
-    - Panel of Normals (PON) - Uses data from many normal samples to identify and remove systematic artifacts
+   - Panel of Normals (PON) - Uses data from many normal samples to identify and remove systematic artifacts
 
-    - Tumor-specific filters that consider:
+   - Tumor-specific filters that consider:
 
-        - Tumor purity (what % of sample is actually cancer cells)
+       - Tumor purity (what % of sample is actually cancer cells)
 
-        - Ploidy (is the tumor diploid or aneuploid?)
+       - Ploidy (is the tumor diploid or aneuploid?)
 
-        - Clonality (is the mutation present in all or just some tumor cells?)
+       - Clonality (is the mutation present in all or just some tumor cells?)
         
 Key Technical Divergences
 
-    - Statistical Models:
+   - Statistical Models:
 
         - HaplotypeCaller: Bayesian genotype likelihood model assuming diploidy
 
         - Mutect2: Somatic likelihood model that doesn't assume diploidy in tumor
 
-    - Error Handling:
+   - Error Handling:
 
-        - HaplotypeCaller: Filters out low-frequency noise (assumes real variants are high frequency)
+       - HaplotypeCaller: Filters out low-frequency noise (assumes real variants are high frequency)
 
-        - Mutect2: Aggressively models and removes noise at ALL frequencies
+       - Mutect2: Aggressively models and removes noise at ALL frequencies
 
-    - Output Differences:
+   - Output Differences:
 
         - HaplotypeCaller: Outputs genotypes (0/0, 0/1, 1/1)
 
