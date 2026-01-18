@@ -876,7 +876,7 @@ gunzip gencode.v38.annotation.gtf.gz
 zless gencode.v38.annotation.gtf.gz | grep "chr*" | grep -w "KRAS" | head -n1     # Copy/Paste the gene target in "gene" and hit Enter
 ```
 
-  - Use this bash script containing a for-loop to retrieve all target genes at once 👉 [04_for_loop_gtf.sh](bash_scripts/04_for_loop_gtf.sh)
+  - Use this bash script containing a for-loop to retrieve all target genes at once for .gtf file 👉 [04_for_loop_gtf.sh](bash_scripts/04_for_loop_gtf.sh)
 
 
 5. **Generation of BED file (if authors provided no BED)**
@@ -1021,6 +1021,7 @@ Genomics_cancer/
         └── mutect2.stdout.log                                  # Output
 ```
 
+---
 
 ### Orientation bias model 👉 [05_learn_read_orientation_model.sh](bash_scripts/05_learn_read_orientation_model.sh)
 
