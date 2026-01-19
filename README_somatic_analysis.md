@@ -1980,9 +1980,21 @@ Abbreviations:
    - For your panel size (~950 variants): This is excellent performance
 
 
-Something strikingto notice: **Almost no variants are PASS**.
+Something striking to notice: **Almost no variants are PASS**.
 
-### 3. VCF Field Abbreviations Explained
+### 3. Final Filtering Results Summary: Filter performance
+
+| Filter | Variants Removed | False Negatives | Effectiveness | Typical Artifacts Caught |
+|--------|------------------|-----------------|---------------|---------------------------|
+| **Germline** | ~1.33 | 25% | High | Common SNPs, population variants |
+| **Orientation** | ~1.39 | 26% | High | FFPE damage, oxidation artifacts |
+| **Contamination** | ~1.32 | 24% | Medium | Cross-sample contamination |
+| **Weak Evidence** | ~1.32 | 24% | Medium | Low VAF, low depth variants |
+| **Strand Bias** | ~0.40 | 7% | Medium | PCR/sequencing strand bias |
+| **Slippage** | 0.00 | 0% | N/A | PCR slippage in homopolymers |
+| **Haplotype** | 0.00 | 0% | N/A | Mapping artifacts |
+
+### 4. VCF Field Abbreviations Explained
 
 FORMAT Fields (Sample-level):
 
@@ -2113,22 +2125,9 @@ TLOD=1676.10
 - Extremely **high TLOD** (Tumor Log Odds score in somatic variant calling: It is a statistical score that represents the confidence that a detected variant signal in a tumor sample is a true somatic mutation rather than just background noise or a sequencing artifact.Variants with a TLOD score below a certain threshold are typically filtered out, as they are considered to have insufficient evidence of presence in the tumor.)
 
 
-### 5. Final Filtering Results Summary: Filter performance
-
-| Filter | Variants Removed | False Negatives | Effectiveness | Typical Artifacts Caught |
-|--------|------------------|-----------------|---------------|---------------------------|
-| **Germline** | ~1.33 | 25% | High | Common SNPs, population variants |
-| **Orientation** | ~1.39 | 26% | High | FFPE damage, oxidation artifacts |
-| **Contamination** | ~1.32 | 24% | Medium | Cross-sample contamination |
-| **Weak Evidence** | ~1.32 | 24% | Medium | Low VAF, low depth variants |
-| **Strand Bias** | ~0.40 | 7% | Medium | PCR/sequencing strand bias |
-| **Slippage** | 0.00 | 0% | N/A | PCR slippage in homopolymers |
-| **Haplotype** | 0.00 | 0% | N/A | Mapping artifacts |
-
-
 **Key Findings from Your Examples**:
 
-1. chr1:114705278 - Likely a true somatic variant
+1. `chr1:114705278` - Likely a true somatic variant
 
   - Balanced strand support
 
@@ -2136,7 +2135,7 @@ TLOD=1676.10
 
   - Moderate allele fraction
 
-2. chr19:49635871 - Sequencing artifact
+2. `chr19:49635871` - Sequencing artifact
 
   - Extreme strand bias (all ALT in reverse reads)
 
@@ -2144,7 +2143,7 @@ TLOD=1676.10
 
   - Low allele fraction
 
-3. chr19 variants - Germline contamination
+3. `chr19` variants - Germline contamination
 
   - In panel of normals
 
@@ -2197,16 +2196,15 @@ output:
 ...
 ```
 
-```bash
-zless SRR30536566.filtered.vcf.gz | grep "PASS"
-```
 Output: 
 4 PASS variants.
 
 ```bash
 ##FILTER=<ID=PASS,Description="Site contains at least one allele that passes filters">
 ##filtering_status=These calls have been filtered by FilterMutectCalls to label false positives with a list of failed filters and true positives with PASS.
-zless ..//data/SRR30536566/variants/SRR30536566.filtered.vcf.gz | grep "chr*" | grep "PASS"
+
+zless SRR30536566.filtered.vcf.gz | grep "chr*" | grep "PASS"
+
 chr1	114713909	.	G	T	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=328,320|61,54;DP=817;ECNT=2;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=158,156;MMQ=60,60;MPOS=24;POPAF=5.60;ROQ=93;TLOD=323.24	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:648,115:0.154:763:241,52:289,43:567,103:328,320,61,54
 chr3	179210338	.	AGTAAGGTTTTTATTGTCATAAATTAGATATTTTTTATGGCAGTCAAACCTTCTCTCTTATGTATATATAATAGCTTTTCTTCCATCTCTTAG	A	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=1161,1314|78,88;DP=2641;ECNT=1;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=171,203;MMQ=60,60;MPOS=18;POPAF=5.60;ROQ=93;TLOD=106.19	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:2475,166:0.019:2641:397,35:411,27:1915,146:1161,1314,78,88
 chr3	179218294	.	G	A	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=454,461|162,185;DP=1324;ECNT=1;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=170,174;MMQ=60,60;MPOS=24;POPAF=5.60;ROQ=93;TLOD=1026.18	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:915,347:0.277:1262:363,138:382,148:786,300:454,461,162,185
