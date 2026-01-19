@@ -1610,7 +1610,7 @@ So:
 
 **More examples from** `SRR30536566.pileups.table`
 
-| Contig | Position | Ref | Alt | Other | AF | Pattern | Haplotype | Interpretation |
+| Ccontig |	position  |	ref_count 	| alt_count	| other_alt_count 	| allele_frequency  | Pattern | Haplotype | Interpretation |
 |--------|----------|-----|-----|-------|----|---------|-----------|----------------|
 | chr10 | 87925886 | 7 | 0 | 0 | 0.133 | Clean Sample | Reference Homozygous | **Questionable due to low coverage** |
 | chr1 | 114708854 | 39 | 0 | 0 | 0.034 | Clean Sample | Reference Homozygous | **Most likely reference homozygous** |
