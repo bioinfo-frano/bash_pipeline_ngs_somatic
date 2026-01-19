@@ -876,7 +876,7 @@ gunzip gencode.v38.annotation.gtf.gz
 zless gencode.v38.annotation.gtf.gz | grep "chr*" | grep -w "KRAS" | head -n1     # Copy/Paste the gene target in "gene" and hit Enter
 ```
 
-  - Use this bash script containing a for-loop to retrieve all target genes at once for .gtf file 👉 [04_for_loop_gtf.sh](bash_scripts/04_for_loop_gtf.sh)
+  - **Alternative**: Use a for-loop to retrieve all target genes at once for .gtf file 👉 [04_for_loop_gtf.sh](bash_scripts/04_for_loop_gtf.sh)
 
 
 5. **Generation of BED file (if authors provided no BED)**
@@ -1085,8 +1085,24 @@ The tool analyzes **read orientation patterns** of supporting reads at candidate
 
   4. **Key insight**: Real somatic variants typically show balanced support; artifacts show skewed patterns
   
+**Orientation bias model** learns the prior probability of read orientation artifact, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data), from the output of CollectF1R2Counts of Mutect2, which is `~/variants/SRR30536566.f1r2.tar.gz` file.
+The `*.f1r2.tar.gz` file contains, **for every candidate variant**:
 
-**Normal vs. Artifact Patterns**
+- Counts of ALT-supporting reads split by:
+
+  - F1R2 (forward read1 / reverse read2)
+
+  - F2R1 (forward read2 / reverse read1)
+
+This preserves orientation-specific evidence, not just strand.
+
+**Conceptually**: "Across ALL candidate variants, do certain mutation types appear preferentially in one orientation pattern (F1R2 vs F2R1)?”
+
+This information is learned from your sample, not from a database, enabling accurate read-orientation artifact filtering. See **Figure 6** and **Table 6**.
+
+This is **not variant-specific**. It is a **global artifact model** for your library.
+
+**Figure 6**: Normal vs. Artifact Patterns
   ![Figure 5: Read orientation: Normal vs Biased](images/Orientation_Read_bias.png)
 
 **Table 6**: Interpretation Guide of Orientation bias
@@ -1154,22 +1170,7 @@ That is exactly the regime where orientation artifacts can:
 
 - Inflate false positives
 
-**Orientation bias model** learns the prior probability of read orientation artifact, a common artifact in Illumina sequencing (especially strong in amplicon and cfDNA data), from the output of CollectF1R2Counts of Mutect2, which is `~/variants/SRR30536566.f1r2.tar.gz` file.
-The `*.f1r2.tar.gz` file contains, **for every candidate variant**:
 
-- Counts of ALT-supporting reads split by:
-
-  - F1R2 (forward read1 / reverse read2)
-
-  - F2R1 (forward read2 / reverse read1)
-
-This preserves orientation-specific evidence, not just strand. 
-
-**Conceptually**: "Across ALL candidate variants, do certain mutation types appear preferentially in one orientation pattern (F1R2 vs F2R1)?”
-
-This information is learned from your sample, not from a database, enabling accurate read-orientation artifact filtering.
-
-This is **not variant-specific**. It is a **global artifact model** for your library.
 
 >**Key takeaway**: This step is **essential for reducing false positives** in somatic calling, especially for low-frequency variants or damaged samples. The model learns your data's specific error patterns rather than using generic thresholds.
 
