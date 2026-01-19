@@ -1614,10 +1614,18 @@ So:
 |--------|----------|-----|-----|-------|----|---------|-----------|----------------|
 | chr10 | 87925886 | 7 | 0 | 0 | 0.133 | Clean Sample | Reference Homozygous | **Questionable due to low coverage** |
 | chr1 | 114708854 | 39 | 0 | 0 | 0.034 | Clean Sample | Reference Homozygous | **Most likely reference homozygous** |
-| chr3 | 179226113 | 174 | 402 | 4 | 0.046 | Germline Heterozygous | Heterozygous with slight imbalance | **Patient carries variant with possible amplification** |
+| chr3 | 179226113 | 174 | 402 | 4 | 0.046 | Germline Heterozygous | Heterozygous with slight imbalance | **Patient carries variant with possible amplification (CNV)** |
 | chr12 | 25229089 | 1 | 0 | 0 | 0.059 | Clean Sample | Reference Homozygous | **Not informative (low coverage)** |
 | chr12 | 25244098 | 1 | 0 | 0 | 0.187 | Clean Sample | Reference Homozygous | **Not informative (low coverage)** |
 
+**Rule of Thumb for Coverage Reliability:**
+
+```bash
+# Minimum reads for reliable interpretation
+if total_reads < 20: "Unreliable"
+elif total_reads < 50: "Marginally reliable"  
+elif total_reads >= 50: "Reliable"
+```
 
 ---
 ---
