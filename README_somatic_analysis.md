@@ -1731,7 +1731,7 @@ The **error is larger than the estimate itself** (2.75% > 1.62%). This means:
 
   - Negative (statistically possible, biologically impossible)
   
-**Statistical Reality Check**:
+### Statistical Reality Check:
 
 With such sparse data:
 
@@ -1744,7 +1744,6 @@ With such sparse data:
 ```bash
 Contamination = 1.6% ± 2.8%
 This means: -1.2% to +4.4% (contamination can't be negative, so 0% to 4.4%)
-```
 ```
 
 ### Why the High Error? Your Targeted Panel Limitations
