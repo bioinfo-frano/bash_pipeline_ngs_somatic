@@ -1798,8 +1798,6 @@ Looking at the log warnings and dataset details:
 
 ### Practical Implications for the Analysis
 
-**For Variant Calling (FilterMutectCalls)**:
-
 Even with this unreliable estimate, `FilterMutectCalls` will:
 
   1. Use the 1.62% estimate to adjust filtering thresholds
