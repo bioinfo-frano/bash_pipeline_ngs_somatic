@@ -950,7 +950,7 @@ b) mutect2.stdout.log
 Tool returned:
 SUCCESS
 ```
-**Interpretation**: self explanatory.
+**Interpretation**: Success!
 
 **Verdict on Mutect2 variant calling step**: There are no errors, no conceptual problems, and no missing inputs.
 
@@ -1279,6 +1279,191 @@ Tabulates pileup metrics for inferring contamination.
 
 `GetPileupSummaries` does **NOT** filter variants itself — it informs the next step (`CalculateContamination`)
 
+>**Key message**:
+`LearnReadOrientationModel` addresses technical/chemical artifacts, while `GetPileupSummaries` is all about biological contamination - specifically, **cross-sample contamination** and **germline variants**.
+
+This tool checks **known germline variant positions** to detect if your tumor sample is contaminated with DNA from other sources, which is CRUCIAL for accurate somatic calling.
+
+**What it does**
+
+After flagging/tagging strand-specific artifacts, the next major source of false positives is **biological contamination** - when tumor DNA gets contaminated with other DNA sources. `GetPileupSummaries` is the first step in detecting this.
+
+Your tumor sample is **not pure tumor DNA**.
+
+It contains:
+
+- Tumor cells
+
+- Normal stromal cells
+
+- Immune cells
+
+- Possibly cross-sample contamination
+
+Even 1–2% contamination can:
+
+- Create low-VAF false positives
+
+- Especially in tumor-only pipelines
+
+**Key challenge in tumor-only analysis**
+
+We do not have a matched normal.
+
+So Mutect2 cannot simply subtract germline variants.
+
+Instead, GATK uses:
+
+- Population allele frequencies
+
+- Statistical mixture modeling
+
+`GetPileupSummaries` works by examining known germline variant sites (typically from population databases like **gnomAD**) and seeing if your tumor sample shows evidence of someone else's DNA at these positions.
+
+**What does `GetPileupSummaries` measure?**
+
+**Input**
+
+- BAM file
+
+- A set of **common population SNPs**
+
+  - Usually from gnomAD
+
+  - High minor allele frequency
+
+  - Known to be germline
+  
+**Output**
+
+```bash
+SRR30536566.pileups.table
+```
+
+**Content of** `SRR30536566.pileups.table` (Example)
+```bash
+contig    position     ref_count  alt_count  other_alt_count  allele_frequency
+chr1      114705427    809        0          0                0.034
+chr1      114705432    820        0          1                0.034  
+chr1      114707407    1187       0          2                0.023
+```
+
+**Meaning**
+| Column           | Meaning                         |
+| ---------------- | ------------------------------- |
+| contig           | Chromosome                      |
+| position         | Known germline variant site (from germline "gnomAD" database)            |
+| ref_count        | Reads matching/supporting the reference allele |
+| alt_count        | Reads matching/supporting the EXPECTED alternate allele (from germline "gnomAD" database)|
+| other_alt_count  | Reads supporting OTHER alleles (neither ref nor expected alt).<br>Sequencing noise: contamination                |
+| allele_frequency | Population frequency of the expected alt allele (0.034 = 3.4%). |
+
+**What the content shows**
+
+At position chr1:114707407:
+
+   - 1187 reference reads
+
+   - 0 expected alt reads
+
+   - BUT 2 "other_alt" reads - these are potential contamination signals!
+   
+**Interpretation**:
+
+🔹 contig, position
+```bash
+chr1	114705427	809	0	0	0.034
+```
+This is a **known common SNP site** from gnomAD
+It lies inside the 7-gene CRC panel
+
+🔹 allele_frequency
+```bash
+0.034
+```
+This is the population allele frequency (from gnomAD):
+
+> ~3.4% of people carry the ALT allele at this position
+
+This is **not** your sample’s VAF (Variant Allele Frequency).
+
+🔹 ref_count
+```bash
+809
+```
+Number of reads supporting the reference allele (after all filters: mapping quality, duplicates, etc.)
+
+🔹 alt_count
+```bash
+0
+```
+Number of reads supporting the **ALT allele** (the gnomAD SNP allele)
+
+🔹 other_alt_count
+```bash
+0
+```
+Reads supporting neither REF nor expected ALT (usually sequencing noise or errors)
+
+At a SNP with population AF = 3.4%:
+
+- ~96.6% of individuals are **homozygous REF**
+
+- ~3.4% are **heterozygous**
+
+Homozygous ALT is extremely rare
+
+So in a **single uncontaminated individual**, most sites will show:
+
+```bash
+ref_count ≫ alt_count
+```
+That is **normal, healthy, and expected**. This is considered a **good signal**.
+
+
+```bash
+                     [CONTAMINATION DETECTION WORKFLOW]
+                             
+┌──────────────────────────────────────────────────────────────┐
+│                   GERMLINE VARIANT DATABASE                   │
+│  (e.g., gnomAD, 1000 Genomes - known common human variants)  │
+│  • chr1:114707407: REF=G, ALT=A (freq=2.3%)                  │
+│  • chr1:114705427: REF=C, ALT=T (freq=3.4%)                  │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+┌──────────────────────────────▼───────────────────────────────┐
+│                   YOUR TUMOR SAMPLE BAM                      │
+│   At chr1:114707407:                                         │
+│   • 1187 reads show: G (reference)                           │
+│   • 0 reads show: A (expected germline alt)                  │
+│   • 2 reads show: T (UNEXPECTED! Possible contamination)    │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+                     ┌─────────▼─────────┐
+                     │ GetPileupSummaries│
+                     └─────────┬─────────┘
+                               │
+                     ┌─────────▼─────────┐
+                     │ OUTPUT TABLE      │
+                     │ ref=1187          │
+                     │ alt=0             │
+                     │ other_alt=2  ← ALERT!│
+                     └───────────────────┘
+```
+
+**Table 7**: Interpreting `.pileups.table`
+
+| Pattern | Example Values | Haplotype | Meaning | Action Needed |
+|---------|---------------|-----------|---------|---------------|
+| **Clean Sample** | `ref=1000, alt=0, other_alt=0` | Reference Homozygous | No contamination at this site | None |
+| **Germline Heterozygous** | `ref=400, alt=400, other_alt=0` | Heterozygous | Patient carries this germline variant | Normal, expected |
+| **Germline Homozygous Alt** | `ref=0, alt=1000, other_alt=0` | Alternate Homozygous | Patient homozygous for germline variant | Normal, expected |
+| **Contamination Signal** | `ref=1000, alt=0, other_alt=15` | Reference Homozygous + Contamination | Unexpected alleles → contamination! | Calculate contamination fraction |
+| **Sequencing Error** | `ref=1000, alt=0, other_alt=1-2` | Reference Homozygous | Low-level noise | Usually ignored |
+| **Novel Variant at Known Site** | `ref=400, alt=0, other_alt=450` | Alternate Homozygous (novel) | Patient has DIFFERENT variant at known germline site | Investigate variant |
+| **Cancer Homozygous Deletion** | `ref=0, alt=0, other_alt=0` | Copy Number Loss | Complete deletion in cancer | Flag for CNV analysis |
+| **Somatic LOH at Germline Site** | `ref=0, alt=800, other_alt=0` | Loss of Heterozygosity | Tumor lost reference allele | Important for cancer evolution |
+
 **Outputs**
 
 a) From Terminal
@@ -1288,7 +1473,13 @@ Tool returned:
 SUCCESS
 ```
 
-b) **Output files**: `~/variants/SRR30536566.pileups.table` (3.9 KB) and `~/logs/get_pileup_summaries.log`
+b) **Output files**: 
+
+ -`~/variants/SRR30536566.pileups.table` (3.9 KB)
+
+ - `~/logs/get_pileup_summaries.log`
+ 
+**These two scripts estimate tumor sample contamination**
 
 c) Sample identity consistency
 
@@ -1362,108 +1553,6 @@ contig  position  ref_count  alt_count  other_alt_count  allele_frequency
 ```
 These columns are **per-SNP pileup summaries**.
 
-**Interpretation**:
-
-🔹 contig, position
-```bash
-chr1	114705427	809	0	0	0.034
-```
-This is a **known common SNP site** from gnomAD
-It lies inside the 7-gene CRC panel
-
-🔹 allele_frequency
-```bash
-0.034
-```
-This is the population allele frequency (from gnomAD):
-
-> ~3.4% of people carry the ALT allele at this position
-
-This is **not** your sample’s VAF (Variant Allele Frequency).
-
-🔹 ref_count
-```bash
-809
-```
-Number of reads supporting the reference allele (after all filters: mapping quality, duplicates, etc.)
-
-🔹 alt_count
-```bash
-0
-```
-Number of reads supporting the **ALT allele** (the gnomAD SNP allele)
-
-🔹 other_alt_count
-```bash
-0
-```
-Reads supporting neither REF nor expected ALT (usually sequencing noise or errors)
-
-At a SNP with population AF = 3.4%:
-
-- ~96.6% of individuals are **homozygous REF**
-
-- ~3.4% are **heterozygous**
-
-Homozygous ALT is extremely rare
-
-So in a **single uncontaminated individual**, most sites will show:
-
-```bash
-ref_count ≫ alt_count
-```
-That is **normal, healthy, and expected**. This is considered a **good signal**.
-
-✅ The observed data matches the  **single-individual model**
-
-Specifically:
-
-- High coverage
-
-- Very few unexpected ALT reads
-
-- No systematic inflation of ALT counts
-
-This tells GATK:
-
-“This locus behaves like it comes from one genome, not a mixture.”
-
-**What would bad signal look like?**. Examples of problematic pileups:
-
-🚨 **Contamination**
-```bash
-ref_count = 500
-alt_count = 40
-allele_frequency = 0.03
-```
-ALT fraction (~7%) ≫ expected (~1–3%)
-
-➡ suggests DNA from **another individual** mixed in
-
-🚨 **Severe technical artifacts**
-```bash
-other_alt_count = 50
-```
-
-Why there are low ALT counts?
-
-Even in tumor tissue, these effects still apply:
-
-🔹 1. Population SNPs are mostly absent
-
-Most gnomAD SNPs are not present in your patient.
-
-🔹 2. Tumor purity < 100%
-
-Normal stromal cells dilute tumor DNA.
-
-🔹 3. Somatic events ≠ gnomAD SNPs
-
-This table is not looking for tumor mutations.
-
-🔹 4. Sequencing noise
-
-Occasional ALT reads are normal.
 
 
 **More interpretations**
@@ -1488,6 +1577,8 @@ So:
 
 ➡ **Irrelevant for this table**
 
+---
+---
 
 ### Contamination estimation 👉 [06b_calculate_contamination.sh](bash_scripts/06b_calculate_contamination.sh)
 
