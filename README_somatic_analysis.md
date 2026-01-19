@@ -1455,33 +1455,29 @@ That is **normal, healthy, and expected**. This is considered a **good signal**.
 
 | Pattern | Example Values | Haplotype | Meaning | Action Needed |
 |---------|---------------|-----------|---------|---------------|
-| **Clean Sample** | `ref=1000, alt=0, other_alt=0` | Reference Homozygous | No contamination at this site | None |
-| **Germline Heterozygous** | `ref=400, alt=400, other_alt=0` | Heterozygous | Patient carries this germline variant | Normal, expected |
-| **Germline Homozygous Alt** | `ref=0, alt=1000, other_alt=0` | Alternate Homozygous | Patient homozygous for germline variant | Normal, expected |
-| **Contamination Signal** | `ref=1000, alt=0, other_alt=15` | Reference Homozygous + Contamination | Unexpected alleles → contamination! | Calculate contamination fraction |
-| **Sequencing Error** | `ref=1000, alt=0, other_alt=1-2` | Reference Homozygous | Low-level noise | Usually ignored |
-| **Novel Variant at Known Site** | `ref=400, alt=0, other_alt=450` | Alternate Homozygous (novel) | Patient has DIFFERENT variant at known germline site | Investigate variant |
-| **Cancer Homozygous Deletion** | `ref=0, alt=0, other_alt=0` | Copy Number Loss | Complete deletion in cancer | Flag for CNV analysis |
-| **Somatic LOH at Germline Site** | `ref=0, alt=800, other_alt=0` | Loss of Heterozygosity | Tumor lost reference allele | Important for cancer evolution |
-
-| Pattern | Example Values | Haplotype | Meaning | Action Needed |
-|---------|---------------|-----------|---------|---------------|
-| **Clean Sample** | `ref=1000, alt=0, other_alt=0` | Reference Homozygous | No contamination at this site | None |
-| **Germline Heterozygous** | `ref=400, alt=400, other_alt=0` | Heterozygous | Patient carries this germline variant | Normal, expected |
-| **Germline Homozygous Alt** | `ref=0, alt=1000, other_alt=0` | Alternate Homozygous | Patient homozygous for germline variant | Normal, expected |
-| **Contamination Signal** | `ref=1000, alt=0, other_alt=15` | Reference Homozygous + Contamination | Unexpected alleles → contamination! | Calculate contamination fraction |
-| **Sequencing Error** | `ref=1000, alt=0, other_alt=1-2` | Reference Homozygous | Low-level noise | Usually ignored |
-| **Novel Variant at Known Site (Heterozygous)** | `ref=400, alt=0, other_alt=400` | Heterozygous (novel) | Patient has different variant than database expects | Investigate variant |
+| **Clean Sample** | `ref=1000, alt=0, other_alt=0`<br>AF=0.034 | Reference Homozygous | Patient lacks this common variant (3.4% population frequency) | None |
+| **Germline Heterozygous** | `ref=400, alt=400, other_alt=0`<br>AF=0.046 | Heterozygous | Patient carries this germline variant (4.6% population frequency) | Normal, expected |
+| **Germline Homozygous Alt** | `ref=0, alt=1000, other_alt=0`<br>AF=0.500 | Alternate Homozygous | Patient homozygous for common variant (50% population frequency) | Normal, expected |
+| **Contamination Signal** | `ref=1000, alt=0, other_alt=15`<br>AF=0.034 | Reference Homozygous + Contamination | Unexpected alleles at significant levels → contamination! | Calculate contamination fraction |
+| **Sequencing Error** | `ref=1000, alt=0, other_alt=1-2`<br>AF=0.001 | Reference Homozygous | Low-level noise at rare variant site | Usually ignored |
+| **Novel Variant at Known Site (Heterozygous)** | `ref=400, alt=0, other_alt=400`<br>AF=0.200 | Heterozygous (novel) | Patient has DIFFERENT variant than expected at common polymorphic site | Investigate variant |
 | **Novel Variant at Known Site (Homozygous)** | `ref=0, alt=0, other_alt=900` | Alternate Homozygous (novel) | Patient homozygous for variant not in database | Investigate variant |
-| **Cancer Homozygous Deletion** | `ref=0, alt=0, other_alt=0` | Copy Number Loss | Complete deletion in cancer | Flag for CNV analysis |
-| **Somatic LOH - Alternate Homozygous** | `ref=0, alt=800, other_alt=0` | Alternate Homozygous (LOH) | Tumor lost reference allele | Important for cancer evolution |
-| **Somatic LOH - Reference Homozygous** | `ref=800, alt=0, other_alt=0` | Reference Homozygous (LOH) | Tumor lost alternate allele | Important for cancer evolution |
+| **Possible Homozygous Deletion** | `ref=0, alt=0, other_alt=0`<br>AF=0.400 | Copy Number Loss | No reads at known variant site - possible deletion | Flag for CNV analysis |
+| **Possible LOH (Alternate)** | `ref=0, alt=800, other_alt=0`<br>AF=0.050 | Alternate Homozygous (possible LOH) | Tumor shows homozygous alternate at rare variant site | Investigate if matched normal available |
+| **Possible LOH (Reference)** | `ref=800, alt=0, other_alt=0`<br>AF=0.400 | Reference Homozygous (possible LOH) | Tumor shows homozygous reference at common variant site | Investigate if matched normal available |
 
-LOH = Loss of Heterozygosity. This refers to a **change from germline to tumor**
+
+LOH = Loss of Heterozygosity. This refers to a **change from germline to tumor**.
+
 "Germline Homozygous" means the patient was born that way. 
 
+High vs Low `allele_frequency` (AF) Thresholds:
 
+  - AF > 0.10 (10%): Common variant
 
+  - AF 0.01-0.10 (1-10%): Moderately common
+
+  - AF < 0.01 (1%): Rare variant
 
 **Outputs**
 
