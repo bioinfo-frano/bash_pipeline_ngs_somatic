@@ -1608,6 +1608,16 @@ So:
 | **When to run** | After Mutect2 | After Mutect2, before filtering |
 | **Output format** | tar.gz (model file) | .table (tabular data) |
 
+**More examples from** `SRR30536566.pileups.table`
+
+| Contig | Position | Ref | Alt | Other | AF | Pattern | Haplotype | Interpretation |
+|--------|----------|-----|-----|-------|----|---------|-----------|----------------|
+| chr10 | 87925886 | 7 | 0 | 0 | 0.133 | Clean Sample | Reference Homozygous | **Questionable due to low coverage** |
+| chr1 | 114708854 | 39 | 0 | 0 | 0.034 | Clean Sample | Reference Homozygous | **Most likely reference homozygous** |
+| chr3 | 179226113 | 174 | 402 | 4 | 0.046 | Germline Heterozygous | Heterozygous with slight imbalance | **Patient carries variant with possible amplification** |
+| chr12 | 25229089 | 1 | 0 | 0 | 0.059 | Clean Sample | Reference Homozygous | **Not informative (low coverage)** |
+| chr12 | 25244098 | 1 | 0 | 0 | 0.187 | Clean Sample | Reference Homozygous | **Not informative (low coverage)** |
+
 
 ---
 ---
