@@ -1286,7 +1286,7 @@ This tool checks **known germline variant positions** to detect if your tumor sa
 
 **What it does**
 
-After flagging/tagging strand-specific artifacts, the next major source of false positives is **biological contamination** - when tumor DNA gets contaminated with other DNA sources. `GetPileupSummaries` is the first step in detecting this.
+After getting the `.read-orientation-model.tar.gz` strand-specific artifacts, the next major source of false positives is **biological contamination** - when tumor DNA gets contaminated with other DNA sources. `GetPileupSummaries` is the first step in detecting this.
 
 Your tumor sample is **not pure tumor DNA**.
 
@@ -1348,15 +1348,16 @@ chr1      114705432    820        0          1                0.034
 chr1      114707407    1187       0          2                0.023
 ```
 
-**Meaning**
-| Column           | Meaning                         |
-| ---------------- | ------------------------------- |
-| contig           | Chromosome                      |
-| position         | Known germline variant site (from germline "gnomAD" database)            |
-| ref_count        | Reads matching/supporting the reference allele |
-| alt_count        | Reads matching/supporting the EXPECTED alternate allele (from germline "gnomAD" database)|
-| other_alt_count  | Reads supporting OTHER alleles (neither ref nor expected alt).<br>Sequencing noise: contamination                |
-| allele_frequency | Population frequency of the expected alt allele (0.034 = 3.4%). |
+**Column and meaning breakdown**
+
+| Column | Meaning | Additional information |
+|--------|---------|-------------------------|
+| **contig** | Chromosome | The chromosome/contig name from your reference genome |
+| **position** | Known germline variant site | From the germline resource provided (commonly gnomAD, but could be 1000 Genomes, ExAC, etc.) |
+| **ref_count** | Reads supporting the reference allele | Count of reads with the REFERENCE base at this position |
+| **alt_count** | Reads supporting the EXPECTED alternate allele | Count of reads with the ALTERNATE base listed in the germline resource |
+| **other_alt_count** | Reads supporting OTHER alleles | Reads with bases that are NEITHER reference nor the expected alternate.<br>**Can indicate:** <br>- Sequencing errors (if low)<br>- Contamination (if high)<br>- Novel variant at same position |
+| **allele_frequency** | Population frequency of the expected alt allele | The allele frequency from the germline resource (0.034 = 3.4% of population carries it) |
 
 **What the content shows**
 
@@ -1576,6 +1577,23 @@ So:
 - BRAF mutations?
 
 ➡ **Irrelevant for this table**
+
+**Comparison: Orientation Model vs. Pileup Summaries**
+
+| Aspect | LearnReadOrientationModel | GetPileupSummaries |
+|--------|---------------------------|---------------------|
+| **Target** | Technical artifacts | Biological contamination |
+| **What it detects** | Strand bias, oxidation, FFPE damage | Cross-sample contamination, normal cell admixture |
+| **Data source** | Candidate somatic sites | Known germline sites |
+| **Output used by** | FilterMutectCalls (artifact filtering) | CalculateContamination → FilterMutectCalls (contamination filtering) |
+| **Biological vs Technical** | Technical | Biological |
+| **Key metric** | f1R2/f2R1 ratios | other_alt_count |
+| **Common causes** | Library prep, sample handling | Lab mix-ups, stromal contamination |
+| **Typical thresholds** | Strand odds ratio > 10 | Contamination fraction > 0.02 |
+| **Sample types affected** | All, especially FFPE | All, especially low-purity tumors |
+| **When to run** | After Mutect2 | After Mutect2, before filtering |
+| **Output format** | tar.gz (model file) | .table (tabular data) |
+
 
 ---
 ---
