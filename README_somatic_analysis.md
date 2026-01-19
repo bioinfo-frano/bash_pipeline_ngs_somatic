@@ -1636,7 +1636,7 @@ elif total_reads >= 50: "Reliable"
 
 - **CalculateContamination**: <https://gatk.broadinstitute.org/hc/en-us/articles/360036888972-CalculateContamination>
 
-Given pileup data from `GetPileupSummaries`, calculates the fraction of reads coming from cross-sample contamination. The resulting contamination table is used with `FilterMutectCalls`. 
+Given pileup data from `GetPileupSummaries`, `CalculateContamination` calculates the fraction of reads coming from cross-sample contamination. The resulting contamination table is used with `FilterMutectCalls`. 
 This tool estimates contamination based on the signal from ref reads at hom alt sites.
 
 **Outputs**
@@ -1661,7 +1661,9 @@ WARN  KernelSegmenter - ... number of data points (1)
 WARN  KernelSegmenter - No changepoint candidates were found
 ```
 ✔ These are expected and harmless
+
 ✔ They occur because you did not provide segmentation (by design)
+
 ✔ GATK attempted segmentation, realized there is only one data point, and correctly fell back to a single global estimate
 
 👉 Nothing is wrong here
@@ -1682,33 +1684,196 @@ WARN  KernelSegmenter - No changepoint candidates were found
 >
 >No meaningful CNV inference possible
 
-d) **IMPORTNAT**: `SRR30536566.contamination.table`
+
+**Key findings**: `SRR30536566.contamination.table`
 
 ```bash
-sample              contamination          error
-DMBEL-EIDR-071       0.016233858827731117   0.027470745560259448
+sample               contamination                  error
+DMBEL-EIDR-071       0.016233858827731117 (1.62%)   0.027470745560259448 (2.75%)
 ```
 Meaning of each column
 
-| Column          | Meaning                                  |
-| --------------- | ---------------------------------------- |
-| `sample`        | Biological sample name (from `@RG:SM`)   |
-| `contamination` | Estimated fraction of contaminating DNA  |
-| `error`         | Statistical uncertainty of that estimate |
+| Column                  | Meaning                                  |
+| ----------------------- | ---------------------------------------- |
+| `sample`                | Biological sample name (from `@RG:SM`)   |
+| `contamination` = 0.016 | Estimated fraction of contaminating DNA  |
+| `error` = 0.027         | Statistical uncertainty of that estimate |
 
-**Interpreting contamination** = 0.0162 ≈ 1.62%
+1. **Estimated Contamination**: 1.62%
 
-This means:
+- This is **LOW contamination** - excellent quality!
 
-**~1.6% of reads behave like they come from another genome**
+This suggests that approximately 1.6% of reads in your tumor sample come from sources other than the patient's tumor. This could be:
 
-This “**other genome**” is typically:
+  - Cross-sample contamination from other patients/lab personnel
 
-- Normal DNA (blood, stromal cells)
+  - Normal tissue contamination (stromal cells, blood cells mixed in biopsy)
 
-- Cross-sample contamination
+  - Index hopping (Illumina-specific issue in multiplexed runs)
 
-- Index hopping (minor contributor)
+For clinical context:
+
+  - **< 2% contamination**: Generally acceptable for most analyses
+
+  - **2-5% contamination**: May require extra caution for low-VAF variants
+
+  - **> 5% contamination**: Problematic, may require re-sequencing
+
+2. **The 2.75% Standard Error (The Critical Warning!)**
+
+The **error is larger than the estimate itself** (2.75% > 1.62%). This means:
+
+**The estimate is statistically unreliable.** The true contamination could be:
+
+  - 0% (no contamination)
+
+  - 4.4% (1.62% + 2.75%)
+
+  - Negative (statistically possible, biologically impossible)
+  
+**Statistical Reality Check**:
+
+With such sparse data:
+
+  - The 1.62% contamination estimate is NOT reliable
+
+  - The high error (2.75%) reflects this uncertainty
+
+  - You essentially have:
+  
+```bash
+Contamination = 1.6% ± 2.8%
+This means: -1.2% to +4.4% (contamination can't be negative, so 0% to 4.4%)
+```
+
+### Why the High Error? Your Targeted Panel Limitations
+
+Looking at the log warnings and dataset details:
+
+**Key Issues Identified**:
+
+  1. "Specified dimension of the kernel approximation (100) exceeds the number of data points (1)"
+
+  2. "Number of points needed to calculate local changepoint costs (2 * window size = 100) exceeds number of data points (1)"
+
+  3. "No changepoint candidates were found"
+
+**Root Cause Analysis**:
+
+## **Root Cause Analysis:**
+
+| Issue | Explanation | Impact |
+|-------|-------------|--------|
+| **Very small targeted panel** | Only EGFR pathway genes (KRAS, NRAS, BRAF, PIK3CA, PTEN, RRAS, MEK1) | Few germline sites available for contamination estimation |
+| **Amplicon sequencing** | PCR-based targeted approach, not whole exome/genome | Limited genomic coverage reduces statistical power |
+| **"1 data point" warning** | Only one germline site met minimum coverage thresholds | Statistical estimation becomes unreliable/impossible |
+
+
+**Visual Representation of the Problem**
+
+```bash
+    GERMLINE SITES IN TARGETED PANEL
+    ┌────────────────────────────────────┐
+    │ EGFR Pathway Genes (~10-20 genes)  │
+    │                                    │
+    │  ┌─────┐  ┌─────┐  ┌─────┐        │
+    │  │KRAS │  │BRAF │  │PIK3C│ ...    │
+    │  └─────┘  └─────┘  └─────┘        │
+    │                                    │
+    │ Germline SNPs needed: 100+         │
+    │ Germline SNPs found: ~1-5          │ ← YOUR PROBLEM
+    └────────────────────────────────────┘
+
+    WHAT GATK EXPECTS:                 WHAT YOU HAVE:
+    ┌─────────────────┐               ┌─────────────────┐
+    │ 1000+ germline  │               │  1-5 germline   │
+    │ sites across    │               │ sites in tiny   │
+    │ whole genome    │               │ amplicon panel  │
+    │                 │               │                 │
+    │ • Robust stats  │               │ • Unreliable    │
+    │ • Low error     │               │ • High error    │
+    │ • Accurate      │               │ • Guesswork     │
+    └─────────────────┘               └─────────────────┘
+```
+```
+
+### Practical Implications for the Analysis
+
+**For Variant Calling (FilterMutectCalls)**:
+
+Even with this unreliable estimate, `FilterMutectCalls` will:
+
+  1. Use the 1.62% estimate to adjust filtering thresholds
+
+  2. Be **more conservative** for low-frequency variants (treats them as potential contamination)
+
+  3. May **over-filter** true low-VAF variants
+
+
+**Recommendations**:
+
+```bash
+# OPTION 1: Use the estimate with caution (default)
+gatk FilterMutectCalls \
+  -V mutect2.vcf.gz \
+  --contamination-table SRR30536566.contamination.table \
+  -O filtered.vcf.gz
+
+# OPTION 2: Set contamination to 0 (more sensitive, risk of false positives)
+echo -e "sample\tcontamination\terror\nDMBEL-EIDR-071\t0.0\t0.0" > zero_contamination.table
+gatk FilterMutectCalls \
+  -V mutect2.vcf.gz \
+  --contamination-table zero_contamination.table \
+  -O filtered.vcf.gz
+
+# OPTION 3: Use a fixed conservative value (e.g., 0.02)
+echo -e "sample\tcontamination\terror\nDMBEL-EIDR-071\t0.02\t0.01" > conservative_contamination.table
+```
+
+Statistical Reality Check
+
+With only ~1 data point:
+
+  1. Bayesian estimation used by GATK needs many data points
+
+  2. Your result is essentially: "We have insufficient data to estimate contamination"
+
+  3. The 1.62% is more of a placeholder than a real measurement
+
+Calculation of confidence interval:
+
+```python
+# 95% confidence interval for contamination
+estimate = 0.01623
+error = 0.02747
+lower_bound = estimate - (1.96 * error)  # = -0.0376 (negative!)
+upper_bound = estimate + (1.96 * error)  # = 0.0701 (7%)
+
+# Interpretation: We're 95% confident contamination is between -3.8% and 7.0%
+# (Negative is impossible, so effectively 0% to 7%)
+```
+
+### Amplicon-Specific Considerations
+
+Your targeted panel has unique characteristics:
+
+  1. PCR duplicates: Amplicon sequencing generates many duplicates
+
+  2. Uneven coverage: Some regions may be over/under-amplified
+
+  3. Few germline SNPs: Cancer pathway genes are often conserved
+
+  4. Panel design: May intentionally avoid common SNPs to focus on exons
+
+**Enhanced interpretation Table for this data**
+
+| Metric | Your Value | Interpretation | Action |
+|--------|------------|----------------|--------|
+| **Contamination** | 1.62% | Unreliable estimate | Treat as "unknown, likely low" |
+| **Standard Error** | 2.75% | > Estimate → statistically insignificant | Don't trust the exact value |
+| **Data Points** | ~1 | Insufficient for reliable estimation | Acknowledge limitation in reporting |
+| **Clinical Impact** | Minimal | Variants >5% VAF unaffected | Low-VAF variants (<5%) need careful review |
+| **Recommendation** | - | Use but verify with orthogonal methods | Manual review of suspicious variants |
 
 **Is 1.6% contamination good or bad?**
 
@@ -1731,35 +1896,24 @@ Context-dependent answer:
 
 👉 Your value is acceptable and usable
 
-What does the `**error = 0.027**` mean?
 
-It means:
+### Bottom line of this section
 
-- There is high uncertainty
+Your contamination analysis is severely limited by the small panel size. The 1.62% estimate is statistically unreliable. However, for practical purposes:
 
-- Due to limited loci
+  1. It's probably low (amplicon panels from good labs usually are)
 
-- Expected for:
+  2. High-VAF variants (>10%) are trustworthy
 
-  - Small panels
+  3. Low-VAF variants need extra scrutiny
 
-  - Few gnomAD SNPs
+  4. Consider this a quality flag rather than a precise measurement
 
-  - Targeted intervals
+**Final recommendation**: Use the contamination table as-is in `FilterMutectCalls`, but manually review any borderline filtered variants, especially in clinically important genes like KRAS, BRAF, and PIK3CA.
 
-Important:
 
-⚠️ Do **NOT** interpret the error literally as ±2.7%
 
-Instead:
 
-- It reflects low statistical power
-
-GATK is warning you:
-
-“I estimated contamination, but with limited confidence”
-
-This is normal for 7 genes.
 
 
 ### Variant Filtering 👉 [07_filter_mutect_calls.sh](bash_scripts/07_filter_mutect_calls.sh)
