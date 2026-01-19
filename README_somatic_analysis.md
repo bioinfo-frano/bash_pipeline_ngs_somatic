@@ -1022,6 +1022,7 @@ Genomics_cancer/
 ```
 
 ---
+---
 
 ### Orientation bias model 👉 [05_learn_read_orientation_model.sh](bash_scripts/05_learn_read_orientation_model.sh)
 
@@ -1029,15 +1030,20 @@ Genomics_cancer/
 
 - **LearnReadOrientationModel**: <https://gatk.broadinstitute.org/hc/en-us/articles/360051305331-LearnReadOrientationModel>
 
-Modern NGS data—especially **amplicon-based, PCR-enriched panels** (like of this tutorial) contain systematic sequencing artifacts that:
+Modern NGS data—especially **amplicon-based, PCR-enriched panels** (like of this tutorial) contain systematic sequencing artifacts. One of the **most dangerous artifacts** is **read-orientation bias**.
 
-- Look like real variants
+So, after Mutect2 identifies somatic candidates, `LearnReadOrientationModel` is crucial because:
 
-- Occur reproducibly
+  - **Sequencing artifacts** often manifest as **strand-biased errors**
 
-- Survive naive depth/VAF filtering
+  - **Oxidative damage** (common in FFPE samples) causes specific read orientation patterns
 
-One of the **most dangerous artifacts** is **read-orientation bias**.
+  - **PCR artifacts** can create false positives with characteristic strand distribution
+
+  - **Context-dependent errors** vary by sequencing platform and library prep
+
+This step models these biases so `FilterMutectCalls` can distinguish real variants from artifacts.
+
 
 **What is read-orientation bias?**
 
@@ -1053,12 +1059,9 @@ Reads can align in **different orientations** relative to the reference strand.
 
 Certain artifacts appear preferentially:
 
-In R1 but not R2
+In R1 but not R2 or only when read is aligned in one orientation
 
-Or only when read is aligned in one orientation
-
-This is **not biological**.
-It is caused by:
+This is **not biological**. It is caused by:
 
 - PCR chemistry
 
@@ -1069,6 +1072,71 @@ It is caused by:
 - DNA damage (e.g., deamination)
 
 - Amplicon design asymmetries
+
+**What It Does**
+
+The tool analyzes **read orientation patterns** of supporting reads at candidate variant sites:
+
+  1. **Counts supporting reads** by their orientation relative to the reference genome
+
+  2. **Builds a probabilistic model** of strand bias for each mutation type
+
+  3. **Outputs artifact probabilities** used by FilterMutectCalls
+
+  4. **Key insight**: Real somatic variants typically show balanced support; artifacts show skewed patterns
+  
+
+**Normal vs. Artifact Patterns**
+  ![Figure 5: Read orientation: Normal vs Biased](images/Orientation_Read_bias.png)
+
+**Table 6**: Interpretation Guide of Orientation bias
+
+| Pattern | F1R2 | F2R1 | Likely Cause | GATK Action |
+|---------|------|------|--------------|-------------|
+| **Balanced Support** | ~50% | ~50% | Real somatic variant | Keep variant |
+| **F1R2 Skew** | High | Low | Oxidative damage at 5' ends<br/>Common in fresh-frozen | Filter as artifact |
+| **F2R1 Skew** | Low | High | FFPE/deamination at 3' ends<br/>Formalin damage | Filter as artifact |
+| **Extreme Both** | High | High | Library prep issue<br/>Contamination | Investigate sample |
+| **No Support** | Zero | Zero | False positive call | Filter out |
+
+**Examples**
+```bash
+NORMAL VARIANT (e.g., TP53 mutation):
+Reads from tumor sample supporting G→A change:
+
+Forward reads (F1R2):  5′---G*---3′  ← 6 reads
+                        │
+                        (alternate allele NOT at read start)
+                        
+Reverse reads (F2R1):  3′---C*---5′  ← 5 reads
+                        │  
+                        (complementary strand, balanced)
+
+Result: F1R2=6, F2R1=5 → BALANCED → REAL VARIANT
+
+OXIDATION ARTIFACT (C→T):
+Oxidized cytosines at read starts:
+
+Forward reads (F1R2):  5′---T*---3′  ← 12 reads
+                        ↑
+                        (alternate AT read start!)
+                        
+Reverse reads (F2R1):  3′---A---5′   ← 1 read
+                        (normal pattern)
+
+Result: F1R2=12, F2R1=1 → F1R2 BIAS → ARTIFACT
+```
+
+**Practical Implications**
+
+  - **Clinical samples**: FFPE artifacts show F2R1 bias; fresh-frozen show F1R1 bias
+
+  - **Library prep**: PCR duplicates can exaggerate these patterns
+
+  - **Mutation types**: C→T/G→A transitions most affected by oxidative damage
+
+  - **FilterMutectCalls** uses this model's output to assign ORIENTATION_BIAS filter
+
 
 **Why this matters in cancer variant calling**
 
@@ -1102,6 +1170,9 @@ This preserves orientation-specific evidence, not just strand.
 This information is learned from your sample, not from a database, enabling accurate read-orientation artifact filtering.
 
 This is **not variant-specific**. It is a **global artifact model** for your library.
+
+>**Key takeaway**: This step is **essential for reducing false positives** in somatic calling, especially for low-frequency variants or damaged samples. The model learns your data's specific error patterns rather than using generic thresholds.
+
 
 Without orientation bias modeling:
 
@@ -1194,6 +1265,7 @@ The ^@ characters are normal binary padding from the tar format. They are not co
 
 >**IMPORTANT**: The model in file `SRR30536566.read-orientation-model.tar.gz` must later on be passed to `FilterMutectCalls`
 
+---
 ---
 
 ### GetPileupSummaries 👉 [06a_get_pileup_summaries.sh](bash_scripts/06a_get_pileup_summaries.sh)
