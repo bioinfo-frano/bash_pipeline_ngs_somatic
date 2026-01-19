@@ -1743,7 +1743,7 @@ With such sparse data:
   
 ```bash
 Contamination = 1.6% ± 2.8%
-This means: -1.2% to +4.4% (contamination can't be negative, so 0% to 4.4%)
+This means: -1.2% to +4.4% (contamination cannot be negative, so 0% to 4.4%)
 ```
 
 ### Why the High Error? Your Targeted Panel Limitations
@@ -1912,55 +1912,42 @@ If given a `--contamination-table` file, e.g. results from `CalculateContaminati
 
 `~/logs/filter_mutect_calls.log`
 
-1️⃣ What FilterMutectCalls actually did
+### 1. Summary of the Filtering Process
 
-From the log:
-```bash
-Processed 948 total variants
-```
-**Interpretation**
+From your log file:
 
-- Mutect2 found 948 candidate variants in your 7-gene CRC panel
+  - Processed 948 total variants (from your targeted panel)
 
-- FilterMutectCalls evaluated each allele using:
+  - Completed in 0.06 minutes (very fast, as expected for targeted data)
 
-  - strand bias
-
-  - orientation bias
-
-  - contamination
-
-  - germline probability
-
-  - weak evidence model
-
-  - PON
-
-  - base quality
-
-  - haplotype consistency
+  - Used all prior information: contamination table, orientation bias model
 
 
-2️⃣ Why almost everything is FILTERED (important!)
+### 2. Filtering Statistics Interpretation
 
-You will notice something striking: **Almost no variants are PASS**. This is expected and biologically correct for your dataset.
+Your `filteringStats.tsv` shows:
 
-3️⃣ Understanding the filteringStats.tsv (very important)
-
-This file answers:
 “Which filters removed variants, and how strong are they?”
 
 Key lines:
-```bash
-filter          FN     FNR
-weak_evidence   1.32   0.24
-contamination   1.32   0.24
-orientation     1.39   0.26
-germline        1.33   0.25
-```
-FN: false negatives
 
-**Interpretation**
+| Filter | FP | FDR | FN | FNR | Interpretation |
+|--------|----|-----|----|-----|----------------|
+| **weak_evidence** | 0.0 | 0.0 | 1.32 | 0.24 | Low evidence variants (low VAF/depth) were filtered |
+| **strand_bias** | 0.0 | 0.0 | 0.4 | 0.07 | Strand-biased artifacts were filtered |
+| **contamination** | 0.0 | 0.0 | 1.32 | 0.24 | Contamination-affected variants were filtered |
+| **orientation** | 0.0 | 0.0 | 1.39 | 0.26 | Read orientation artifacts were filtered |
+| **slippage** | 0.0 | 0.0 | 0.0 | 0.0 | No PCR slippage artifacts detected |
+| **haplotype** | 0.0 | 0.0 | 0.0 | 0.0 | No haplotype artifacts detected |
+| **germline** | 0.0 | 0.0 | 1.33 | 0.25 | Germline variants were filtered |
+
+Abbreviations:
+- **FP**: False Positives (artifacts incorrectly kept)
+- **FDR**: False Discovery Rate
+- **FN**: False Negatives (true variants incorrectly filtered)
+- **FNR**: False Negative Rate
+
+**Interpretation**:
 
 | Filter        | Meaning                                                  |
 | ------------- | -------------------------------------------------------- |
@@ -1969,7 +1956,146 @@ FN: false negatives
 | orientation   | F1R2 / F2R1 strand artifact                              |
 | germline      | Looks like constitutional variant                        |
 
-4️⃣ Let’s interpret real variants from your VCF (`SRR30536566.filtered.vcf.gz`)
+
+**Key Interpretation**:
+
+- No False Positives (FP=0.0): Filtering did not remove any artifacts that were actually true variants
+
+- False Negatives present: Each filter removed some true variants (FN > 0)
+
+- Most impactful filters:
+
+   - Orientation bias: Removed ~1.39 true variants (26% of filtered true variants)
+
+   - Germline filter: Removed ~1.33 true variants (25%)
+
+   - Contamination: Removed ~1.32 true variants (24%)
+
+**What FN=1.32 means**:
+
+   - Not a whole variant (continuous number)
+
+   - Probabilistic estimate: "We are 32% confident we filtered out 4 true variants" OR "We are 100% confident we filtered out 1.32 true variants"
+
+   - For your panel size (~950 variants): This is excellent performance
+
+
+Something strikingto notice: **Almost no variants are PASS**.
+
+### 3. VCF Field Abbreviations Explained
+
+FORMAT Fields (Sample-level):
+
+- GT: Genotype (0/1 = heterozygous)
+
+- AD: Allele Depth (REF,ALT read counts)
+
+- AF: Allele Fraction (ALT allele frequency)
+
+- DP: Depth (total reads at position)
+
+- F1R2: Forward read 1, Reverse read 2 counts for REF,ALT
+
+- F2R1: Forward read 2, Reverse read 1 counts for REF,ALT
+
+- FAD: Filtered Allele Depth (after filtering low-quality reads)
+
+- SB: Strand Bias counts (forward REF, reverse REF, forward ALT, reverse ALT)
+
+INFO Fields (Variant-level):
+
+- AS_SB_TABLE: Allele-Specific Strand Bias Table (REF forward, REF reverse | ALT forward, ALT reverse)
+
+- DP: Depth (total reads at position)
+
+- ECNT: Event Count (number of events in this haplotype)
+
+- ECNTH: Event Count Haplotype
+
+- GERMQ: Germline Quality (phred-scaled)
+
+- MBQ: Median Base Quality for REF,ALT
+
+- MFRL: Median Fragment Length for REF,ALT
+
+- MMQ: Median Mapping Quality for REF,ALT
+
+- MPOS: Median Position of variant in reads
+
+- PON: Panel of Normals (variant seen in normal samples)
+
+- POPAF: Population Allele Frequency (from gnomAD)
+
+- ROQ: Read Orientation Quality
+
+- TLOD: Tumor LOD Score (log odds of variant being real)
+
+### 4. `SRR30536566.filtered.vcf.gz` VCF File Analysis
+
+**Variant 1: chr1:114705278 - PASS (Likely Somatic)**
+
+```bash
+CHROM  POS       REF ALT QUAL FILTER  INFO
+chr1   114705278 A   G   .    PASS    TLOD=1676.10
+
+FORMAT: GT:AD:AF:DP:F1R2:F2R1:FAD:SB
+SAMPLE: 0/1:517,496:0.487:1013:210,216:241,212:473,448:217,300,227,269
+```
+**Interpretation**:
+
+  - Allele Fraction: 48.7% (496/1013) - typical for heterozygous
+
+  - Strand Balance: Excellent (F1R2: 210/216, F2R1: 241/212)
+
+  - Tumor LOD (TLOD): 1676.10 → Very strong evidence
+
+  - Population AF (POPAF): 4.31 → Not common in population
+
+  - Verdict: High-confidence somatic variant ✅
+
+**Variant 2: chr19:49635871 - FAIL (Artifact)**
+
+```bash
+CHROM  POS       REF ALT QUAL FILTER
+chr19  49635871  C   G   .    base_qual;clustered_events;orientation;strand_bias;weak_evidence
+
+DP=3128;ECNT=7;ECNTH=3;GERMQ=93;MBQ=32,12;MFRL=193,240;MMQ=60,60;MPOS=13;POPAF=3.49;ROQ=1;TLOD=12.56
+FORMAT: GT:AD:AF:DP:F1R2:F2R1:FAD:SB
+SAMPLE: 0/1:2859,123:0.012:2982:944,0:1022,19:2637,115:1155,1704,0,123
+```
+**Interpretation** (why it failed):
+
+  - Extreme Strand Bias: All 123 ALT reads in F2R1 only (reverse strand)
+
+  - Low AF: 1.2% - borderline for somatic calling
+
+  - Low Base Quality (MBQ): ALT base quality = 12 (REF = 32)
+
+  - Clustered Events: Multiple variants nearby
+
+  - Verdict: Sequencing artifact ❌
+
+**Variant 3: chr19:49637299 - FAIL (Germline)**
+
+```bash
+CHROM  POS       REF ALT QUAL FILTER
+chr19  49637299  G   A   .    germline;panel_of_normals
+
+SAMPLE: 0/1:0,89:0.990:89:0,49:0,38:0,89:0,0,0,89
+```
+**Interpretation** (why it failed):
+
+  - Variant in Panel of Normals (PON): Seen in normal samples
+
+  - AF = 99%: Too high for somatic, suggests germline or LOH
+
+  - No Reference Reads: 0 REF reads - suspicious
+
+  - Verdict: Germline variant (not somatic) ❌
+  
+**Another variant**
+
+ Let’s interpret real variants from your VCF (`SRR30536566.filtered.vcf.gz`)
 
 Example 1 — High-AF “germline” variant (AF: allele fraction)
 ```bash
@@ -1986,39 +2112,49 @@ TLOD=1676.10
 
 - Extremely **high TLOD** (Tumor Log Odds score in somatic variant calling: It is a statistical score that represents the confidence that a detected variant signal in a tumor sample is a true somatic mutation rather than just background noise or a sequencing artifact.Variants with a TLOD score below a certain threshold are typically filtered out, as they are considered to have insufficient evidence of presence in the tumor.)
 
-Example 2 — Low-AF somatic-looking but filtered
-```bash
-chr12 25227460 T>A
-AF=0.020
-DP=340
-FILTER=base_qual;contamination;orientation;strand_bias;weak_evidence
-```
-**Interpretation**
 
-- AF ~2%
+### 5. Final Filtering Results Summary: Filter performance
 
-- Only 7 alt reads
+| Filter | Variants Removed | False Negatives | Effectiveness | Typical Artifacts Caught |
+|--------|------------------|-----------------|---------------|---------------------------|
+| **Germline** | ~1.33 | 25% | High | Common SNPs, population variants |
+| **Orientation** | ~1.39 | 26% | High | FFPE damage, oxidation artifacts |
+| **Contamination** | ~1.32 | 24% | Medium | Cross-sample contamination |
+| **Weak Evidence** | ~1.32 | 24% | Medium | Low VAF, low depth variants |
+| **Strand Bias** | ~0.40 | 7% | Medium | PCR/sequencing strand bias |
+| **Slippage** | 0.00 | 0% | N/A | PCR slippage in homopolymers |
+| **Haplotype** | 0.00 | 0% | N/A | Mapping artifacts |
 
-- Strong strand imbalance
 
-- Low alt base quality
+**Key Findings from Your Examples**:
 
-- Compatible with contamination + artifacts
+1. chr1:114705278 - Likely a true somatic variant
 
-➡️ Not reliable enough
-Correctly filtered.
+  - Balanced strand support
 
-Example 3 — PON + germline + STR
-```bash
-chr15 66387311 T>TC
-AF=0.549
-FILTER=germline;panel_of_normals;STR
-```
-This has a high AF
+  - High quality scores
 
-➡️ Definitely not somatic
+  - Moderate allele fraction
 
-5️⃣ Why you see MANY germline calls
+2. chr19:49635871 - Sequencing artifact
+
+  - Extreme strand bias (all ALT in reverse reads)
+
+  - Low base quality
+
+  - Low allele fraction
+
+3. chr19 variants - Germline contamination
+
+  - In panel of normals
+
+  - Very high allele fractions
+
+  - Likely from normal tissue in biopsy
+
+
+
+**Why you see MANY germline calls**
 
 This is expected because:
 
@@ -2038,28 +2174,34 @@ Mutect2 therefore:
 
 ✔ This is exactly correct behavior.
 
-6️⃣ Do you have any PASS variants?
-
-Possible outcomes:
-
-**Case A — No PASS variants**
-
-This is plausible if:
-
-- No hotspot somatic mutations in these 7 genes
-
-- Or tumor purity is low
-
-- Or variants are below ~2–3% VAF
-
-**Case B — Few PASS variants**
-
-These are your high-confidence somatic mutations
+### Which variants PASS?
 
 ```bash
-zless ..//data/SRR30536566/variants/SRR30536566.filtered.vcf.gz | grep "PASS"
+# Count PASS variants
+bcftools view -H -f PASS SRR30536566.filtered.vcf.gz | wc -l
+
+output:
+4
+
+# Count by filter
+bcftools view -H SRR30536566.filtered.vcf.gz | cut -f7 | sort | uniq -c
+
+output:
+4 PASS
+4 base_qual;clustered_events;contamination;germline;haplotype;orientation;weak_evidence
+...
+1 contamination;strand_bias
+1 contamination;weak_evidence
+4 germline
+1 germline;haplotype;panel_of_normals;strand_bias
+...
 ```
-Output: There are 4 PASS variants.
+
+```bash
+zless SRR30536566.filtered.vcf.gz | grep "PASS"
+```
+Output: 
+4 PASS variants.
 
 ```bash
 ##FILTER=<ID=PASS,Description="Site contains at least one allele that passes filters">
@@ -2081,6 +2223,38 @@ In fact:
 - Over-filtering is preferred in clinical pipelines
 
 - **False positives are worse** than false negatives
+
+**Quick Commands for Further Analysis**
+
+```bash
+# 1. Extract PASS variants
+bcftools view -f PASS SRR30536566.filtered.vcf.gz -Oz -o SRR30536566.PASS.vcf.gz
+
+# 2. Count variants by gene
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%FILTER\n' SRR30536566.filtered.vcf.gz | \
+awk '{print $1}' | sort | uniq -c
+
+Output:
+   13 chr1
+   50 chr10
+   48 chr12
+   21 chr15
+    9 chr19
+   49 chr3
+   47 chr7
+
+# 3. Check allele fractions of PASS variants
+bcftools query -f '%CHROM\t%POS\t[%AF]\t%FILTER\n' SRR30536566.filtered.vcf.gz -i 'FILTER="PASS"'
+
+Output:
+chr1	114713909	0.154	PASS
+chr3	179210338	0.019	PASS
+chr3	179218294	0.277	PASS
+chr3	179226113	0.698	PASS
+```
+
+---
+---
 
 
 ### Post-filter (amplicon-specific) 👉 [08_postfilter.sh](bash_scripts/08_postfilter.sh)
@@ -2187,11 +2361,11 @@ TLOD=1387
 
 Your post-filtering successfully removed 1 variant (chr3:179210338) while keeping 3 variants:
 
-    chr1:114713909 - G>T (VAF=15.4%, DP=763)
+  - chr1:114713909 - G>T (VAF=15.4%, DP=763)
 
-    chr3:179218294 - G>A (VAF=27.7%, DP=1262)
+  - chr3:179218294 - G>A (VAF=27.7%, DP=1262)
 
-    chr3:179226113 - C>G (VAF=69.8%, DP=559)
+  - chr3:179226113 - C>G (VAF=69.8%, DP=559)
 
 The removed variant failed because its VAF (1.9%) was below your 2% threshold.
 
@@ -2200,93 +2374,94 @@ The removed variant failed because its VAF (1.9%) was below your 2% threshold.
 
 This is the FORMAT field describing how the variant was called in your sample:
 
-    GT (Genotype): 0/1 = heterozygous variant
+- GT (Genotype): 0/1 = heterozygous variant
 
-    AD (Allele Depth): Reads supporting reference and alternate alleles
+- AD (Allele Depth): Reads supporting reference and alternate alleles
 
-        Format: REF,ALT (e.g., 648,115 = 648 ref reads, 115 alt reads)
+   - Format: REF,ALT (e.g., 648,115 = 648 ref reads, 115 alt reads)
 
-    AF (Allele Frequency): VAF = ALT/(REF+ALT)
+- AF (Allele Frequency): VAF = ALT/(REF+ALT)
 
-    DP (Depth): Total reads at this position
+- DP (Depth): Total reads at this position
 
-    F1R2 & F2R1: Strand bias metrics
+- F1R2 & F2R1: Strand bias metrics
 
-        F1R2: Forward reads supporting ref/alt (read1 in forward orientation)
+   - F1R2: Forward reads supporting ref/alt (read1 in forward orientation)
 
-        F2R1: Reverse reads supporting ref/alt (read2 in reverse orientation)
+   - F2R1: Reverse reads supporting ref/alt (read2 in reverse orientation)
 
-        Used to detect PCR artifacts/strand bias
+   - Used to detect PCR artifacts/strand bias
 
-    FAD (Filtered Allele Depth): AD after filtering low-quality reads
+- FAD (Filtered Allele Depth): AD after filtering low-quality reads
 
-    SB (Strand Bias Table): ref_forward,ref_reverse,alt_forward,alt_reverse
+- SB (Strand Bias Table): ref_forward,ref_reverse,alt_forward,alt_reverse
 
 **TLOD (Tumor LOD Score)**
 
-    What it is: Log-odds score comparing variant vs. no variant hypotheses
+What it is: Log-odds score comparing variant vs. no variant hypotheses
 
-    Interpretation:
+**Interpretation**:
 
-        Higher TLOD = stronger evidence for variant
+- Higher TLOD = stronger evidence for variant
 
-        TLOD > 6.3 is typical Mutect2 threshold for somatic variants
+- TLOD > 6.3 is typical Mutect2 threshold for somatic variants
 
-        Your variants have very high TLODs (323-1387), indicating excellent confidence
+- Your variants have very high TLODs (323-1387), indicating excellent confidence
 
-    Formula: TLOD = log₁₀[P(data|variant)/P(data|no variant)]
+- Formula: TLOD = log₁₀[P(data|variant)/P(data|no variant)]
 
 **Clinical Relevance for Colorectal Cancer**
 
 Let me map these to your targeted genes:
 
-    chr1:114713909 = NRAS codon 61 (likely Q61K/L/R)
+- chr1:114713909 = NRAS codon 61 (likely Q61K/L/R)
 
-        NRAS mutations in CRC (~3-5% of cases)
+   - NRAS mutations in CRC (~3-5% of cases)
 
-        Predictive: Anti-EGFR resistance (similar to KRAS)
+   - Predictive: Anti-EGFR resistance (similar to KRAS)
 
-    chr3:179218294 = PIK3CA exon 9 (likely E545K)
+- chr3:179218294 = PIK3CA exon 9 (likely E545K)
 
-        Common in CRC (~15-20%)
+   - Common in CRC (~15-20%)
 
-        Associated with poor prognosis
+   - Associated with poor prognosis
 
-        Emerging therapeutic target (PI3K inhibitors)
+   - Emerging therapeutic target (PI3K inhibitors)
 
-    chr3:179226113 = PIK3CA exon 20 (likely H1047R)
+- chr3:179226113 = PIK3CA exon 20 (likely H1047R)
 
-        Most common PIK3CA mutation in CRC
+   - Most common PIK3CA mutation in CRC
 
-        Constitutively activates PI3K pathway
+   - Constitutively activates PI3K pathway
 
-        High VAF (69.8%) suggests clonal/dominant mutation
+   - High VAF (69.8%) suggests clonal/dominant mutation
 
 **Quality Assessment**
 
 All 3 variants look high-quality:
 
-    ✅ High depth (>500x)
+  ✅ High depth (>500x)
 
-    ✅ Good VAF (15-70%)
+  ✅ Good VAF (15-70%)
 
-    ✅ Strong strand balance (not strand-biased)
+  ✅ Strong strand balance (not strand-biased)
 
-    ✅ Excellent TLOD scores
+  ✅ Excellent TLOD scores
 
-    ✅ Passed all Mutect2 filters
+  ✅ Passed all Mutect2 filters
 
 **Key Implications for Your Patient**
 
-    NRAS mutation = Likely resistance to anti-EGFR therapies (cetuximab/panitumumab)
+- NRAS mutation = Likely resistance to anti-EGFR therapies (cetuximab/panitumumab)
 
-    Dual PIK3CA mutations = Strong PI3K pathway activation
+- Dual PIK3CA mutations = Strong PI3K pathway activation
 
-        Consider PI3K/mTOR inhibitors in clinical trials
+   - Consider PI3K/mTOR inhibitors in clinical trials
 
-        Associated with poorer outcomes
+   - Associated with poorer outcomes
 
-    No KRAS/BRAF mutations detected = May still benefit from EGFR inhibitors if NRAS is wild-type (but you have NRAS mutation)
+- No KRAS/BRAF mutations detected = May still benefit from EGFR inhibitors if NRAS is wild-type (but you have NRAS mutation)
+
 
 
 ### Folder structure: after running post-filtering variant.
