@@ -1745,6 +1745,7 @@ With such sparse data:
 Contamination = 1.6% ± 2.8%
 This means: -1.2% to +4.4% (contamination can't be negative, so 0% to 4.4%)
 ```
+```
 
 ### Why the High Error? Your Targeted Panel Limitations
 
@@ -1758,9 +1759,8 @@ Looking at the log warnings and dataset details:
 
   3. "No changepoint candidates were found"
 
-**Root Cause Analysis**:
 
-## **Root Cause Analysis:**
+### **Root Cause Analysis:**
 
 | Issue | Explanation | Impact |
 |-------|-------------|--------|
@@ -1795,7 +1795,7 @@ Looking at the log warnings and dataset details:
     │ • Accurate      │               │ • Guesswork     │
     └─────────────────┘               └─────────────────┘
 ```
-```
+
 
 ### Practical Implications for the Analysis
 
@@ -1830,7 +1830,7 @@ gatk FilterMutectCalls \
 echo -e "sample\tcontamination\terror\nDMBEL-EIDR-071\t0.02\t0.01" > conservative_contamination.table
 ```
 
-Statistical Reality Check
+### Statistical Reality Check
 
 With only ~1 data point:
 
@@ -1840,7 +1840,7 @@ With only ~1 data point:
 
   3. The 1.62% is more of a placeholder than a real measurement
 
-Calculation of confidence interval:
+**Calculation of confidence interval**:
 
 ```python
 # 95% confidence interval for contamination
@@ -1875,27 +1875,6 @@ Your targeted panel has unique characteristics:
 | **Clinical Impact** | Minimal | Variants >5% VAF unaffected | Low-VAF variants (<5%) need careful review |
 | **Recommendation** | - | Use but verify with orthogonal methods | Manual review of suspicious variants |
 
-**Is 1.6% contamination good or bad?**
-
-Context-dependent answer:
-
-| Context           | Interpretation                      |
-| ----------------- | ----------------------------------- |
-| WGS / WES         | Very good                           |
-| Tumor-only panels | Acceptable                          |
-| cfDNA             | Normal                              |
-| Amplicon panels   | Slightly on the high side, but fine |
-
-🔬 For **targeted cancer panels**, anything below:
-
-- 2–3% → acceptable
-
-- <1% → excellent
-
-- >5% → concerning
-
-👉 Your value is acceptable and usable
-
 
 ### Bottom line of this section
 
@@ -1912,8 +1891,8 @@ Your contamination analysis is severely limited by the small panel size. The 1.6
 **Final recommendation**: Use the contamination table as-is in `FilterMutectCalls`, but manually review any borderline filtered variants, especially in clinically important genes like KRAS, BRAF, and PIK3CA.
 
 
-
-
+---
+---
 
 
 ### Variant Filtering 👉 [07_filter_mutect_calls.sh](bash_scripts/07_filter_mutect_calls.sh)
