@@ -2359,15 +2359,15 @@ Coordinates: chr1:114,713,909
 
 **Technical Quality**:
 
-  ✅ Good depth (763x)
+  ✔ Good depth (763x)
 
-  ✅ Moderate VAF (15.4%) suggests subclonal or mixed population
+  ✔ Moderate VAF (15.4%) suggests subclonal or mixed population
 
-  ✅ Excellent strand balance (F1R2: 241/52, F2R1: 289/43)
+  ✔ Excellent strand balance (F1R2: 241/52, F2R1: 289/43)
 
-  ✅ High TLOD (323.24) = very confident call
+  ✔ High TLOD (323.24) = very confident call
     
-  ✅ Likely clonal or early driver
+  ✔ Likely clonal or early driver
 
 
 ✅ PIK3CA Exon 9 Mutation (chr3:179218294)
@@ -2398,17 +2398,17 @@ DP=1262
 
 **Technical Quality**:
 
-  ✅ Excellent depth (1262x)
+  ✔ Excellent depth (1262x)
 
-  ✅ Strong VAF (27.7%) suggests clonal mutation
+  ✔ Strong VAF (27.7%) suggests clonal mutation
 
-  ✅ Near-perfect strand balance
+  ✔ Near-perfect strand balance
 
-  ✅ Extremely high TLOD (1026) = virtually certain
+  ✔ Extremely high TLOD (1026) = virtually certain
     
-  ✅ Likely founder clone
+  ✔ Likely founder clone
    
-  ✅ Virtually impossible to be an artifact
+  ✔ Virtually impossible to be an artifact
 
 
 ✅ PIK3CA Exon 20 Mutation (chr3:179226113)
@@ -2441,13 +2441,13 @@ DP=559
 
 **Technical Quality**:
 
-  ✅ Good depth (559x)
+  ✔ Good depth (559x)
 
-  ✅ Very high VAF (69.8%) = likely LOH or amplification
+  ✔ Very high VAF (69.8%) = likely LOH or amplification
 
-  ✅ High TLOD (1387.91) = most confident call
+  ✔ High TLOD (1387.91) = most confident call
 
-  ✅ This matches your earlier pileup data perfectly!
+  ✔ This matches your earlier pileup data perfectly!
 
 
 ❌  chr3:179210338 - 85bp Deletion - The Removed Variant
@@ -2552,48 +2552,6 @@ Reason for removal: VAF < 2% threshold
 | **PON** | Absent | Not in panel of normals | Not seen in normal samples |
 | **AS_SB_TABLE** | 23,142\|63,331 | REF: 23f/142r, ALT: 63f/331r | Some strand imbalance for ALT |
 
-### Post-Filtering Results Summary
-
-Your post-filtering successfully removed 1 variant (chr3:179210338) while keeping 3 variants:
-
-  - chr1:114713909 - G>T (VAF=15.4%, DP=763)
-
-  - chr3:179218294 - G>A (VAF=27.7%, DP=1262)
-
-  - chr3:179226113 - C>G (VAF=69.8%, DP=559)
-
-The removed variant failed because its VAF (1.9%) was below your 2% threshold.
-
-**VCF Format Field Explanations**
-**GT:AD:AF:DP:F1R2:F2R1:FAD:SB**
-
-This is the FORMAT field describing how the variant was called in your sample:
-
-- GT (Genotype): 0/1 = heterozygous variant
-
-- AD (Allele Depth): Reads supporting reference and alternate alleles
-
-   - Format: REF,ALT (e.g., 648,115 = 648 ref reads, 115 alt reads)
-
-- AF (Allele Frequency): VAF = ALT/(REF+ALT)
-
-- DP (Depth): Total reads at this position
-
-- F1R2 & F2R1: Strand bias metrics
-
-   - F1R2: Forward reads supporting ref/alt (read1 in forward orientation)
-
-   - F2R1: Reverse reads supporting ref/alt (read2 in reverse orientation)
-
-   - Used to detect PCR artifacts/strand bias
-
-- FAD (Filtered Allele Depth): AD after filtering low-quality reads
-
-- SB (Strand Bias Table): ref_forward,ref_reverse,alt_forward,alt_reverse
-
-**TLOD (Tumor LOD Score)**
-
-What it is: Log-odds score comparing variant vs. no variant hypotheses
 
 **Key Implications for Your Patient**
 
