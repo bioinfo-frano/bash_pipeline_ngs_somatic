@@ -2257,9 +2257,28 @@ chr3	179226113	0.698	PASS
 
 ### Post-filter (amplicon-specific) 👉 [08_postfilter.sh](bash_scripts/08_postfilter.sh)
 
+In this step, it is applied amplicon-specific, conservative thresholds to ensure only the most reliable variants remain for clinical interpretation.
+
 **Documentation**
 
 - **bcftools**: <https://gatk.broadinstitute.org/hc/en-us/articles/360036888972-CalculateContamination>
+
+### Conservative Approach for Amplicon Data
+
+These are stricter thresholds than GATK's default:
+
+1. DP* ≥ 200 (minimum depth): 
+  
+  - *Depth (total reads at position)
+
+2. ALT* reads ≥ 10 (minimum supporting reads): 
+
+  - *ALT allele frequency
+
+3. VAF* ≥ 0.02 (minimum allele frequency): 
+
+  - *VAF = ALT/(REF+ALT)
+
 
 **Output files**
 
@@ -2286,6 +2305,26 @@ chr3	179218294	.	G	A	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=454,461|162,185;DP=
 chr3	179226113	.	C	G	.	PASS	AS_FilterStatus=SITE;AS_SB_TABLE=23,142|63,331;DP=589;ECNT=2;ECNTH=1;GERMQ=93;MBQ=41,41;MFRL=186,175;MMQ=60,60;MPOS=21;POPAF=1.34;ROQ=93;TLOD=1387.91	GT:AD:AF:DP:F1R2:F2R1:FAD:SB	0/1:165,394:0.698:559:68,145:75,182:151,350:23,142,63,331
 ```
 
+**Result summary**
+
+- Input: 4 PASS variants from FilterMutectCalls
+
+- Output: 3 variants after post-filtering
+
+- Removed: 1 variant (chr3:179210338) due to low VAF (1.9% < 2%)
+
+- See post-filtering in **Table 10**
+
+**Table 10**: Summary of postfiltered-variants
+
+| Variant | Gene | Change | VAF | Depth | TLOD | Passed? | Reason |
+|---------|------|--------|-----|-------|------|---------|--------|
+| **chr1:114713909** | **NRAS** | G>T | 15.4% | 763 | 323.24 | ✅ PASS | Meets all thresholds |
+| **chr3:179218294** | **PIK3CA** | G>A | 27.7% | 1262 | 1026.18 | ✅ PASS | Meets all thresholds |
+| **chr3:179226113** | **PIK3CA** | C>G | 69.8% | 559 | 1387.91 | ✅ PASS | Meets all thresholds |
+| **chr3:179210338** | **PIK3CA** | 85bp del>A | 1.9% | 2641 | 106.19 | ❌ REMOVED | **VAF < 2% threshold** |
+
+
 **Why 3 variants is the “right” answer**
 
 You started with 4 PASS calls from `FilterMutectCalls`.
@@ -2299,61 +2338,219 @@ Your post-filter thresholds **removed** 1 borderline subclonal variant:
 
 ### Biological interpretation of the 3 retained variants
 
-✅ chr1:114713909 (AF 15%)
+✅ NRAS Mutation (chr1:114713909)
 
-```bash
-DP=763
-AD=648,115
-AF=0.154
-TLOD=323
+```text
+Gene: NRAS
+Change: G > T (missense)
+AD=648,115 | VAF (AF): 15.4% | Depth (DP): 763 | TLOD: 323.24
+Coordinates: chr1:114,713,909
 ```
-**Interpretation**
 
-- Strong allelic signal
+**Clinical Significance**:
 
-- Balanced strand counts
+  - NRAS codon 61 mutation (most common: Q61K/R/L)
 
-- High TLOD
+  - Anti-EGFR therapy resistance - similar to KRAS mutations
 
-- Likely clonal or early driver
+  - In colorectal cancer, NRAS mutations occur in 3-5% of cases
 
-✅ chr3:179218294 (AF 27%)
+  - This mutation makes the tumor unlikely to respond to cetuximab/panitumumab
 
-```bash
+**Technical Quality**:
+
+  ✅ Good depth (763x)
+
+  ✅ Moderate VAF (15.4%) suggests subclonal or mixed population
+
+  ✅ Excellent strand balance (F1R2: 241/52, F2R1: 289/43)
+
+  ✅ High TLOD (323.24) = very confident call
+    
+  ✅ Likely clonal or early driver
+
+
+✅ PIK3CA Exon 9 Mutation (chr3:179218294)
+
+```text
+Gene: PIK3CA
+Change: G>A (missense)
+AD=915,347 | VAF: 27.7% | Depth: 1262 | TLOD: 1026.18
+Coordinates: chr3:179,218,294
 DP=1262
-AD=915,347
-AF=0.277
-TLOD=1026
 ```
-**Interpretation**
 
-- Very strong variant
+**Likely Amino Acid Change**:
 
-- Likely founder clone
+  - E545K (c.1633G>A) - most common in exon 9
 
-- Excellent depth and support
+  - E542K (c.1624G>A) - less common alternative
 
-- Virtually impossible to be an artifact
+**Clinical Impact**:
 
-✅ chr3:179226113 (AF 70%)
-```bash
+  - Activates PI3K/AKT/mTOR pathway
+
+  - Associated with poorer prognosis in CRC
+
+  - May confer resistance to anti-EGFR therapy
+
+  - Emerging therapeutic target (PI3K inhibitors like alpelisib)
+
+**Technical Quality**:
+
+  ✅ Excellent depth (1262x)
+
+  ✅ Strong VAF (27.7%) suggests clonal mutation
+
+  ✅ Near-perfect strand balance
+
+  ✅ Extremely high TLOD (1026) = virtually certain
+    
+  ✅ Likely founder clone
+   
+  ✅ Virtually impossible to be an artifact
+
+
+✅ PIK3CA Exon 20 Mutation (chr3:179226113)
+```text
+Gene: PIK3CA
+Change: C>G (missense)
+AD=165,394 | VAF: 69.8% | Depth: 559 | TLOD: 1387.91
+Coordinates: chr3:179,226,113
 DP=559
-AD=165,394
-AF=0.698
-TLOD=1387
 ```
-**Interpretation**
+
+**Likely Amino Acid Change**:
+
+  - H1047R (c.3140A>G) - most common PIK3CA mutation
+
+  - Or H1047L (c.3140A>T) if reference is wrong
+
+**Clinical Impact**
+
+  - Strongest PI3K pathway activation
+
+  - Clonal dominance (69.8% VAF suggests LOH or amplification)
+
+  - Associated with tumor aggressiveness
+
+  - Dual PIK3CA mutations (exon 9 + exon 20) = hyperactive pathway
 
 - Near-homozygous or LOH-associated
 
-- Possibly:
 
-  - copy-number loss of REF allele
+**Technical Quality**:
 
-  - strong clonal expansion
+  ✅ Good depth (559x)
 
-- Extremely strong confidence
+  ✅ Very high VAF (69.8%) = likely LOH or amplification
 
+  ✅ High TLOD (1387.91) = most confident call
+
+  ✅ This matches your earlier pileup data perfectly!
+
+
+❌  chr3:179210338 - 85bp Deletion - The Removed Variant
+
+```text
+Change: 85bp deletion → A
+VAF: 1.9% | Depth: 2641 | TLOD: 106.19
+Reason for removal: VAF < 2% threshold
+```
+
+**Interpretation**:
+
+  - Low VAF (1.9%) = subclonal or minor population
+
+  - Frameshift deletion = loss-of-function mutation
+
+  - High depth (2641x) suggests good coverage
+
+  - Borderline TLOD (106.19) **still indicates real variant**
+
+
+**Why Filtering Was Correct**:
+
+  1. Amplicon artifacts: PCR can create false indels at low frequencies
+
+  2. Clinical actionability: Variants <2% VAF are rarely actionable
+
+  3. Conservative approach: **Better to miss a subclonal variant than include a false positive**
+  
+  
+**Post-Filtering Threshold Rationale**
+
+| Threshold | Value | Rationale for Amplicon Data |
+|-----------|-------|------------------------------|
+| **Minimum Depth** | 200 | Ensures sufficient coverage for reliable VAF estimation |
+| **Minimum ALT Reads** | 10 | Filters variants supported by ≤10 reads (likely artifacts) |
+| **Minimum VAF** | 2% | Removes subclonal variants unlikely to be clinically actionable |
+| **Result** | 3/4 variants kept | Conservative but clinically relevant filtering |
+
+
+### Quality Assessment of Final Variants
+
+**Technical Validation Checklist**:
+
+| Metric | chr1:114713909 | chr3:179218294 | chr3:179226113 | Assessment |
+|--------|----------------|----------------|----------------|------------|
+| **Depth** | 763x | 1262x | 559x | ✅ All > 200x |
+| **ALT Reads** | 115 | 347 | 394 | ✅ All > 10 |
+| **VAF** | 15.4% | 27.7% | 69.8% | ✅ All > 2% |
+| **TLOD** | 323.24 | 1026.18 | 1387.91 | ✅ All >> 6.3 |
+| **Strand Bias** | Balanced | Balanced | Balanced | ✅ No bias |
+| **Base Quality** | MBQ=41,41 | MBQ=41,41 | MBQ=41,41 | ✅ Excellent |
+| **Mapping Quality** | MMQ=60,60 | MMQ=60,60 | MMQ=60,60 | ✅ Perfect |
+
+
+**Statistical Confidence**:
+
+  - **TLOD** > 100 for all variants = extremely confident
+
+  - **Population AF (POPAF)**: All > 1% = not common polymorphisms
+
+  - **Germline filter (GERMQ)**: All = 93 = low probability of being germline
+
+| Pattern | GERMQ | POPAF | Likely Interpretation |
+|---------|-------|-------|-----------------------|
+| **Somatic hotspot** | High (>60) | Low (<1%) | True somatic (GERMQ wrong) |
+| **Germline variant** | High (>60) | High (>1%) | Germline contamination |
+| **Novel somatic** | Low (<30) | Very low (<0.1%) | True novel somatic |
+| **Common SNP** | High (>60) | Very high (>5%) | Germline/common polymorphism |
+
+**Table: GATK INFO Field Interpretation**
+
+| INFO Field | Description | Ideal Range | Threshold | Significance |
+|------------|-------------|-------------|-----------|--------------|
+| **TLOD** | Tumor Log Odds (somatic vs artifact) | > 6.3 | > 100 = excellent<br>10-100 = good<br>6.3-10 = borderline | Primary confidence metric for somatic calls |
+| **POPAF** | Population AF (gnomAD frequency) | < 0.01 (1%) | > 0.01 = likely germline<br>0.001-0.01 = rare variant<br>< 0.001 = novel | Filters common polymorphisms |
+| **GERMQ** | Germline Quality (Phred-scaled) | < 30 | 0-30 = likely somatic<br>30-60 = ambiguous<br>> 60 = likely germline | Probability variant is germline |
+| **MBQ** | Median Base Quality (REF,ALT) | > 20 | REF>20, ALT>20 = good<br>ALT<20 = possible artifact | Low ALT base quality suggests sequencing error |
+| **MMQ** | Median Mapping Quality | > 50 | > 50 = excellent<br>30-50 = acceptable<br>< 30 = poor | Reads mapping confidently |
+| **MPOS** | Median Position in reads | 25-75% of read length | Near ends (<25%) = artifact prone<br>Middle = more reliable | Variants near read ends often artifacts |
+| **DP** | Total Depth | > 200 (amplicon) | < 50 = unreliable<br>50-200 = marginal<br>> 200 = good | Statistical power for variant calling |
+| **ECNT** | Event Count in haplotype | 1 | > 1 = multiple events nearby | May indicate complex variant or artifact |
+| **MFRL** | Median Fragment Length | Similar REF/ALT | Large difference = possible bias | Fragment length bias indicator |
+| **ROQ** | Read Orientation Quality | > 93 (Phred) | > 93 = high confidence<br>50-93 = moderate<br>< 50 = low | Confidence in strand orientation model |
+| **PON** | Panel of Normals | Absent | Present = filter out | Seen in normal samples = likely artifact |
+| **AS_SB_TABLE** | Strand Bias Table | Balanced | Extreme skew = artifact | Strand-specific artifacts |
+
+**Table: GATK INFO Field Interpretation with data examples**
+
+| INFO Field | Example Value | Interpretation | Clinical Impact |
+|------------|---------------|----------------|-----------------|
+| **TLOD** | 1387.91 | Exceptional confidence (>100) | High reliability for reporting |
+| **POPAF** | 5.60 | 5.6% population frequency | Borderline: could be germline or common variant |
+| **GERMQ** | 93 | High germline probability | But known somatic hotspots often have high GERMQ |
+| **MBQ** | 41,41 | Excellent base quality | Low chance of sequencing error |
+| **MMQ** | 60,60 | Perfect mapping quality | No alignment issues |
+| **MPOS** | 21 | Good (not at read ends) | Less likely to be artifact |
+| **DP** | 589 | Good depth for amplicon | Sufficient statistical power |
+| **ECNT** | 1 | Single event | Not in complex genomic region |
+| **MFRL** | 186,175 | Similar fragment lengths | No fragment length bias |
+| **ROQ** | 93 | High orientation confidence | Strand bias model confident |
+| **PON** | Absent | Not in panel of normals | Not seen in normal samples |
+| **AS_SB_TABLE** | 23,142\|63,331 | REF: 23f/142r, ALT: 63f/331r | Some strand imbalance for ALT |
 
 ### Post-Filtering Results Summary
 
@@ -2398,56 +2595,6 @@ This is the FORMAT field describing how the variant was called in your sample:
 
 What it is: Log-odds score comparing variant vs. no variant hypotheses
 
-**Interpretation**:
-
-- Higher TLOD = stronger evidence for variant
-
-- TLOD > 6.3 is typical Mutect2 threshold for somatic variants
-
-- Your variants have very high TLODs (323-1387), indicating excellent confidence
-
-- Formula: TLOD = log₁₀[P(data|variant)/P(data|no variant)]
-
-**Clinical Relevance for Colorectal Cancer**
-
-Let me map these to your targeted genes:
-
-- chr1:114713909 = NRAS codon 61 (likely Q61K/L/R)
-
-   - NRAS mutations in CRC (~3-5% of cases)
-
-   - Predictive: Anti-EGFR resistance (similar to KRAS)
-
-- chr3:179218294 = PIK3CA exon 9 (likely E545K)
-
-   - Common in CRC (~15-20%)
-
-   - Associated with poor prognosis
-
-   - Emerging therapeutic target (PI3K inhibitors)
-
-- chr3:179226113 = PIK3CA exon 20 (likely H1047R)
-
-   - Most common PIK3CA mutation in CRC
-
-   - Constitutively activates PI3K pathway
-
-   - High VAF (69.8%) suggests clonal/dominant mutation
-
-**Quality Assessment**
-
-All 3 variants look high-quality:
-
-  ✅ High depth (>500x)
-
-  ✅ Good VAF (15-70%)
-
-  ✅ Strong strand balance (not strand-biased)
-
-  ✅ Excellent TLOD scores
-
-  ✅ Passed all Mutect2 filters
-
 **Key Implications for Your Patient**
 
 - NRAS mutation = Likely resistance to anti-EGFR therapies (cetuximab/panitumumab)
@@ -2461,6 +2608,31 @@ All 3 variants look high-quality:
 - No KRAS/BRAF mutations detected = May still benefit from EGFR inhibitors if NRAS is wild-type (but you have NRAS mutation)
 
 
+**OPTIONAL: Quick alternative command to make post-filtering step stricter or looser based on INFO & FORMAT Fields**
+
+```bash
+bcftools view -f PASS SRR30536566.filtered.vcf.gz | \
+bcftools filter \
+  -i 'INFO/TLOD > 20 && FORMAT/DP >= 200 && FORMAT/AD[0:1] >= 10 && FORMAT/AF >= 0.02' \
+  -Oz -o SRR30536566.postfiltered_high_confidence.vcf.gz
+
+bcftools index SRR30536566.postfiltered_high_confidence.vcf.gz
+```
+
+-f PASS: Filter for variants where the FILTER column equals "PASS"
+-i: "Include" - keep variants matching these conditions
+-Oz -o: Creates compressed, indexed VCF
+
+🧪 **INFO/TLOD > 20**
+
+**Mutect2 default detection threshold** ≈ 6.3
+
+**TLOD > 20** = extremely strong somatic evidence
+
+✔ Excellent for removing borderline calls
+✔ Very safe
+
+⚠️ **Do NOT hard-filter on POPAF**, it is biologically harmful, unless your explicit goal is germline exclusion, not somatic confidence.
 
 ### Folder structure: after running post-filtering variant.
 
@@ -2489,9 +2661,11 @@ Genomics_cancer/
 │           └── SRR30536566.filtered.vcf.gz.filteringStats.tsv
 │           └── SRR30536566.filtered.vcf.gz
 │           └── SRR30536566.filtered.vcf.gz.tbi
-│           └── SRR30536566.postfiltered.vcf.gz
+│           └── SRR30536566.postfiltered.vcf.gz                             # It has same filters as 'high_confidence' but TLOD = 6.3 (default from Mutect2)
 │           └── SRR30536566.postfiltered.vcf.gz.csi
 │           └── SRR30536566.postfilter_summary.txt
+│           └── SRR30536566.postfiltered_high_confidence.vcf.gz             # It has same filters as 'postfiltered' but higher TLOD filter (TLOD > 20)
+│           └── SRR30536566.postfiltered_high_confidence.vcf.gz.csi
 │       └── annotation/        
 ├── scripts/
 │       └── 0_wget_gnomad_PoN.sh
@@ -2499,6 +2673,7 @@ Genomics_cancer/
 │       └── 01_qc.sh
 │       └── 02_trim.sh
 │       └── 03_align_&_bam_preprocess.sh
+│       └── 04_for_loop_gtf.sh
 │       └── 04_make_crc_7genes_bed.sh
 │       └── 04_mutect2.sh
 │       └── 05_learn_read_orientation_model.sh          
