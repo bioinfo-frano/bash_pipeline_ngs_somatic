@@ -2338,7 +2338,7 @@ Your post-filter thresholds **removed** 1 borderline subclonal variant:
 
 ### Biological interpretation of the 3 retained variants
 
-✅ NRAS Mutation (chr1:114713909)
+✅ **NRAS Mutation (chr1:114713909)**
 
 ```text
 Gene: NRAS
@@ -2370,7 +2370,7 @@ Coordinates: chr1:114,713,909
   ✔ Likely clonal or early driver
 
 
-✅ PIK3CA Exon 9 Mutation (chr3:179218294)
+✅ **PIK3CA Exon 9 Mutation (chr3:179218294)**
 
 ```text
 Gene: PIK3CA
@@ -2411,7 +2411,7 @@ DP=1262
   ✔ Virtually impossible to be an artifact
 
 
-✅ PIK3CA Exon 20 Mutation (chr3:179226113)
+✅ **PIK3CA Exon 20 Mutation (chr3:179226113)**
 ```text
 Gene: PIK3CA
 Change: C>G (missense)
@@ -2450,7 +2450,7 @@ DP=559
   ✔ This matches your earlier pileup data perfectly!
 
 
-❌  chr3:179210338 - 85bp Deletion - The Removed Variant
+❌  **chr3:179210338 - 85bp Deletion - The Removed Variant**
 
 ```text
 Change: 85bp deletion → A
@@ -2619,10 +2619,10 @@ Genomics_cancer/
 │           └── SRR30536566.filtered.vcf.gz.filteringStats.tsv
 │           └── SRR30536566.filtered.vcf.gz
 │           └── SRR30536566.filtered.vcf.gz.tbi
-│           └── SRR30536566.postfiltered.vcf.gz                             # It has same filters as 'high_confidence' but TLOD = 6.3 (default from Mutect2)
+│           └── SRR30536566.postfiltered.vcf.gz                          # It has same filters as 'high_confidence' but TLOD = 6.3 (default from Mutect2)
 │           └── SRR30536566.postfiltered.vcf.gz.csi
 │           └── SRR30536566.postfilter_summary.txt
-│           └── SRR30536566.postfiltered_high_confidence.vcf.gz             # It has same filters as 'postfiltered' but higher TLOD filter (TLOD > 20)
+│           └── SRR30536566.postfiltered_high_confidence.vcf.gz         # It has same filters as 'postfiltered' but higher TLOD filter (TLOD > 20)
 │           └── SRR30536566.postfiltered_high_confidence.vcf.gz.csi
 │       └── annotation/        
 ├── scripts/
