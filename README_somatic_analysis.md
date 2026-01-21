@@ -2824,7 +2824,7 @@ SRR30536566.postfiltered.vcf
 
 5. Press 'run'
 
-6. Filtering **columns** of table
+6. Showing **columns** of table
 
 - Aim: To display a table showing the minimum information required for the 3 variants found.
 
@@ -2864,14 +2864,50 @@ SRR30536566.postfiltered.vcf
 | **Transcript support level** | Transcript quality             |
 | **SIFT**                     | Functional prediction          |
 | **PolyPhen**                 | Functional prediction          |
+| **AF      **                 | Freq of existing variant in<br>1000 Genomes combined population |
 | **Clinical significance**    | Known pathogenicity            |
 | **Somatic status**           | Somatic vs germline            |
 | **Phenotype or disease**     | Cancer association             |
+| **Pubmed**                   | Pubmed ID publications<br> that cite existing variant |
 
 
-7. Filtering **rows** of table. In the following **Table 8**, see which categories to filter out based on **Consequence** and **IMPACT**
+### VEP online TABLE (partial view)
+
+| Uploaded variant   | Location                 | Allele    | Consequence                        | IMPACT         | Symbol | Gene            | etc ...
+|--------------------|--------------------------|-----------|------------------------------------|----------------|--------------------------|-------|
+| .                  | 	1:114713909-114713909   | T         | downstream_gene_variant            | MODIFIER       | CSDE1  |	ENSG00000009307 |-------|
+| .                  | 	1:114713909-114713909   | T         | missense_variant                   | MODERATE       | NRAS   |	ENSG00000213281 |-------|
+| .                  | 	1:114713909-114713909   | T         | intron_variant                     | MODIFIER       | NRAS   |	ENSG00000213281 |-------|
+| .                  | 	3:179218294-179218294   | A         | missense_variant                   | MODERATE       | PIK3CA |	ENSG00000121879 |-------|
+| .                  | 	3:179218294-179218294   | A         | non_coding_transcript_exon_variant | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
+| .                  | 	3:179218294-179218294   | A         | intron_variant                     | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
+| .                  | 	3:179218294-179218294   | A         | upstream_gene_variant              | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
+
+
+7. Filtering **rows** of table. In the following **Table 8**, see which categories to filter out based on:
+
+a) **Symbol**: **CSDE1** is **NOT** a called variant in the .vcf data — it is an **annotation artifact** caused by transcript proximity and regulatory overlap. Also, **CSDE1** is not in the panel of targeted sequencing genes! Therefore, the correct genes (as Symbol) are NRAS and PIK3CA.
+
+b) **Consequence**: VEP does **not only annotate genes with coding variants**.
+
+  - It also reports:
   
-**Table 8**: Categories of **Consequence** to consider for filtering out.
+    - upstream_gene_variant
+
+    - downstream_gene_variant
+    
+    - non_coding_transcript_exon_variant
+    
+    - intron_variant
+
+    - intergenic_variant
+
+    - regulatory_region_variant
+    
+    > This is **annotation multiplicity**, not multiple variants.
+
+
+**Table 8A**: Categories of **Consequence** to be filtered out / excluded (non-protein-altering)
 
 | Consequence                       | Label color (VEP) | Where is the variant?                  | Protein produced? | Biological meaning                                                                 | Clinical relevance (CRC) | Keep? |
 |----------------------------------|------------------|----------------------------------------|-------------------|------------------------------------------------------------------------------------|--------------------------|-------|
@@ -2884,6 +2920,19 @@ SRR30536566.postfiltered.vcf
 
 >**Important**: All variants above have IMPACT = MODIFIER because they do not change a protein sequence. For cancer driver discovery, these variants add noise rather than insight.
 
+**Table 8B**: Categories of **Consequence** to RETAIN (protein-altering, driver-relevant)
+
+| Consequence               | Label color (VEP) | Where is the variant?     | Protein produced?   | Biological meaning                                             | Clinical relevance (CRC)                               | Keep? |
+| ------------------------- | ----------------- | ------------------------- | ------------------- | -------------------------------------------------------------- | ------------------------------------------------------ | ----- |
+| **missense_variant**      | 🟡 Yellow         | Coding exon               | ✅ Yes               | Single amino acid substitution                                 | **Very high** (e.g. KRAS, NRAS, BRAF, PIK3CA hotspots) | ✅ Yes |
+| **stop_gained**           | 🔴 Red            | Coding exon               | ⚠️ Truncated        | Premature stop codon → shortened, often non-functional protein | **High** (tumor suppressor inactivation)               | ✅ Yes |
+| **frameshift_variant**    | 🔴 Red            | Coding exon               | ⚠️ Severely altered | Indel not multiple of 3 → reading frame disrupted              | **High** (loss of function)                            | ✅ Yes |
+| **inframe_deletion**      | 🟠 Orange         | Coding exon               | ✅ Altered           | Deletion of amino acids without frame disruption               | Moderate–High (depends on region)                      | ✅ Yes |
+| **splice_region_variant** | 🟠 Orange         | Near exon–intron boundary | ⚠️ Possibly altered | May affect splicing (but not canonical ±1/2 positions)         | Moderate (context-dependent)                           | ✅ Yes |
+
+
+c) **IMPACT**:  Filter based on "MODERATE"" and "HIGH". See **Table 9** about **IMPACT** column.
+
 **Table 9**: Meaning of categories **IMPACT**
 
 | IMPACT    | Definition (VEP)                                      | Typical consequences                         | Protein effect? | Clinical relevance in CRC | Keep? |
@@ -2894,7 +2943,7 @@ SRR30536566.postfiltered.vcf
 | MODIFIER  | No direct effect on protein                           | intronic, non-coding, intergenic             | None             | Not relevant              | ❌ No |
 
 
-8. Save the filtered table from VEP
+8. Save the filtered table files from VEP -> move files to `~/annotation/`
 
 | File                     | Purpose                   |
 | ------------------------ | ------------------------- |
@@ -2909,6 +2958,92 @@ SRR30536566.postfiltered.vcf
 - GVF
 
 - Raw consequence dumps
+
+### VEP online cannot filter columns
+
+VEP online can:
+
+| Action                       | VEP online |
+| ---------------------------- | ---------- |
+| Filter variants (rows)                | ✅ Yes      |
+| Filter by Gene / Consequence / IMPACT | ✅ Yes      |
+| Hide columns in browser               | ✅ Yes      |
+| Export only chosen columns            | ❌ No       |
+| Create clinical-style report          | ❌ No       |
+
+> The “**Show/Hide columns**” option only affects your browser view, not the downloaded files. VEP online is not suitable for clinical reporting.
+
+>Therefore, 
+>
+>  1. Filter/exclude rows based on Symbol/Consequence/IMPACT
+>
+>  2. Download VCF, VEP and TXT
+>
+>  3. Filter by column using bash
+
+
+### Creating SRR30536566_clinical_report.tsv
+
+### 1. Decide which columns matter clinically. 
+
+For a CRC somatic report, this is a clean and realistic column set:
+
+```text
+Location
+SYMBOL
+Gene
+Consequence
+IMPACT
+HGVSc
+HGVSp
+Protein_position
+Amino_acids
+Codons
+AF
+gnomADe_AF
+SIFT
+PolyPhen
+CLIN_SIG
+SOMATIC
+PUBMED
+ClinPred
+```
+
+### Verify column indices of .txt file
+
+```bash
+head -n1 my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER.txt | tr '\t' '\n' | nl
+
+Output:
+1	–#Uploaded_variation
+2	Location
+3	Allele
+...
+69	ClinPred
+70	PHENOTYPES
+71	OpenTargets_geneId
+72	OpenTargets_l2g
+73	REVEL
+```
+
+### 2. Extract selected columns (command line)
+
+The **.txt** file is tab-delimited, thus use `cut`
+
+```bash
+cd annotation/
+
+cut -f1,2,4,5,6,7,11,13,14,17,18,19,28,35,36,38,39,60,61,69,63 \
+  my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER.txt \
+  > SRR30536566_clinical_report.tsv
+```
+
+### 3. Add a clean header (optional but recommended)
+
+```bash
+sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc\tHGVSp\tProtein_pos\tAA_change\tCodons\tSIFT_prediction\tPolyPhen_prediction\tTumor_AF\tgnomAD_AF\tClinical_Significance\tSomatic\tPubMed\tClinPred/' \
+  SRR30536566_clinical_report.tsv > SRR30536566_clinical_report_clean_headers.tsv
+```
 
 ### Ideal final "clean" table (example)
 
