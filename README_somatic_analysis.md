@@ -2722,7 +2722,7 @@ The **only difference** is:
 
 ### Annotation using Ensembl VEP Online
 
-1. Decompress the post-filtered file `SRR30536566.postfiltered.vcf.gz` without deleting the original:
+1. **Decompress** the post-filtered file `SRR30536566.postfiltered.vcf.gz` without deleting the original:
 
 ```bash
 gunzip -k SRR30536566.postfiltered.vcf.gz
@@ -2829,7 +2829,9 @@ Under:
 
 6. **Observe** columns and rows from the table. See **Figure 7**
 
+
 ![Figure 7: Variant Effect Predictor results](images/Variant_Effect_Predictor_results.png)
+
 
 7. **Getting to know** the table before **cleaning**
 
@@ -2882,18 +2884,22 @@ Under:
 
 | Uploaded variant   | Location                 | Allele    | Consequence                        | IMPACT         | Symbol | Gene            | etc ...|
 |--------------------|--------------------------|-----------|------------------------------------|----------------|--------------------------|-------|
-| .                  | 	1:114713909-114713909   | T         | downstream_gene_variant            | MODIFIER       | CSDE1  |	ENSG00000009307 |-------|
-| .                  | 	1:114713909-114713909   | T         | missense_variant                   | MODERATE       | NRAS   |	ENSG00000213281 |-------|
-| .                  | 	1:114713909-114713909   | T         | intron_variant                     | MODIFIER       | NRAS   |	ENSG00000213281 |-------|
-| .                  | 	3:179218294-179218294   | A         | missense_variant                   | MODERATE       | PIK3CA |	ENSG00000121879 |-------|
-| .                  | 	3:179218294-179218294   | A         | non_coding_transcript_exon_variant | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
-| .                  | 	3:179226113-179226113   | A         | intron_variant                     | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
-| .                  | 	3:179226113-179226113   | A         | upstream_gene_variant              | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
+| .                  | 	1:114713909-114713909   | T         | downstream_gene_variant            | MODIFIER       | CSDE1  |	ENSG00000009307 |  |
+| .                  | 	1:114713909-114713909   | T         | missense_variant                   | MODERATE       | NRAS   |	ENSG00000213281 |  |
+| .                  | 	1:114713909-114713909   | T         | intron_variant                     | MODIFIER       | NRAS   |	ENSG00000213281 |  |
+| .                  | 	3:179218294-179218294   | A         | missense_variant                   | MODERATE       | PIK3CA |	ENSG00000121879 |  |
+| .                  | 	3:179218294-179218294   | A         | non_coding_transcript_exon_variant | MODIFIER       | PIK3CA |	ENSG00000121879 |  |
+| .                  | 	3:179226113-179226113   | A         | intron_variant                     | MODIFIER       | PIK3CA |	ENSG00000121879 |  |
+| .                  | 	3:179226113-179226113   | A         | upstream_gene_variant              | MODIFIER       | PIK3CA |	ENSG00000121879 |  |
 
 
-8. **Filter** **rows** from table. In the following **Table 8**, see which categories to filter out based on:
+8. **Filter** **rows** from VEP table. In the following **Table 8**, see which categories to filter out based on:
 
-a) **Symbol**: **CSDE1** is **NOT** a called variant in the .vcf data — it is an **annotation artifact** caused by transcript proximity and regulatory overlap. Also, **CSDE1** is not in the panel of targeted sequencing genes! Therefore, the correct genes (as Symbol) are NRAS and PIK3CA.
+a) **Symbol**: 
+
+- **CSDE1** is **NOT** a called variant in the .vcf data — it is an **annotation artifact** caused by transcript proximity and regulatory overlap. 
+
+- **CSDE1** is also not in the panel of targeted sequencing genes! Therefore, the correct genes (as Symbol) are NRAS and PIK3CA.
 
 b) **Consequence**: VEP does **not only annotate genes with coding variants**.
 
@@ -2901,11 +2907,13 @@ b) **Consequence**: VEP does **not only annotate genes with coding variants**.
   
     - upstream_gene_variant
 
-    - downstream_gene_variant
+    - downstream_gene_variant (82% of all annotated variants - see **Pie-Chart: Consequences (all)** in **Figure 7**)
     
     - 3_prime_UTR_variant
     
     - non_coding_transcript_exon_variant
+    
+    - non_coding_transcript_variant
     
     - intron_variant
 
@@ -2954,7 +2962,7 @@ c) **IMPACT**:  Filter based on "MODERATE"" and "HIGH". See **Table 9** about **
 
 9. **Save** the filtered table files from VEP -> move files to `~/annotation/`
 
-There should be downloaded at least **three** type of files:
+**Three** type of files to download from **VEP results**:
 
 | File                     | Purpose                   |
 | ------------------------ | ------------------------- |
@@ -2967,7 +2975,8 @@ There should be downloaded at least **three** type of files:
 > - Symbol: PIK3CA
 >
 > WAS FILTERED OUT. 
-> In addition, the "Clinical significance" of this variant was classified as "benign". Therefore, it was removed because from the variant annotation table because it doesn't show potential pathogenicity to drive CRC, hence, not considered for therapeutics.
+>
+> In addition, the "Clinical significance" of this variant was classified as "benign". Therefore, it was removed from the variant annotation table because it doesn't show potential pathogenicity to drive CRC, hence, not considered for therapeutics.
 > Thus, the variants with clinical relevance are finally two:
 >   - NRAS    1:114713909 G > T
 >   - PIK3CA  3:179218294 G > A
@@ -3095,11 +3104,7 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 
 This is apparently the end of the analysis. Once we reach this point, it is always advisable to validate the analysis in two ways:
 
-- Visualizing the found variants using **IGV**
-
-**Click** here 👉 [Part III – Somatic - IGV analysis](README_somatic_igv_analysis.md), where it will be possible to learn how to visualize the reads of variants, explained step-by-step.
-
-- Confirm the somatic mutations by orthogonal methods (see **Table 10**) 
+- **Confirm** the somatic mutations by orthogonal methods (see **Table 10**) 
 
 ### Table 10: Orthogonal validation methods of variants for clinical use
 
@@ -3141,4 +3146,10 @@ This is apparently the end of the analysis. Once we reach this point, it is alwa
 All reported somatic variants have been confirmed by orthogonal methods,
 supporting their validity for clinical decision-making. 
 ```
-* There were finally only two variants annotated but it would be recommended to check the third one (**chr3:179226113**) whether affected or not a non-coding region of the same PIK3CA. 
+* There were finally only two variants annotated but it would be recommended to check the third one (**chr3:179226113**) considering that the same PIK3CA might have this and/or more mutations. 
+
+- **Visualizing** the found variants using **IGV**
+
+**Click** here 👉 [Part III – Somatic - IGV analysis](README_somatic_igv_analysis.md), where it will be possible to learn how to visualize the reads of variants, explained step-by-step.
+
+End of Part II.
