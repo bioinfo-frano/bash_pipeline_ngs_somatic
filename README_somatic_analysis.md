@@ -2866,5 +2866,5 @@ SRR30536566.postfiltered.vcf
 
 **Interpretation:**
 All reported somatic variants have been confirmed by orthogonal methods,
-supporting their validity for clinical decision-making.
+supporting their validity for clinical decision-making. 
 ```
