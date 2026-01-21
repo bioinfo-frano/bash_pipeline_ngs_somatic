@@ -2880,8 +2880,8 @@ SRR30536566.postfiltered.vcf
 | .                  | 	1:114713909-114713909   | T         | intron_variant                     | MODIFIER       | NRAS   |	ENSG00000213281 |-------|
 | .                  | 	3:179218294-179218294   | A         | missense_variant                   | MODERATE       | PIK3CA |	ENSG00000121879 |-------|
 | .                  | 	3:179218294-179218294   | A         | non_coding_transcript_exon_variant | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
-| .                  | 	3:179218294-179218294   | A         | intron_variant                     | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
-| .                  | 	3:179218294-179218294   | A         | upstream_gene_variant              | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
+| .                  | 	3:179226113-179226113   | A         | intron_variant                     | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
+| .                  | 	3:179226113-179226113   | A         | upstream_gene_variant              | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
 
 
 7. Filtering **rows** of table. In the following **Table 8**, see which categories to filter out based on:
@@ -2895,6 +2895,8 @@ b) **Consequence**: VEP does **not only annotate genes with coding variants**.
     - upstream_gene_variant
 
     - downstream_gene_variant
+    
+    - 3_prime_UTR_variant
     
     - non_coding_transcript_exon_variant
     
@@ -2942,6 +2944,13 @@ c) **IMPACT**:  Filter based on "MODERATE"" and "HIGH". See **Table 9** about **
 | LOW       | Minimal protein effect                                | synonymous_variant                            | None             | Usually benign            | ❌ No |
 | MODIFIER  | No direct effect on protein                           | intronic, non-coding, intergenic             | None             | Not relevant              | ❌ No |
 
+>**Important** Due to the fact that rows were filtered based on "Consequence" and "Impact", removing all non-coding variants (e.g. intron_variant, non-coding transcripts, among others), the variant:
+> - Location: 3:179226113
+> - Symbol: PIK3CA
+> WAS FILTERED OUT. In addition, the "Clinical significance" of this variant was classified as "benign". Therefore, it was removed because from the variant annotation **.tsv** list because it doesn't show potential pathogenicity to drive CRC, hence, not considered for therapeutics.
+> Thus, the variants with clinical relevance are finally two:
+>   - NRAS    1:114713909 G > T
+>   - PIK3CA  3:179218294 G > A
 
 8. Save the filtered table files from VEP -> move files to `~/annotation/`
 
@@ -3033,25 +3042,39 @@ The **.txt** file is tab-delimited, thus use `cut`
 ```bash
 cd annotation/
 
-cut -f1,2,4,5,6,7,11,13,14,17,18,19,28,35,36,38,39,60,61,69,63 \
-  my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER.txt \
+cut -f1,2,4,5,6,7,11,13,14,17,18,19,21,22,24,28,30,35,36,38,39,60,61,69,63 \
+  my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.txt \
   > SRR30536566_clinical_report.tsv
 ```
 
 ### 3. Add a clean header (optional but recommended)
 
 ```bash
-sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc\tHGVSp\tProtein_pos\tAA_change\tCodons\tSIFT_prediction\tPolyPhen_prediction\tTumor_AF\tgnomAD_AF\tClinical_Significance\tSomatic\tPubMed\tClinPred/' \
-  SRR30536566_clinical_report.tsv > SRR30536566_clinical_report_clean_headers.tsv
+sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDNA\tHGVSp\tProtein_pos\tAA_change\tCodons\tREF_ALLELE\tUPLOADED_ALLELE\tSTRAND\tCanonical\tMANE_Select\tSIFT_prediction\tPolyPhen_prediction\tTumor_AF\tgnomAD_AF\tClinical_Significance\tSomatic\tPubMed\tClinPred/' \
+  SRR30536566_clinical_report.tsv > SRR30536566_clinical_report_improved.tsv
 ```
 
-### Ideal final "clean" table (example)
+### Ideal final "clean" table (examples)
 
 | Location       | Gene   | Consequence      | HGVSp        | Exon | AF    | gnomAD AF | Impact   | SIFT        | PolyPhen          | Clinical significance |
 | -------------- | ------ | ---------------- | ------------ | ---- | ----- | --------- | -------- | ----------- | ----------------- | --------------------- |
 | chr1:114713909 | NRAS   | missense_variant | p.Gln61Lys   | 3    | 0.154 | 0         | MODERATE | deleterious | probably_damaging | Pathogenic            |
 | chr3:179218294 | PIK3CA | missense_variant | p.Glu545Lys  | 9    | 0.277 | 0         | MODERATE | deleterious | probably_damaging | Pathogenic            |
-| chr3:179226113 | PIK3CA | missense_variant | p.His1047Arg | 20   | 0.698 | 0         | MODERATE | deleterious | probably_damaging | Pathogenic            |
+
+
+| Gene | Variant | Genomic Coordinate | Protein Change | Consequence | Exon | Tumor VAF | gnomAD AF | SIFT | PolyPhen | ClinVar | ClinPred | Evidence |
+|------|---------|-------------------|----------------|-------------|------|-----------|-----------|------|----------|---------|----------|----------|
+| **NRAS** | c.181C>A | 1:114713909 | p.Gln61Lys | Missense | 3/7 | 15.4% | 6.85e-7 | Deleterious | - | Pathogenic | 0.984 | ✅ Hotspot |
+| **PIK3CA** | c.1624G>A | 3:179218294 | p.Glu542Lys | Missense | 10/21 | 27.7% | - | Deleterious | Probably damaging | Likely pathogenic | 0.880 | ✅ Hotspot |
+
+
+### Final table 👉 [SRR30536566_clinical_report_improved.tsv](bash_scripts/SRR30536566_clinical_report_improved.tsv)
+
+| Variant | Location | Consequence | Impact | Symbol | Gene | Exon | HGVSc_cDNA | HGVSp | Protein_pos | AA_change | Codons | REF_ALLELE | UPLOADED_ALLELE | STRAND | Canonical | MANE_Select | SIFT_prediction | PolyPhen_prediction | Tumor_AF | gnomAD_AF | Clinical_Significance | Somatic | PubMed | ClinPred |
+|---------|----------|-------------|--------|--------|------|------|------------|-------|-------------|-----------|--------|------------|-----------------|--------|-----------|-------------|-----------------|---------------------|----------|-----------|------------------------|--------|--------|----------|
+| . | 1:114713909-114713909 | missense_variant | MODERATE | NRAS | ENSG00000213281 | 3/7 | ENST00000369535.5:c.181C>A | ENSP00000358548.4:p.Gln61Lys | 61 | Q/K | Caa/Aaa | G | G/T | -1 | YES | NM_002524.5 | deleterious_low_confidence(0.01) | - | - | 0.0000006849 | uncertain_significance,drug_response,pathogenic,likely_pathogenic | 0,1,1,1 | 2674680,8120410,12460918,16273091,16291983,17699718,18390968,18633438,18948947,20130576,20179705,20619739,20736745,21107323,21305640,21729679,21829508,22761467,23392294,23414587,23515407,23538902,23569304,23614898,25157968,26619011,19657110,19966803,23076151,26821351,37384296,39635441 | 0.98360139131546 |
+| . | 3:179218294-179218294 | missense_variant | MODERATE | PIK3CA | ENSG00000121879 | 10/21 | ENST00000263967.4:c.1624G>A | ENSP00000263967.3:p.Glu542Lys | 542 | E/K | Gaa/Aaa | G | G/A | 1 | YES | NM_006218.4 | deleterious(0) | probably_damaging(0.915) | - | - | likely_pathogenic,not_provided,pathogenic/likely_pathogenic,pathogenic | 0,0,1,1 | 30089490,26900293,20619739,25157968,26619011,35127508,15016963,15254419,15647370,15805248,16906227,18676830,18725974,19029981,19223544,19366826,19513541,19903786,20453058,21430269,22162582,22162589,22271473,23946963,22658544,21558396,22357840,24559322,26851524,33076847,25599672,34776939,33917394,33105631,32422573,28708103,29700339,34462366,37195967,36765720,23480694,29446767,34496175,38015548,37712948,40004036,39208653 | 0.880067884922028 |
+
 
 
 ### Orthogonal validation methods of variants for clinical use
