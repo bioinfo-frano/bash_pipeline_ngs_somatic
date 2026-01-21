@@ -2829,6 +2829,7 @@ Under:
 
 6. **Observe** columns and rows from the table. See **Figure 7**
 
+**Figure 7**: Variant Effect Predictor results
 
 ![Figure 7: Variant Effect Predictor results](images/Variant_Effect_Predictor_results.png)
 
@@ -2891,6 +2892,16 @@ Under:
 | .                  | 	3:179218294-179218294   | A         | non_coding_transcript_exon_variant | MODIFIER       | PIK3CA |	ENSG00000121879 |  |
 | .                  | 	3:179226113-179226113   | A         | intron_variant                     | MODIFIER       | PIK3CA |	ENSG00000121879 |  |
 | .                  | 	3:179226113-179226113   | A         | upstream_gene_variant              | MODIFIER       | PIK3CA |	ENSG00000121879 |  |
+
+| Uploaded variant | Location | Allele | Consequence | IMPACT | Symbol | Gene |
+|------------------|----------|--------|-------------|--------|--------|------|
+| . | 1:114713909-114713909 | T | downstream_gene_variant | MODIFIER | CSDE1 | ENSG00000009307 |
+| . | 1:114713909-114713909 | T | missense_variant | MODERATE | NRAS | ENSG00000213281 |
+| . | 1:114713909-114713909 | T | intron_variant | MODIFIER | NRAS | ENSG00000213281 |
+| . | 3:179218294-179218294 | A | missense_variant | MODERATE | PIK3CA | ENSG00000121879 |
+| . | 3:179218294-179218294 | A | non_coding_transcript_exon_variant | MODIFIER | PIK3CA | ENSG00000121879 |
+| . | 3:179226113-179226113 | A | intron_variant | MODIFIER | PIK3CA | ENSG00000121879 |
+| . | 3:179226113-179226113 | A | upstream_gene_variant | MODIFIER | PIK3CA | ENSG00000121879 |
 
 
 8. **Filter** **rows** from VEP table. In the following **Table 8**, see which categories to filter out based on:
@@ -3013,7 +3024,9 @@ VEP online can:
 
 See in **Figure 8** the final filtered annotated variantss table on the **Variant Effect Predictor results**
 
-![Figure 8: Variant Effect Predictor results: Filtered and annotated variants table ](images/Filtered_Variant_Effect_Predictor_results.png)
+**Figure 8**: VEP results: Filtered and annotated variants table
+
+![Figure 8: Variant Effect Predictor results: Filtered and annotated variants table](images/Filtered_Variant_Effect_Predictor_results.png)
 
 ### Creating SRR30536566_clinical_report.tsv
 
