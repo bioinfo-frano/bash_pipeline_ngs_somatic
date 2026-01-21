@@ -1103,7 +1103,7 @@ This information is learned from your sample, not from a database, enabling accu
 This is **not variant-specific**. It is a **global artifact model** for your library.
 
 **Figure 6**: Normal vs. Artifact Patterns
-  ![Figure 5: Read orientation: Normal vs Biased](images/Orientation_Read_bias.png)
+  ![Figure 6: Read orientation: Normal vs Biased](images/Orientation_Read_bias.png)
 
 **Table 6**: Interpretation Guide of Orientation bias
 
@@ -2732,17 +2732,17 @@ Output:
 SRR30536566.postfiltered.vcf
 ```
 
-2. Go to: 👉 <https://www.ensembl.org/Tools/VEP>
+2. **Go to**: 👉 <https://www.ensembl.org/Tools/VEP>
 
-2. Upload file: `SRR30536566.postfiltered.vcf`
+2. **Upload** file: `SRR30536566.postfiltered.vcf`
 
-3. Select options (important!)
+3. **Select** options (important!)
 
-  ✔ Species: Homo sapiens
+   ✔ Species: Homo sapiens
 
-  ✔ Assembly: GRCh38
+   ✔ Assembly: GRCh38
 
-4. Under:
+Under:
 
 🔹 **Identifiers**
 
@@ -2822,9 +2822,16 @@ SRR30536566.postfiltered.vcf
 | ClinPred | ✅ Check     | **Excellent**              |
 
 
-5. Press 'run'
+5. **Press** 'run'.
 
-6. Showing **columns** of table
+> You should click on the analysis in "green" and reach the **Variant Effect Predictor results**
+> Here, you'll see the **Summary statistics** and the table with a multiplicity of variants derived from the three post-filtered variants.
+
+6. **Observe** columns and rows from the table. See **Figure 7**
+
+![Figure 7: Variant Effect Predictor results](images/Variant_Effect_Predictor_results.png)
+
+7. **Getting to know** the table before **cleaning**
 
 - Aim: To display a table showing the minimum information required for the 3 variants found.
 
@@ -2864,16 +2871,16 @@ SRR30536566.postfiltered.vcf
 | **Transcript support level** | Transcript quality             |
 | **SIFT**                     | Functional prediction          |
 | **PolyPhen**                 | Functional prediction          |
-| **AF      **                 | Freq of existing variant in<br>1000 Genomes combined population |
+| **AF**                 | Freq of existing variant in<br>1000 Genomes combined population |
 | **Clinical significance**    | Known pathogenicity            |
 | **Somatic status**           | Somatic vs germline            |
 | **Phenotype or disease**     | Cancer association             |
 | **Pubmed**                   | Pubmed ID publications<br> that cite existing variant |
 
 
-### VEP online TABLE (partial view)
+### VEP online results TABLE (partial view)
 
-| Uploaded variant   | Location                 | Allele    | Consequence                        | IMPACT         | Symbol | Gene            | etc ...
+| Uploaded variant   | Location                 | Allele    | Consequence                        | IMPACT         | Symbol | Gene            | etc ...|
 |--------------------|--------------------------|-----------|------------------------------------|----------------|--------------------------|-------|
 | .                  | 	1:114713909-114713909   | T         | downstream_gene_variant            | MODIFIER       | CSDE1  |	ENSG00000009307 |-------|
 | .                  | 	1:114713909-114713909   | T         | missense_variant                   | MODERATE       | NRAS   |	ENSG00000213281 |-------|
@@ -2884,7 +2891,7 @@ SRR30536566.postfiltered.vcf
 | .                  | 	3:179226113-179226113   | A         | upstream_gene_variant              | MODIFIER       | PIK3CA |	ENSG00000121879 |-------|
 
 
-7. Filtering **rows** of table. In the following **Table 8**, see which categories to filter out based on:
+8. **Filter** **rows** from table. In the following **Table 8**, see which categories to filter out based on:
 
 a) **Symbol**: **CSDE1** is **NOT** a called variant in the .vcf data — it is an **annotation artifact** caused by transcript proximity and regulatory overlap. Also, **CSDE1** is not in the panel of targeted sequencing genes! Therefore, the correct genes (as Symbol) are NRAS and PIK3CA.
 
@@ -2944,15 +2951,10 @@ c) **IMPACT**:  Filter based on "MODERATE"" and "HIGH". See **Table 9** about **
 | LOW       | Minimal protein effect                                | synonymous_variant                            | None             | Usually benign            | ❌ No |
 | MODIFIER  | No direct effect on protein                           | intronic, non-coding, intergenic             | None             | Not relevant              | ❌ No |
 
->**Important** Due to the fact that rows were filtered based on "Consequence" and "Impact", removing all non-coding variants (e.g. intron_variant, non-coding transcripts, among others), the variant:
-> - Location: 3:179226113
-> - Symbol: PIK3CA
-> WAS FILTERED OUT. In addition, the "Clinical significance" of this variant was classified as "benign". Therefore, it was removed because from the variant annotation **.tsv** list because it doesn't show potential pathogenicity to drive CRC, hence, not considered for therapeutics.
-> Thus, the variants with clinical relevance are finally two:
->   - NRAS    1:114713909 G > T
->   - PIK3CA  3:179218294 G > A
 
-8. Save the filtered table files from VEP -> move files to `~/annotation/`
+9. **Save** the filtered table files from VEP -> move files to `~/annotation/`
+
+There should be downloaded at least **three** type of files:
 
 | File                     | Purpose                   |
 | ------------------------ | ------------------------- |
@@ -2960,13 +2962,23 @@ c) **IMPACT**:  Filter based on "MODERATE"" and "HIGH". See **Table 9** about **
 | **Tab-delimited (.txt)** | Teaching + tables         |
 | **VEP annotated VCF**    | Advanced reuse            |
 
-❌ You do NOT need
+>**Important** Due to the fact that rows were filtered based on "Consequence" and "Impact", removing all non-coding variants (e.g. intron_variant, non-coding transcripts, among others), the variant:
+> - Location: 3:179226113
+> - Symbol: PIK3CA
+>
+> WAS FILTERED OUT. 
+> In addition, the "Clinical significance" of this variant was classified as "benign". Therefore, it was removed because from the variant annotation table because it doesn't show potential pathogenicity to drive CRC, hence, not considered for therapeutics.
+> Thus, the variants with clinical relevance are finally two:
+>   - NRAS    1:114713909 G > T
+>   - PIK3CA  3:179218294 G > A
 
+❌ You do NOT need to save the table as:
 - JSON
 
 - GVF
 
 - Raw consequence dumps
+
 
 ### VEP online cannot filter columns
 
@@ -2975,7 +2987,7 @@ VEP online can:
 | Action                       | VEP online |
 | ---------------------------- | ---------- |
 | Filter variants (rows)                | ✅ Yes      |
-| Filter by Gene / Consequence / IMPACT | ✅ Yes      |
+| Filter by Gene / Consequence / IMPACT, Others | ✅ Yes      |
 | Hide columns in browser               | ✅ Yes      |
 | Export only chosen columns            | ❌ No       |
 | Create clinical-style report          | ❌ No       |
@@ -2990,6 +3002,9 @@ VEP online can:
 >
 >  3. Filter by column using bash
 
+See in **Figure 8** the final filtered annotated variantss table on the **Variant Effect Predictor results**
+
+![Figure 8: Variant Effect Predictor results: Filtered and annotated variants table ](images/Filtered_Variant_Effect_Predictor_results.png)
 
 ### Creating SRR30536566_clinical_report.tsv
 
@@ -3018,10 +3033,10 @@ PUBMED
 ClinPred
 ```
 
-### Verify column indices of .txt file
+### 2. Verify column indices of .txt file
 
 ```bash
-head -n1 my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER.txt | tr '\t' '\n' | nl
+head -n1 my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.txt | tr '\t' '\n' | nl
 
 Output:
 1	–#Uploaded_variation
@@ -3035,7 +3050,7 @@ Output:
 73	REVEL
 ```
 
-### 2. Extract selected columns (command line)
+### 3. Extract selected columns (command line)
 
 The **.txt** file is tab-delimited, thus use `cut`
 
@@ -3047,11 +3062,11 @@ cut -f1,2,4,5,6,7,11,13,14,17,18,19,21,22,24,28,30,35,36,38,39,60,61,69,63 \
   > SRR30536566_clinical_report.tsv
 ```
 
-### 3. Add a clean header (optional but recommended)
+### 4. Add a clean header (recommended)
 
 ```bash
 sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDNA\tHGVSp\tProtein_pos\tAA_change\tCodons\tREF_ALLELE\tUPLOADED_ALLELE\tSTRAND\tCanonical\tMANE_Select\tSIFT_prediction\tPolyPhen_prediction\tTumor_AF\tgnomAD_AF\tClinical_Significance\tSomatic\tPubMed\tClinPred/' \
-  SRR30536566_clinical_report.tsv > SRR30536566_clinical_report_improved.tsv
+  SRR30536566_clinical_report.tsv > SRR30536566_annotated_variants_clinical_report_improved.tsv
 ```
 
 ### Ideal final "clean" table (examples)
@@ -3076,8 +3091,17 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 | . | 3:179218294-179218294 | missense_variant | MODERATE | PIK3CA | ENSG00000121879 | 10/21 | ENST00000263967.4:c.1624G>A | ENSP00000263967.3:p.Glu542Lys | 542 | E/K | Gaa/Aaa | G | G/A | 1 | YES | NM_006218.4 | deleterious(0) | probably_damaging(0.915) | - | - | likely_pathogenic,not_provided,pathogenic/likely_pathogenic,pathogenic | 0,0,1,1 | 30089490,26900293,20619739,25157968,26619011,35127508,15016963,15254419,15647370,15805248,16906227,18676830,18725974,19029981,19223544,19366826,19513541,19903786,20453058,21430269,22162582,22162589,22271473,23946963,22658544,21558396,22357840,24559322,26851524,33076847,25599672,34776939,33917394,33105631,32422573,28708103,29700339,34462366,37195967,36765720,23480694,29446767,34496175,38015548,37712948,40004036,39208653 | 0.880067884922028 |
 
 
+## Final steps:
 
-### Orthogonal validation methods of variants for clinical use
+This is apparently the end of the analysis. Once we reach this point, it is always advisable to validate the analysis in two ways:
+
+- Visualizing the found variants using **IGV**
+
+**Click** here 👉 [Part III – Somatic - IGV analysis](README_somatic_igv_analysis.md), where it will be possible to learn how to visualize the reads of variants, explained step-by-step.
+
+- Confirm the somatic mutations by orthogonal methods (see **Table 10**) 
+
+### Table 10: Orthogonal validation methods of variants for clinical use
 
 | Method | Description | Pros | Cons | Best For | Clinical Validation Level |
 |--------|-------------|------|------|----------|---------------------------|
@@ -3090,7 +3114,7 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 | **FISH/CISH** | Fluorescence/chromogenic in situ hybridization | • DNA-level alterations<br>• Cell-by-cell analysis<br>• Detects amplifications/deletions<br>• Tissue architecture preserved | • Low throughput<br>• Expensive ($300-500)<br>• Requires specialized equipment | • Gene amplifications (HER2, MET)<br>• Gene fusions (ALK, ROS1)<br>• Chromosomal rearrangements | **Structural variant validation** (Standard for amplifications/fusions) |
 | **ddPCR** | Droplet digital PCR (Bio-Rad) | • Extreme sensitivity (0.001% VAF)<br>• Absolute quantification<br>• Minimal sample input<br>• High reproducibility | • Very expensive ($300-600)<br>• Limited plex (1-2 targets)<br>• Platform lock-in | • Ultra-low VAF detection<br>• Liquid biopsy validation<br>• Residual disease monitoring | **Ultra-sensitive monitoring** (Clinical trial assays) |
 
-### Recommended validation strategy for the 3 Variants:
+### Recommended validation strategy for the 3 Variants:*
 
 | Variant | Gene | VAF | Recommended Validation Method | Alternative Method | Clinical Priority |
 |---------|------|-----|------------------------------|-------------------|------------------|
@@ -3098,7 +3122,7 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 | **chr3:179218294** | PIK3CA (exon 9) | 27.7% | **Sanger Sequencing** | dPCR (if <20% VAF expected) | High (prognostic marker) |
 | **chr3:179226113** | PIK3CA (exon 20) | 69.8% | **Sanger Sequencing** | IHC (PI3K pathway activation) | High (therapy target) |
 
-### Clinical Report Integration:
+### Clinical Report Integration:*
 
 ```markdown
 ### **VALIDATION SECTION**
@@ -3117,3 +3141,4 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 All reported somatic variants have been confirmed by orthogonal methods,
 supporting their validity for clinical decision-making. 
 ```
+* There were finally only two variants annotated but it would be recommended to check the third one (**chr3:179226113**) whether affected or not a non-coding region of the same PIK3CA. 
