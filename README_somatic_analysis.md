@@ -2651,3 +2651,176 @@ Genomics_cancer/
         └── calculate_contamination.log                                 
         └── filter_mutect_calls.log                             
         └── SRR30536566.postfilter.log                                 
+```
+
+---
+---
+
+### Variant annotation (VEP-Online) 👉 [09_prepare_annotation.sh](bash_scripts/09_prepare_annotation.sh)
+
+There are basically two ways of perform variant annotation thorough VEP: Offline and Online. 
+
+**Disadvantage of 'offline VEP'**
+
+Offline VEP requires the installation on the computer of approximately:
+
+| Component          | Size          |
+| ------------------ | ------------- |
+| Cache (GRCh38)     | ~15–20 GB     |
+| FASTA              | ~3 GB         |
+| Plugins (optional) | 1–5 GB        |
+| Total              | **>20–25 GB** |
+
+**Advantage of 'online VEP'**
+
+Online VEP uses:
+
+- The same annotation engine
+
+- The same transcript models
+
+- The same databases (ClinVar, gnomAD, COSMIC*)
+
+- The same consequence ontology
+
+The **only difference** is:
+
+- where the computation runs
+
+**For ≤100 variants**, online VEP is:
+
+✔ faster
+
+✔ safer
+
+✔ more reproducible
+
+✔ easier to teach
+
+
+### Recommended annotation strategy for your pipeline
+
+| Number of variants | Recommended method     |
+| ------------------ | ---------------------- |
+| 1–100              | **Ensembl VEP online** |
+| 100–10,000         | VEP local or Docker    |
+| Large panels / WES | Local VEP / Funcotator |
+| Clinical pipeline  | Locked container       |
+
+
+
+**Documentation**
+
+- **Ensembl VEP**: 
+
+<https://onlinelibrary.wiley.com/doi/10.1002/humu.24298>
+
+<https://www.ensembl.org/info/docs/tools/vep/vep_formats.html#input>
+
+<https://www.ensembl.org/info/docs/tools/vep/vep_formats.html#output>
+
+### Annotation using Ensembl VEP Online
+
+1. Decompress the post-filtered file `SRR30536566.postfiltered.vcf.gz` without deleting the original:
+
+```bash
+gunzip -k SRR30536566.postfiltered.vcf.gz
+
+Uutput:
+
+SRR30536566.postfiltered.vcf
+```
+
+2. Go to: 👉 <https://www.ensembl.org/Tools/VEP>
+
+2. Upload file: `SRR30536566.postfiltered.vcf`
+
+3. Select options (important!)
+
+✔ Species: Homo sapiens
+
+✔ Assembly: GRCh38
+
+4. Under:
+
+🔹 **Identifiers**
+
+| Option             | Your choice  | Verdict     |
+| ------------------ | ------------ | ----------- |
+| Gene Symbol        | ✅ Check     | **Correct** |
+| Transcript version | ✅ Check     | **Correct** |
+| Protein            | ✅ Check     | **Correct** |
+| HGVS               | ✅ Check     | **Correct** |
+👉 These are core annotations. Keep them.
+
+
+🔹 **Variants and frequency data**
+
+| Option                                 | Your choice | Verdict     |
+| -------------------------------------- | ----------- | ----------- |
+| Frequency data for co-located variants | ✅ Yes       | **Correct** |
+| PubMed IDs for citations               | ✅ Check     | **Good**    |
+
+🔹 **Frequency data sources**
+
+| Option                   | Your choice     | Verdict                              |
+| ------------------------ | --------------- | ------------------------------------ |
+| 1000G global MAF         | ✅ Check         | **Good**                             |
+| 1000G continental AF     | ⛔ (not checked) | **Fine** (optional)                  |
+| gnomAD exomes AF         | ✅ Check         | **Strongly recommended**             |
+| gnomAD genomes AF        | ✅ Check         | **Strongly recommended**             |
+| AllOfUs AF               | ⛔ (not checked) | **OK to skip** (still evolving)      |
+| gnomAD SV AF             | ❌ Disable       | **Correct** (you’re not calling SVs) |
+| Include flagged variants | ✅ Check         | **Correct**                          |
+| Paralogue variants       | ❌ Disable       | **Correct**                          |
+| Open Targets Genetics    | ✅ Check         | **Good (lightweight & useful)**      |
+
+🔹 **Transcript annotation**
+
+| Option                                  | Your choice    | Verdict                  |
+| ----------------------------------------| -------------- | ------------------------ |
+| Transcript biotype                      | ✅ Check       | **Correct**              |
+| Exon/intron numbers                     | ✅ Check       | **OK** (not critical)    |  ⛔ (unchecked) 
+| Transcript support level (TSL)          | ✅ Check       | **Strongly recommended** |
+| APPRIS                                  | ✅ Check       | **Strongly recommended** |
+| MANE                                    | ✅ Check       | **Excellent**            |
+| Identify Canonical transcripts          | ✅ Check       | **Essential**            |
+
+👉 This is a gold-standard transcript setup.
+
+🔹 **Protein annotation**
+
+| Option  | Your choice | Verdict                    |
+| ------- | ----------- | -------------------------- |
+| mutfunc | ❌ Disable   | **Correct** (heavy + slow) |
+
+
+🔹 **Functional effect**
+
+| Option | Your choice | Verdict     |
+| ------ | ----------- | ----------- |
+| IntAct | ❌ Disable   | **Correct** |
+
+
+🔹 **Phenotype & citations**
+
+| Option                     | Your choice   | Verdict       |
+| -------------------------- | ------------- | ------------- |
+| Phenotypes                 | ✅ Check       | **Very good** |
+| Gene Ontology              | ⛔ (unchecked) | **Fine**      |
+| Clinical significance (SV) | ❌ Disable     | **Correct**   |
+
+
+🔹 **Predictions**
+
+| Option   | Your choice | Verdict                    |
+| -------- | ----------- | -------------------------- |
+| dbNSFP   | ❌ Disable   | **Correct** (huge & heavy) |
+| CADD     | ❌ Disable   | **Correct**                |
+| REVEL    | ✅ Check     | **Excellent**              |
+| ClinPred | ✅ Check     | **Excellent**              |
+
+
+5. Press 'run'
+
+
