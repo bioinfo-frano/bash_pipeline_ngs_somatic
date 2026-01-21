@@ -2824,6 +2824,97 @@ SRR30536566.postfiltered.vcf
 
 5. Press 'run'
 
+6. Filtering columns of table
+
+- Aim: To display a table showing the minimum information required for the 3 variants found.
+
+- The columns should answer these 5 questions:
+
+  1. Where is the variant?
+
+  2. What gene and transcript does it affect?
+
+  3. What is the molecular consequence?
+
+  4. How damaging is it predicted to be?
+
+  5. Is it known / clinically relevant?
+
+**Recommended column set**: These columns should always be kept.
+
+| Column                       | Why it matters                 |
+| ---------------------------- | ------------------------------ |
+| **Uploaded variant**         | Traceability to original input |
+| **Location**                 | Genomic coordinate             |
+| **Allele**                   | ALT allele                     |
+| **Symbol**                   | Gene name (NRAS, PIK3CA)       |
+| **Gene**                     | Stable Ensembl gene ID         |
+| **Consequence**              | Variant type (missense, etc.)  |
+| **Impact**                   | VEP impact classification      |
+| **Feature**                  | Transcript ID                  |
+| **Biotype**                  | protein_coding confirmation    |
+| **Exon**                     | Exon number                    |
+| **HGVSc**                    | cDNA-level change              |
+| **HGVSp**                    | Protein-level change           |
+| **Protein position**         | Codon location                 |
+| **Amino acids**              | REF → ALT                      |
+| **Codons**                   | Nucleotide change              |
+| **Canonical**                | Prefer main transcript         |
+| **MANE SELECT**              | Clinical transcript            |
+| **Transcript support level** | Transcript quality             |
+| **SIFT**                     | Functional prediction          |
+| **PolyPhen**                 | Functional prediction          |
+| **Clinical significance**    | Known pathogenicity            |
+| **Somatic status**           | Somatic vs germline            |
+| **Phenotype or disease**     | Cancer association             |
+
+
+7. Filtering rows of table. In the following **Table 8**, filter rows based **Consequence** and **IMPACT**
+  
+**Table 8**: Categories of **Consequence** to consider for filtering out.
+
+| Consequence                       | Label color (VEP) | Where is the variant?                  | Protein produced? | Biological meaning                                                                 | Clinical relevance (CRC) | Keep? |
+|----------------------------------|------------------|----------------------------------------|-------------------|------------------------------------------------------------------------------------|--------------------------|-------|
+| non_coding_transcript_exon_variant | 🟢 Green          | Exon of a non-coding transcript        | ❌ No              | Exonic variant, but transcript does not encode a protein (e.g. lncRNA, antisense)  | None for drivers         | ❌ No |
+| non_coding_transcript_variant     | 🟢 Green          | Anywhere in a non-coding transcript    | ❌ No              | Variant in non-coding RNA; no amino acid or protein-level effect                    | None for drivers         | ❌ No |
+| intron_variant                    | 🔵 Blue           | Intron of a protein-coding gene        | ❌ No              | Removed during splicing; not affecting canonical splice sites                       | Very unlikely            | ❌ No |
+| NMD_transcript_variant            | 🔴 Red            | Transcript predicted to undergo NMD    | ❌ No (unstable)   | Transcript likely degraded via nonsense-mediated decay; variant itself is indirect | None for drivers         | ❌ No |
+
+>**Important**: All variants above have IMPACT = MODIFIER because they do not change a protein sequence. For cancer driver discovery, these variants add noise rather than insight.
+
+**Table 9**: Meaning of categories **IMPACT**
+
+| IMPACT    | Definition (VEP)                                      | Typical consequences                         | Protein effect? | Clinical relevance in CRC | Keep? |
+|-----------|-------------------------------------------------------|----------------------------------------------|------------------|---------------------------|-------|
+| HIGH      | Truncates or abolishes protein function               | stop_gained, frameshift_variant, splice_acceptor/donor | Severe           | Rare but important        | ✅ Yes |
+| MODERATE  | Changes amino acid sequence                           | missense_variant, inframe_insertion/deletion | Functional change| **Major CRC drivers**     | ✅ Yes |
+| LOW       | Minimal protein effect                                | synonymous_variant                            | None             | Usually benign            | ❌ No |
+| MODIFIER  | No direct effect on protein                           | intronic, non-coding, intergenic             | None             | Not relevant              | ❌ No |
+
+
+8. Save the filtered table from VEP
+
+| File                     | Purpose                   |
+| ------------------------ | ------------------------- |
+| **VCF**                  | Archive + reproducibility |
+| **Tab-delimited (.txt)** | Teaching + tables         |
+| **VEP annotated VCF**    | Advanced reuse            |
+
+❌ You do NOT need
+
+- JSON
+
+- GVF
+
+- Raw consequence dumps
+
+### Ideal final "clean" table (example)
+
+| Location       | Gene   | Consequence      | HGVSp        | Exon | AF    | gnomAD AF | Impact   | SIFT        | PolyPhen          | Clinical significance |
+| -------------- | ------ | ---------------- | ------------ | ---- | ----- | --------- | -------- | ----------- | ----------------- | --------------------- |
+| chr1:114713909 | NRAS   | missense_variant | p.Gln61Lys   | 3    | 0.154 | 0         | MODERATE | deleterious | probably_damaging | Pathogenic            |
+| chr3:179218294 | PIK3CA | missense_variant | p.Glu545Lys  | 9    | 0.277 | 0         | MODERATE | deleterious | probably_damaging | Pathogenic            |
+| chr3:179226113 | PIK3CA | missense_variant | p.His1047Arg | 20   | 0.698 | 0         | MODERATE | deleterious | probably_damaging | Pathogenic            |
 
 
 ### Orthogonal Validation Methods for Clinical Use
@@ -2846,8 +2937,6 @@ SRR30536566.postfiltered.vcf
 | **chr1:114713909** | NRAS | 15.4% | **Sanger Sequencing** | Pyrosequencing | High (therapy decision) |
 | **chr3:179218294** | PIK3CA (exon 9) | 27.7% | **Sanger Sequencing** | dPCR (if <20% VAF expected) | High (prognostic marker) |
 | **chr3:179226113** | PIK3CA (exon 20) | 69.8% | **Sanger Sequencing** | IHC (PI3K pathway activation) | High (therapy target) |
-
-*Report: "Confirmed by orthogonal method"
 
 ### Clinical Report Integration:
 
