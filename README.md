@@ -41,12 +41,12 @@ Perform a **somatic DNA-NGS analysis** following GATK best practices:
 This repository is designed to grow. Planned additions include:
 
 - **Part III – Somatic - IGV analysis**
-- Learn how to use IGV using the outputted .BAM and .BAI files from 👉 [Part II – Somatic analysis](README_somatic_analysis.md)
-- Check potential artifacts and confirm annotated variants
+  - Learn how to use IGV using the outputted .BAM and .BAI files from 👉 [Part II – Somatic analysis](README_somatic_analysis.md)
+  - Check potential artifacts and confirm annotated variants
 
 - **Part IV – Germline analysis**
-- Additional datasets
-- Pipeline optimizations and best practices
+  - Additional datasets
+  - Pipeline optimizations and best practices
 
 ---
 
