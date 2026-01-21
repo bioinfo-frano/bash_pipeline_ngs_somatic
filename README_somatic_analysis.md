@@ -2657,9 +2657,9 @@ Genomics_cancer/
 ---
 ---
 
-### Variant annotation (VEP-Online) 👉 [09_prepare_annotation.sh](bash_scripts/09_prepare_annotation.sh)
+### Variant annotation 👉 VEP-Online
 
-There are basically two ways of perform variant annotation thorough VEP: Offline and Online. 
+There are basically two ways of performing variant annotation thorough VEP: **Offline** and **Online**. 
 
 **Disadvantage of 'offline VEP'**
 
@@ -2699,7 +2699,7 @@ The **only difference** is:
 ✔ easier to teach
 
 
-### Recommended annotation strategy for your pipeline
+### Recommended annotation strategy depending on the amount of variants
 
 | Number of variants | Recommended method     |
 | ------------------ | ---------------------- |
@@ -2712,7 +2712,7 @@ The **only difference** is:
 
 **Documentation**
 
-- **Ensembl VEP**: 
+- **Ensembl VEP Online**: 
 
 <https://onlinelibrary.wiley.com/doi/10.1002/humu.24298>
 
@@ -2727,7 +2727,7 @@ The **only difference** is:
 ```bash
 gunzip -k SRR30536566.postfiltered.vcf.gz
 
-Uutput:
+Output:
 
 SRR30536566.postfiltered.vcf
 ```
@@ -2738,9 +2738,9 @@ SRR30536566.postfiltered.vcf
 
 3. Select options (important!)
 
-✔ Species: Homo sapiens
+  ✔ Species: Homo sapiens
 
-✔ Assembly: GRCh38
+  ✔ Assembly: GRCh38
 
 4. Under:
 
@@ -2824,7 +2824,7 @@ SRR30536566.postfiltered.vcf
 
 5. Press 'run'
 
-6. Filtering columns of table
+6. Filtering **columns** of table
 
 - Aim: To display a table showing the minimum information required for the 3 variants found.
 
@@ -2869,7 +2869,7 @@ SRR30536566.postfiltered.vcf
 | **Phenotype or disease**     | Cancer association             |
 
 
-7. Filtering rows of table. In the following **Table 8**, filter rows based **Consequence** and **IMPACT**
+7. Filtering **rows** of table. In the following **Table 8**, see which categories to filter out based on **Consequence** and **IMPACT**
   
 **Table 8**: Categories of **Consequence** to consider for filtering out.
 
@@ -2879,6 +2879,8 @@ SRR30536566.postfiltered.vcf
 | non_coding_transcript_variant     | 🟢 Green          | Anywhere in a non-coding transcript    | ❌ No              | Variant in non-coding RNA; no amino acid or protein-level effect                    | None for drivers         | ❌ No |
 | intron_variant                    | 🔵 Blue           | Intron of a protein-coding gene        | ❌ No              | Removed during splicing; not affecting canonical splice sites                       | Very unlikely            | ❌ No |
 | NMD_transcript_variant            | 🔴 Red            | Transcript predicted to undergo NMD    | ❌ No (unstable)   | Transcript likely degraded via nonsense-mediated decay; variant itself is indirect | None for drivers         | ❌ No |
+
+> A NMD transcript variant (Nonsense-Mediated Decay transcript variant) refers to a mRNA molecule that contains a Premature Termination Codon (PTC), making it a target for destruction by the cell's quality control system, NMD, to prevent the production of faulty, truncated proteins. 
 
 >**Important**: All variants above have IMPACT = MODIFIER because they do not change a protein sequence. For cancer driver discovery, these variants add noise rather than insight.
 
@@ -2917,7 +2919,7 @@ SRR30536566.postfiltered.vcf
 | chr3:179226113 | PIK3CA | missense_variant | p.His1047Arg | 20   | 0.698 | 0         | MODERATE | deleterious | probably_damaging | Pathogenic            |
 
 
-### Orthogonal Validation Methods for Clinical Use
+### Orthogonal validation methods of variants for clinical use
 
 | Method | Description | Pros | Cons | Best For | Clinical Validation Level |
 |--------|-------------|------|------|----------|---------------------------|
@@ -2930,7 +2932,7 @@ SRR30536566.postfiltered.vcf
 | **FISH/CISH** | Fluorescence/chromogenic in situ hybridization | • DNA-level alterations<br>• Cell-by-cell analysis<br>• Detects amplifications/deletions<br>• Tissue architecture preserved | • Low throughput<br>• Expensive ($300-500)<br>• Requires specialized equipment | • Gene amplifications (HER2, MET)<br>• Gene fusions (ALK, ROS1)<br>• Chromosomal rearrangements | **Structural variant validation** (Standard for amplifications/fusions) |
 | **ddPCR** | Droplet digital PCR (Bio-Rad) | • Extreme sensitivity (0.001% VAF)<br>• Absolute quantification<br>• Minimal sample input<br>• High reproducibility | • Very expensive ($300-600)<br>• Limited plex (1-2 targets)<br>• Platform lock-in | • Ultra-low VAF detection<br>• Liquid biopsy validation<br>• Residual disease monitoring | **Ultra-sensitive monitoring** (Clinical trial assays) |
 
-### Recommended Validation Strategy for Your 3 Variants:
+### Recommended validation strategy for the 3 Variants:
 
 | Variant | Gene | VAF | Recommended Validation Method | Alternative Method | Clinical Priority |
 |---------|------|-----|------------------------------|-------------------|------------------|
