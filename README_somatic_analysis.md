@@ -355,7 +355,7 @@ Variant Annotation (VEP, ClinVar, COSMIC, SnpEff)
 ```
 ---
 
-## V. Bash shell scripting for NGS - DNA Somatic analysis
+## V. Bash shell scripting for NGS-DNA Somatic analysis
 
 According to [freeCodeCamp](https://www.freecodecamp.org/news/bash-scripting-tutorial-linux-shell-script-and-command-line-for-beginners/), a bash script "is a file containing a sequence of commands that are executed by the bash program line by line. It allows you to perform a series of actions, such as navigating to a specific directory, creating a folder, and launching a process using the command line. By saving these commands in a script, you can repeat the same sequence of steps multiple times and execute them by running the script". If you are new to bash scripting, the following [YouTube](https://www.youtube.com/watch?v=tK9Oc6AEnR4&t=614s) video tutorial, also from **freeCodeCamp**, provides a clear step-by-step introduction.
 
