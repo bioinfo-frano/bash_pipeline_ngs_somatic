@@ -8,7 +8,7 @@
 - [Bioinformatics overview: step-by-step somatic DNA-NGS pipeline](#bioinformatics-overview-step-by-step-somatic-dna-ngs-pipeline)
 - [Bash shell scripting for NGS - Somatic analysis](#v-bash-shell-scripting-for-ngs---somatic-analysis)
 - [Quality control (QC)](#quality-control-qc--01_qcsh)
-- [Trimming + QC](#trimming-and-quality-control-qc)
+- [Trimming + QC](#trimming-+-qc--02_trimsh)
   
 4. [Read Alignment and Pre-processing](#read-alignment-and-pre-processing)
 5. [Somatic Variant Calling (Mutect2)](#somatic-variant-calling-mutect2)
