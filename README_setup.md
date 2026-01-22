@@ -53,7 +53,7 @@ III.	Find & download small-sized FASTQ datasets
 
 IV. Download a reference human genome and indexes
 
-V.	Bash shell scripting
+V.	Bash shell scripting for NGS - DNA analysis
 
 
 ## Purpose
