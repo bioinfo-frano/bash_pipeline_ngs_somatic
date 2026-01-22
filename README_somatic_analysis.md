@@ -7,9 +7,8 @@
 - [Introduction](#introduction)
 - [Bioinformatics overview: step-by-step somatic DNA-NGS pipeline](#bioinformatics-overview-step-by-step-somatic-dna-ngs-pipeline)
 - [Bash shell scripting for NGS - Somatic analysis](#v-bash-shell-scripting-for-ngs---somatic-analysis)
-
-   - [Quality control (QC)](#quality-control-qc--01_qcsh)
-   - [Trimming + QC](#trimming-+-qc)
+- [Quality control (QC)](#quality-control-qc--01_qcsh)
+- [Trimming + QC](#trimming-and-quality-control-qc)
   
 4. [Read Alignment and Pre-processing](#read-alignment-and-pre-processing)
 5. [Somatic Variant Calling (Mutect2)](#somatic-variant-calling-mutect2)
@@ -359,6 +358,9 @@ According to [freeCodeCamp](https://www.freecodecamp.org/news/bash-scripting-tut
 
 Each step in the somatic DNA-NGS analysis is implemented as a **separate bash script**. You do not need to write these scripts from scratch; they are provided and can be downloaded and executed directly on your computer.
 
+---
+---
+
 ## Quality control (QC) 👉 [01_qc.sh](bash_scripts/01_qc.sh)
 
 ### FastQC & MultiQC
@@ -425,10 +427,11 @@ The red warning is because FastQC compares your distribution to a unimodal model
   ![Figure 4: Per sequence GC content](images/FastQ_Per_Sequence_GC_content.png)
 
 ---
+---
 
-### Trimming + QC 👉 [02_trim.sh](bash_scripts/02_trim.sh)
+## Trimming + QC 👉 [02_trim.sh](bash_scripts/02_trim.sh)
 
-#### Cutadapt
+### Cutadapt
 
 **Documentation for Cutadapt**:
 
@@ -498,7 +501,7 @@ This indicates **high-quality data** with minimal loss of informative reads.
 ---
 ---
 
-### Alignment and BAM preprocessing 👉 [03_align_&_bam_preprocess.sh](bash_scripts/03_align_&_bam_preprocess.sh)
+## Alignment and BAM preprocessing 👉 [03_align_&_bam_preprocess.sh](bash_scripts/03_align_&_bam_preprocess.sh)
 
 **Documentation**: 
 
@@ -724,7 +727,7 @@ The pipeline is fully GATK-compatible and intentionally uses a legacy samtools v
 ---
 ---
 
-### Variant calling with Mutect2 👉 [04_mutect2.sh](bash_scripts/04_mutect2.sh)
+## Variant calling with Mutect2 👉 [04_mutect2.sh](bash_scripts/04_mutect2.sh)
 
 **Variant calling** is the bioinformatics process of identifying positions in a sequenced genome where the sample’s DNA differs from a reference genome. See examples of variant types related to various diseases and in cancer in **Table 4** and **Table 5**.
 
@@ -1053,7 +1056,7 @@ Genomics_cancer/
 ---
 ---
 
-### Orientation bias model 👉 [05_learn_read_orientation_model.sh](bash_scripts/05_learn_read_orientation_model.sh)
+## Orientation bias model 👉 [05_learn_read_orientation_model.sh](bash_scripts/05_learn_read_orientation_model.sh)
 
 **Documentation**
 
@@ -1298,7 +1301,7 @@ The ^@ characters are normal binary padding from the tar format. They are not co
 ---
 ---
 
-### GetPileupSummaries 👉 [06a_get_pileup_summaries.sh](bash_scripts/06a_get_pileup_summaries.sh)
+## GetPileupSummaries 👉 [06a_get_pileup_summaries.sh](bash_scripts/06a_get_pileup_summaries.sh)
 
 **Documentation**
 
@@ -1659,7 +1662,7 @@ elif total_reads >= 50: "Reliable"
 ---
 ---
 
-### Contamination estimation 👉 [06b_calculate_contamination.sh](bash_scripts/06b_calculate_contamination.sh)
+## Contamination estimation 👉 [06b_calculate_contamination.sh](bash_scripts/06b_calculate_contamination.sh)
 
 **Documentation**
 
@@ -1921,7 +1924,7 @@ Your contamination analysis is severely limited by the small panel size. The 1.6
 ---
 
 
-### Variant Filtering 👉 [07_filter_mutect_calls.sh](bash_scripts/07_filter_mutect_calls.sh)
+## Variant Filtering 👉 [07_filter_mutect_calls.sh](bash_scripts/07_filter_mutect_calls.sh)
 
 **Documentation**
 
@@ -2305,7 +2308,7 @@ chr3	179226113	0.698	PASS
 ---
 
 
-### Post-filter (amplicon-specific) 👉 [08_postfilter.sh](bash_scripts/08_postfilter.sh)
+## Post-filter (amplicon-specific) 👉 [08_postfilter.sh](bash_scripts/08_postfilter.sh)
 
 In this step, it is applied amplicon-specific, conservative thresholds to ensure only the most reliable variants remain for clinical interpretation.
 
@@ -2727,7 +2730,7 @@ Genomics_cancer/
 ---
 ---
 
-### Variant annotation 👉 VEP-Online
+## Variant annotation 👉 VEP-Online
 
 There are basically two ways of performing variant annotation thorough VEP: **Offline** and **Online**. 
 
