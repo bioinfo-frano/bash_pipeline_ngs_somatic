@@ -8,23 +8,22 @@
 - [Bioinformatics overview: step-by-step somatic DNA-NGS pipeline](#bioinformatics-overview-step-by-step-somatic-dna-ngs-pipeline)
 - [Bash shell scripting for NGS - Somatic analysis](#v-bash-shell-scripting-for-ngs---somatic-analysis)
 - [Quality control (QC)](#quality-control-qc--01_qcsh)
-
 - [Trimming + QC](#trimming--qc--02_trimsh)
 - [Alignment and BAM preprocessing](#alignment-and-bam-preprocessing--03_align__bam_preprocesssh)
-- [Folder structure: From QC – Trimming/Filtering – Alignment + BAM preprocessing](#folder-structure-from-qc---trimmingfiltering---alignment--bam-preprocessing)
+    - [Folder structure: From QC – Trimming/Filtering – Alignment + BAM preprocessing](#folder-structure-from-qc---trimmingfiltering---alignment--bam-preprocessing)
 - [Variant calling with Mutect2](#variant-calling-with-mutect2--04_mutect2sh)
-- [Essential files for somatic variant calling with GATK Mutect2](#essential-files-for-somatic-variant-calling-with-gatk-mutect2)
-- [Folder structure: Input & Output files of Mutect2 Variant calling](#folder-structure-input--output-files-of-mutect2-variant-calling)
+    - [Essential files for somatic variant calling with GATK Mutect2](#essential-files-for-somatic-variant-calling-with-gatk-mutect2)
+    - [Folder structure: Input & Output files of Mutect2 Variant calling](#folder-structure-input--output-files-of-mutect2-variant-calling)
 - [Orientation bias model](#orientation-bias-model--05_learn_read_orientation_modelsh)
 - [GetPileupSummaries](#getpileupsummaries--06a_get_pileup_summariessh)
 - [Contamination estimation](#contamination-estimation--06b_calculate_contaminationsh)
 - [Variant filtering](#variant-filtering--07_filter_mutect_callssh)
-- [VCF file analysis](#5-vcf-file-analysis)
+    - [Inspection of VCF file variants](#5-inspection-of-vcf-file-variants)
 - [Post-filter (amplicon-specific)](#post-filter-amplicon-specific--08_postfiltersh)
-- [Folder structure: after running Post-filter variant](#folder-structure-after-running-post-filter-variant)
+    - [Folder structure: after running Post-filter variant](#folder-structure-after-running-post-filter-variant)
 - [Variant annotation](#variant-annotation--vep-online)
-- [Creating SRR30536566 clinical report](#creating-srr30536566_clinical_reporttsv)
-- [Folder structure: after VEP-Online variant annotation](#folder-structure-after-vep-online-variant-annotation)
+    - [Creating SRR30536566 clinical report](#creating-srr30536566_clinical_reporttsv)
+    - [Folder structure: after VEP-Online variant annotation](#folder-structure-after-vep-online-variant-annotation)
 
 
 
@@ -2087,15 +2086,15 @@ INFO Fields (Variant-level):
 
 - TLOD: Tumor Log-Odds or Tumor LOD Score (log odds of variant being real)
 
-### 5. VCF File Analysis
+### 5. Inspection of VCF file variants
 
 From `SRR30536566.filtered.vcf.gz`
 
 **Variant 1: chr1:114705278 - germline**
 
 ```bash
-CHROM  POS       REF ALT QUAL FILTER  INFO
-chr1   114705278 A   G   .    PASS    POPAF=4.31;TLOD=1676.10
+CHROM  POS       REF ALT QUAL FILTER      INFO
+chr1   114705278 A   G   .    germline    POPAF=4.31;TLOD=1676.10
 
 FORMAT: GT:AD:AF:DP:F1R2:F2R1:FAD:SB
 SAMPLE: 0/1:517,496:0.487:1013:210,216:241,212:473,448:217,300,227,269
