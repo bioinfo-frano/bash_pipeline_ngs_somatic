@@ -4,21 +4,15 @@
 
 ## Table of Contents
 
-1. [Introduction](##Introduction)
-2. [Dataset Description](#dataset-description)
-3. [Pipeline Overview](#pipeline-overview)
-4. [Read Alignment and Pre-processing](#read-alignment-and-pre-processing)
-5. [Somatic Variant Calling (Mutect2)](#somatic-variant-calling-mutect2)
-6. [Mutect2 Filtering and QC](#mutect2-filtering-and-qc)
-7. [Post-filtering Strategy](#post-filtering-strategy)
-8. [Variant Annotation with VEP](#variant-annotation-with-vep)
-   - [Row Filtering by Consequence and IMPACT](#row-filtering-by-consequence-and-impact)
-   - [Transcript Selection (Canonical / MANE)](#transcript-selection-canonical--mane)
-9. [Clinical Interpretation of Variants](#clinical-interpretation-of-variants)
-10. [Final Clinical Report](#final-clinical-report)
-11. [Limitations and Caveats](#limitations-and-caveats)
-12. [Exam-style Questions](#exam-style-questions)
-13. [References](#references)
+- [Introduction](#introduction)
+- [Creating the computing environment for NGS - DNA analysis](#creating-the-computing-environment-for-ngs---dna-analysis)
+    - [I. Create a specific conda environment called DNA](#i-create-a-specific-conda-environment-called-dna)
+    - [II. Create the folder structure](#ii-create-the-folder-structure)
+    - [III. Find & download small-sized FASTQ datasets for cancer gene panels](#iii-find--download-small-sized-fastq-datasets-for-cancer-gene-panels)
+    - [IV. Download a reference human genome (GRCh38) and indexes](#iv-download-a-reference-human-genome-grch38-and-indexes)
+- [Reference Genome](#reference-genome)
+- [(Final) Folder structure: before starting the analysis](#final-folder-structure-before-starting-the-analysis)
+
 
 
 ## Introduction
@@ -56,7 +50,7 @@ IV. Download a reference human genome and indexes
 V.	Bash shell scripting for NGS - DNA analysis
 
 
-## Purpose
+## Purpose of this tutorial
 
 This repository provides a minimal, reproducible guide for running a DNA-seq (NGS) analysis pipeline locally, from FASTQ files to variant calling and annotation, using modest computational resources.
 
