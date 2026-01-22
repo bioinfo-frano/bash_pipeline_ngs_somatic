@@ -5,8 +5,8 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Bioinformatics overview: step-by-step somatic DNA-NGS pipeline](#bioinformatics-overview-step-by-step-somatic-dna-ngs-pipeline)
-- [Bash shell scripting for NGS - Somatic analysis](#v-bash-shell-scripting-for-ngs---somatic-analysis)
+- [Bioinformatics overview: step-by-step somatic NGS-DNA pipeline](#bioinformatics-overview-step-by-step-somatic-ngs-dna-pipeline)
+- [Bash shell scripting for NGS-DNA Somatic analysis](#v-bash-shell-scripting-for-ngs-dna-somatic-analysis)
 - [Quality control (QC)](#quality-control-qc--01_qcsh)
 - [Trimming + QC](#trimming--qc--02_trimsh)
 - [Alignment and BAM preprocessing](#alignment-and-bam-preprocessing--03_align__bam_preprocesssh)
@@ -32,7 +32,7 @@
 Building on [Part I – Preparation & setup](README_setup.md), this tutorial demonstrates how to analyze DNA NGS data on a **local workstation or laptop**.
 The workflow is designed to run under **limited computational resources**, and has been tested on macOS (Intel-based MacBook Pro). With minor adaptations, the same approach can be applied to Linux systems.
 
-In **Part I**, steps I–IV were completed. In this part, we focus on **bash scripting** to implement a complete somatic DNA-NGS analysis pipeline.
+In **Part I**, steps I–IV were completed. In this part, we focus on **bash scripting** to implement a complete somatic NGS-DNA analysis pipeline.
 
 ### Completed steps
 
@@ -48,9 +48,9 @@ V.	Bash shell scripting (**covered in this part**)
 
 ---
 
-## Types of DNA-NGS analysis
+## Types of NGS - DNA analysis
 
-When investigating genomic alterations, two main categories of DNA-NGS analysis are commonly performed:
+When investigating genomic alterations, two main categories of NGS-DNA analysis are commonly performed:
 
 ### 1. Somatic analysis 
 
@@ -97,7 +97,7 @@ In many clinical settings, tumor (somatic) and matched normal (germline) samples
 
 ## Bioinformatic workflows/pipelines
 
-DNA-NGS analysis can be automated using several workflow approaches, including:
+NGS-DNA analysis can be automated using several workflow approaches, including:
 - Bash scripting
 - Nextflow
 - Snakemake
@@ -301,11 +301,11 @@ The reason GATK has separate, specialized tools for somatic vs. germline analysi
 >**Bottom line**: The biological and technical differences between inherited and acquired mutations are so profound that specialized tools with different statistical foundations are necessary. GATK provides both because in clinical cancer genomics, you typically need to perform **both analyses** on the same patient—somatic for treatment targets, germline for inherited risk assessment.
 
 
-In this **Part II**, bash scripting is used to perform a **somatic DNA-NGS analysis** on the small FASTQ dataset introduced in [Part I – Preparation & setup](README_setup.md) and find SNP and Indels using GATK toolkit.
+In this **Part II**, bash scripting is used to perform a **somatic NGS-DNA analysis** on the small FASTQ dataset introduced in [Part I – Preparation & setup](README_setup.md) and find SNP and Indels using GATK toolkit.
 
 ---
 
-## Bioinformatics overview: step-by-step somatic DNA-NGS pipeline
+## Bioinformatics overview: step-by-step somatic NGS-DNA pipeline
 
 ### Preprocessing
 
@@ -355,11 +355,11 @@ Variant Annotation (VEP, ClinVar, COSMIC, SnpEff)
 ```
 ---
 
-## V. Bash shell scripting for NGS - Somatic analysis
+## V. Bash shell scripting for NGS - DNA Somatic analysis
 
 According to [freeCodeCamp](https://www.freecodecamp.org/news/bash-scripting-tutorial-linux-shell-script-and-command-line-for-beginners/), a bash script "is a file containing a sequence of commands that are executed by the bash program line by line. It allows you to perform a series of actions, such as navigating to a specific directory, creating a folder, and launching a process using the command line. By saving these commands in a script, you can repeat the same sequence of steps multiple times and execute them by running the script". If you are new to bash scripting, the following [YouTube](https://www.youtube.com/watch?v=tK9Oc6AEnR4&t=614s) video tutorial, also from **freeCodeCamp**, provides a clear step-by-step introduction.
 
-Each step in the somatic DNA-NGS analysis is implemented as a **separate bash script**. You do not need to write these scripts from scratch; they are provided and can be downloaded and executed directly on your computer.
+Each step in the somatic NGS-DNA analysis is implemented as a **separate bash script**. You do not need to write these scripts from scratch; they are provided and can be downloaded and executed directly on your computer.
 
 ---
 ---
