@@ -5,7 +5,7 @@
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Bioinformatics overview: step-by-step somatic DNA-NGS pipeline](#Bioinformatics-overview:-step-by-step-somatic-DNA-NGS-pipeline)
+2. [Bioinformatics overview: step-by-step somatic DNA-NGS pipeline](#bioinformatics-overview:-step-by-step-somatic-DNA-NGS-pipeline)
 3. [Pipeline Overview](#pipeline-overview)
 4. [Read Alignment and Pre-processing](#read-alignment-and-pre-processing)
 5. [Somatic Variant Calling (Mutect2)](#somatic-variant-calling-mutect2)
