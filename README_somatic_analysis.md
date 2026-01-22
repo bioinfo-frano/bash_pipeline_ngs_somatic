@@ -4,9 +4,9 @@
 
 ## Table of Contents
 
-[Introduction](#introduction)
-[Bioinformatics overview: step-by-step somatic DNA-NGS pipeline](#bioinformatics-overview-step-by-step-somatic-dna-ngs-pipeline)
-[Bash scripting](#v-bash-scripting)
+- [Introduction](#introduction)
+- [Bioinformatics overview: step-by-step somatic DNA-NGS pipeline](#bioinformatics-overview-step-by-step-somatic-dna-ngs-pipeline)
+- [Bash scripting](#v-bash-scripting)
 4. [Read Alignment and Pre-processing](#read-alignment-and-pre-processing)
 5. [Somatic Variant Calling (Mutect2)](#somatic-variant-calling-mutect2)
 6. [Mutect2 Filtering and QC](#mutect2-filtering-and-qc)
