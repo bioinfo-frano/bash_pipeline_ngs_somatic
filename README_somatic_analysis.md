@@ -2,6 +2,25 @@
 
 #  Part II – Somatic analysis (Bash pipelines)
 
+## Table of Contents
+
+1. [Introduction](##Introduction)
+2. [Dataset Description](#dataset-description)
+3. [Pipeline Overview](#pipeline-overview)
+4. [Read Alignment and Pre-processing](#read-alignment-and-pre-processing)
+5. [Somatic Variant Calling (Mutect2)](#somatic-variant-calling-mutect2)
+6. [Mutect2 Filtering and QC](#mutect2-filtering-and-qc)
+7. [Post-filtering Strategy](#post-filtering-strategy)
+8. [Variant Annotation with VEP](#variant-annotation-with-vep)
+   - [Row Filtering by Consequence and IMPACT](#row-filtering-by-consequence-and-impact)
+   - [Transcript Selection (Canonical / MANE)](#transcript-selection-canonical--mane)
+9. [Clinical Interpretation of Variants](#clinical-interpretation-of-variants)
+10. [Final Clinical Report](#final-clinical-report)
+11. [Limitations and Caveats](#limitations-and-caveats)
+12. [Exam-style Questions](#exam-style-questions)
+13. [References](#references)
+
+
 ## Introduction
 
 Building on [Part I – Preparation & setup](README_setup.md), this tutorial demonstrates how to analyze DNA NGS data on a **local workstation or laptop**.
@@ -3171,11 +3190,11 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 
 
 > ⚠️ **Disclaimer** for students / scientist in general:
-This workflow is for educational and research purposes and is not CAP/CLIA certified for clinical diagnostics, which means is not legally valid for patient care. 
+This tutorial demonstrates a research-grade somatic variant analysis pipeline using tumor-only sequencing data. While biologically meaningful variants can be identified, the workflow is not validated for clinical diagnostics and should not be used for patient care without CAP/CLIA-certified confirmation and matched normal samples.
 **Clinical reports** require laboratory validation, standardized nomenclature, and medical oversight.
 CLIA (Clinical Laboratory Improvement Amendments – USA): Governs how clinical lab tests are validated and reported.
 CAP (College of American Pathologists): Accredits clinical laboratories and enforces standardized pipelines, QC, documentation, sign-off.
-This tutorial demonstrates a research-grade somatic variant analysis pipeline using tumor-only sequencing data. While biologically meaningful variants can be identified, the workflow is not validated for clinical diagnostics and should not be used for patient care without CAP/CLIA-certified confirmation and matched normal samples.
+
 
 ## Final steps:
 

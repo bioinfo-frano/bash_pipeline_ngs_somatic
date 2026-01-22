@@ -2,6 +2,25 @@
 
 # Part I – Preparation & setup
 
+## Table of Contents
+
+1. [Introduction](##Introduction)
+2. [Dataset Description](#dataset-description)
+3. [Pipeline Overview](#pipeline-overview)
+4. [Read Alignment and Pre-processing](#read-alignment-and-pre-processing)
+5. [Somatic Variant Calling (Mutect2)](#somatic-variant-calling-mutect2)
+6. [Mutect2 Filtering and QC](#mutect2-filtering-and-qc)
+7. [Post-filtering Strategy](#post-filtering-strategy)
+8. [Variant Annotation with VEP](#variant-annotation-with-vep)
+   - [Row Filtering by Consequence and IMPACT](#row-filtering-by-consequence-and-impact)
+   - [Transcript Selection (Canonical / MANE)](#transcript-selection-canonical--mane)
+9. [Clinical Interpretation of Variants](#clinical-interpretation-of-variants)
+10. [Final Clinical Report](#final-clinical-report)
+11. [Limitations and Caveats](#limitations-and-caveats)
+12. [Exam-style Questions](#exam-style-questions)
+13. [References](#references)
+
+
 ## Introduction
 
 Many students and scientists who want to learn genomic data analysis independently often rely on personal computers (e.g., laptops) with limited computational resources. These constraints can make it challenging to run secondary and tertiary NGS analyses starting from FASTQ files through variant annotation.
