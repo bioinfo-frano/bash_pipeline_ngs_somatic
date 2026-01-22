@@ -2084,7 +2084,7 @@ INFO Fields (Variant-level):
 
 - ROQ: Read Orientation Quality
 
-- TLOD: Tumor Log-Odds or Tumor LOD Score (log odds of variant being real)
+- TLOD: Tumor Log-Odds or Tumor LOD Score (log odds of variant being real). It is a statistical score that represents the confidence that a detected variant signal in a tumor sample is a true somatic mutation rather than just background noise or a sequencing artifact. Variants with a TLOD score below a certain threshold are typically filtered out, as they are considered to have insufficient evidence of presence in the tumor
 
 ### 5. Inspection of VCF file variants
 
@@ -2155,58 +2155,6 @@ SAMPLE: 0/1:0,89:0.990:89:0,49:0,38:0,89:0,0,0,89
 
   - Verdict: Germline variant (not somatic) ❌
   
-**Another variant**
-
- Let’s interpret real variants from your VCF (`SRR30536566.filtered.vcf.gz`)
-
-Example 1 — High-AF “germline” variant (AF: allele fraction)
-```bash
-chr1 114705278 A>G FILTER=germline
-AF=0.487
-DP=1013
-TLOD=1676.10
-```
-**Interpretation**
-
-- ~50% allele fraction
-
-- Very strong signal
-
-- Extremely **high TLOD** (Tumor Log Odds score in somatic variant calling: It is a statistical score that represents the confidence that a detected variant signal in a tumor sample is a true somatic mutation rather than just background noise or a sequencing artifact.Variants with a TLOD score below a certain threshold are typically filtered out, as they are considered to have insufficient evidence of presence in the tumor.)
-
-
-**Key Findings from Your Examples**:
-
-1. `chr1:114705278` - GERMLINE variant
-
-  - AF = 0.487  +  GT = 0/1  →  Germline heterozygous (expected VAF ~0.5%)
-
-  - GERMQ = 1   →  very low germline error.
-    
-    - High GERMQ → unlikely germline
-    
-    - Low GERMQ → very likely germline
-    
-    - GERMQ=1 means Mutect2 is confident this is germline
-
-  - Population allele frequency (POPAF) is high → POPAF = 4.31 (%)
-
-2. `chr19:49635871` - Sequencing artifact
-
-  - Extreme strand bias (all ALT in reverse reads)
-
-  - Low base quality
-
-  - Low allele fraction
-
-3. `chr19` variants - Germline contamination
-
-  - In panel of normals
-
-  - Very high allele fractions
-
-  - Likely from normal tissue in biopsy
-
 
 
 **Why you see MANY germline calls**
@@ -2228,6 +2176,8 @@ Mutect2 therefore:
 - Removes them in filtering
 
 ✔ This is exactly correct behavior.
+
+
 
 ### Which variants PASS?
 
