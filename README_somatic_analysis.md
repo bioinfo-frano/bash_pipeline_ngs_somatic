@@ -6,9 +6,10 @@
 
 - [Introduction](#introduction)
 - [Bioinformatics overview: step-by-step somatic DNA-NGS pipeline](#bioinformatics-overview-step-by-step-somatic-dna-ngs-pipeline)
-- [Bash shell scripting for NGS - somatic analysis](#v-bash-shell-scripting-for-ngs---somatic-analysis)
+- [Bash shell scripting for NGS - Somatic analysis](#v-bash-shell-scripting-for-ngs---somatic-analysis)
 
    - [Quality control (QC)](#quality-control-qc--01_qcsh)
+   - [Trimming + QC](#trimming-+-qc)
   
 4. [Read Alignment and Pre-processing](#read-alignment-and-pre-processing)
 5. [Somatic Variant Calling (Mutect2)](#somatic-variant-calling-mutect2)
@@ -352,15 +353,15 @@ Variant Annotation (VEP, ClinVar, COSMIC, SnpEff)
 ```
 ---
 
-## V. Bash shell scripting for NGS - somatic analysis
+## V. Bash shell scripting for NGS - Somatic analysis
 
 According to [freeCodeCamp](https://www.freecodecamp.org/news/bash-scripting-tutorial-linux-shell-script-and-command-line-for-beginners/), a bash script "is a file containing a sequence of commands that are executed by the bash program line by line. It allows you to perform a series of actions, such as navigating to a specific directory, creating a folder, and launching a process using the command line. By saving these commands in a script, you can repeat the same sequence of steps multiple times and execute them by running the script". If you are new to bash scripting, the following [YouTube](https://www.youtube.com/watch?v=tK9Oc6AEnR4&t=614s) video tutorial, also from **freeCodeCamp**, provides a clear step-by-step introduction.
 
 Each step in the somatic DNA-NGS analysis is implemented as a **separate bash script**. You do not need to write these scripts from scratch; they are provided and can be downloaded and executed directly on your computer.
 
-### Quality control (QC) 👉 [01_qc.sh](bash_scripts/01_qc.sh)
+## Quality control (QC) 👉 [01_qc.sh](bash_scripts/01_qc.sh)
 
-#### FastQC & MultiQC
+### FastQC & MultiQC
 
 To learn how to interpret **FastQC** reports, check the official documentation from the [Babraham Bioinformatics](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 
@@ -497,7 +498,7 @@ This indicates **high-quality data** with minimal loss of informative reads.
 ---
 ---
 
-### Alignment and BAM preprocessing workflow 👉 [03_align_&_bam_preprocess.sh](bash_scripts/03_align_&_bam_preprocess.sh)
+### Alignment and BAM preprocessing 👉 [03_align_&_bam_preprocess.sh](bash_scripts/03_align_&_bam_preprocess.sh)
 
 **Documentation**: 
 
@@ -998,7 +999,7 @@ SUCCESS
 >
 > Final biological interpretation happens after filtering and annotation.
 
-### Folder structure: necessary and output files from Mutect2-Variant calling
+### Folder structure: Input & Output files of Mutect2-Variant calling.
 
 ```bash
 Genomics_cancer/
@@ -2079,7 +2080,9 @@ INFO Fields (Variant-level):
 
 - TLOD: Tumor Log-Odds or Tumor LOD Score (log odds of variant being real)
 
-### 4. `SRR30536566.filtered.vcf.gz` VCF File Analysis
+### 5. VCF File Analysis
+
+From `SRR30536566.filtered.vcf.gz`
 
 **Variant 1: chr1:114705278 - germline**
 
@@ -2642,6 +2645,11 @@ bcftools index SRR30536566.postfiltered_high_confidence.vcf.gz
 -i: "Include" - keep variants matching these conditions
 -Oz -o: Creates compressed, indexed VCF
 
+**OPTIONAL: decompress and save post-filtered .vcf.gz as .tsv**
+```bash
+gunzip -c SRR30536566.postfiltered.vcf.gz > SRR30536566.postfiltered.tsv
+```
+
 🧪 **INFO/TLOD > 20**
 
 **Mutect2 default detection threshold** ≈ 6.3
@@ -2654,7 +2662,7 @@ bcftools index SRR30536566.postfiltered_high_confidence.vcf.gz
 ⚠️ **Do NOT hard-filter on POPAF**, it is biologically harmful, unless your explicit goal is germline exclusion, not somatic confidence.
 
 
-### Folder structure: after running post-filtering variant.
+### Folder structure: after running Post-Filter variant.
 
 ```bash
 Genomics_cancer/
@@ -2684,6 +2692,7 @@ Genomics_cancer/
 │           └── SRR30536566.postfiltered.vcf.gz                          # It has same filters as 'high_confidence' but TLOD = 6.3 (default from Mutect2)
 │           └── SRR30536566.postfiltered.vcf.gz.csi
 │           └── SRR30536566.postfilter_summary.txt
+│           └── SRR30536566.postfiltered.tsv
 │           └── SRR30536566.postfiltered_high_confidence.vcf.gz         # It has same filters as 'postfiltered' but higher TLOD filter (TLOD > 20)
 │           └── SRR30536566.postfiltered_high_confidence.vcf.gz.csi
 │       └── annotation/        
@@ -2990,13 +2999,6 @@ b) **Consequence**: VEP does **not only annotate genes with coding variants**.
 
 **Table 8A**: **Consequence** categories to be filtered out / excluded (non-protein-altering)
 
-| Consequence                       | Label color (VEP) | Where is the variant?                  | Protein produced? | Biological meaning                                                                 | Clinical relevance (CRC) | Keep? |
-|----------------------------------|------------------|----------------------------------------|-------------------|------------------------------------------------------------------------------------|--------------------------|-------|
-| non_coding_transcript_exon_variant | 🟢 Green          | Exon of a non-coding transcript        | ❌ No              | Exonic variant, but transcript does not encode a protein (e.g. lncRNA, antisense)  | None for drivers         | ❌ No |
-| non_coding_transcript_variant     | 🟢 Green          | Anywhere in a non-coding transcript    | ❌ No              | Variant in non-coding RNA; no amino acid or protein-level effect                    | None for drivers         | ❌ No |
-| intron_variant                    | 🔵 Blue           | Intron of a protein-coding gene        | ❌ No              | Removed during splicing; not affecting canonical splice sites                       | Very unlikely            | ❌ No |
-| NMD_transcript_variant            | 🔴 Red            | Transcript predicted to undergo NMD    | ❌ No (unstable)   | Transcript likely degraded via nonsense-mediated decay; variant itself is indirect | None for drivers         | ❌ No |
-
 | Consequence                        | Label color (VEP) | Where is the variant?                                   | Protein produced? | Biological meaning                                                                | Clinical relevance (CRC) | Keep? |
 | ---------------------------------- | ----------------- | ------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------- | ------------------------ | ----- |
 | non_coding_transcript_exon_variant | 🟢 Green          | Exon of a non-coding transcript                         | ❌ No              | Exonic variant, but transcript does not encode a protein (e.g. lncRNA, antisense) | None for drivers         | ❌ No  |
@@ -3057,13 +3059,13 @@ c) **IMPACT**:  Filter based on "MODERATE"" and "HIGH". See **Table 9** about **
 >
 > was filtered out even though passed all technical filtering (Mutect2 + post-filter).
 >
-> Variant was later excluded from the annotation table due to:
+> Variant was excluded from the annotation table due to:
 >
 >  - non-coding / intron / benign annotation (based on "Consequence" and "Impact" from VEP-Online results table)
 > 
 >  - lack of clinical relevance
 >
-> This was an **annotation-level filtering**, not variat calling failure.
+> This was an **annotation-level filtering**, not variant calling failure.
 
 ❌ You do NOT need to save the table as:
 
@@ -3250,9 +3252,79 @@ supporting their validity for clinical decision-making.
 ```
 * There were finally only two variants annotated but it would be recommended to check the third one (**chr3:179226113**) considering that the same PIK3CA might have this and/or more mutations. 
 
-2. **Visualize** the SNPs found annotated variants.
+2. **Visualize** the found annotated variants using IGV.
+
+
+### Folder structure: after VEP-Online variant annotation.
+
+```bash
+Genomics_cancer/
+├── reference/                 
+│   └── GRCh38/
+│       ├── fasta/
+│       └── known_sites/       
+│       └── intervals/                                    
+│       └── somatic_resources/                                   
+├── data/
+│   └── SRR30536566/                
+│       ├── raw_fastq/
+│       ├── qc/
+│       ├── trimmed/
+│       ├── aligned/
+│       ├── variants/                                       
+│           └── SRR30536566.f1r2.tar.gz          
+│           └── SRR30536566.unfiltered.vcf.gz
+│           └── SRR30536566.unfiltered.vcf.gz.stats 
+│           └── SRR30536566.unfiltered.vcf.gz.tbi
+│           └── SRR30536566.read-orientation-model.tar.gz
+│           └── SRR30536566.pileups.table
+│           └── SRR30536566.contamination.table
+│           └── SRR30536566.filtered.vcf.gz.filteringStats.tsv
+│           └── SRR30536566.filtered.vcf.gz
+│           └── SRR30536566.filtered.vcf.gz.tbi
+│           └── SRR30536566.postfiltered.vcf
+│           └── SRR30536566.postfiltered.vcf.gz                          # It has same filters as 'high_confidence' but TLOD = 6.3 (default from Mutect2)
+│           └── SRR30536566.postfiltered.vcf.gz.csi
+│           └── SRR30536566.postfilter_summary.txt
+│           └── SRR30536566.postfiltered.tsv
+│           └── SRR30536566.postfiltered_high_confidence.vcf.gz         # It has same filters as 'postfiltered' but higher TLOD filter (TLOD > 20)
+│           └── SRR30536566.postfiltered_high_confidence.vcf.gz.csi
+│       └── annotation/                                       
+│           └── my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.vcf                                       
+│           └── my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.vep.txt                                       
+│           └── my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.txt                                       
+│           └── SRR30536566_annotated_variants_clinical_report_improved.tsv     # Clean headers
+├── scripts/
+│       └── 0_wget_gnomad_PoN.sh
+│       └── 0_wget_Hsapiens_assem38.sh
+│       └── 01_qc.sh
+│       └── 02_trim.sh
+│       └── 03_align_&_bam_preprocess.sh
+│       └── 04_for_loop_gtf.sh
+│       └── 04_make_crc_7genes_bed.sh
+│       └── 04_mutect2.sh
+│       └── 05_learn_read_orientation_model.sh          
+│       └── 06a_get_pileup_summaries.sh            
+│       └── 06b_calculate_contamination.sh             
+│       └── 07_filter_mutect_calls.sh             
+│       └── 08_postfilter.sh                                              
+└── logs/
+        └── cutadapt_SRR30536566.log
+        └── bwa_mem.log
+        └── markduplicates.log
+        └── SRR30536566.flagstat.txt                     
+        └── mutect2.stderr.log                                  
+        └── mutect2.stdout.log                                  
+        └── learn_read_orientation_model.log                                  
+        └── get_pileup_summaries.log                                 
+        └── calculate_contamination.log                                 
+        └── filter_mutect_calls.log                             
+        └── SRR30536566.postfilter.log                                 
+```
+
 
 **Click** here 👉 [Part III – Somatic - IGV analysis](README_somatic_igv_analysis.md) to learn how to visualize the reads of variants using **IGV** software, explained step-by-step.
+
 
 
 End of Part II.
