@@ -316,9 +316,15 @@ Indexed BAM
  ↓
 Mutect2 (somatic variant calling)
  ↓
-Learn read-orientation bias (LearnReadOrientationModel) 
+Learn read-orientation bias (LearnReadOrientationModel)
+ ↓
+Get pileup summaries
+ ↓
+Calculate contamination
  ↓
 FilterMutectCalls (variant filtering)
+ ↓
+Post-filter
  ↓
 Variant Annotation (VEP, ClinVar, COSMIC, SnpEff)
 ```
@@ -1959,7 +1965,7 @@ Abbreviations:
 
 **Key Interpretation**:
 
-- No False Positives (FP=0.0): Filtering did not remove any artifacts that were actually true variants
+- FP ≈ 0.0 indicates that the filtering model estimates a very low probability of false-positive calls remaining after filtering, not that artifacts are absent in absolute terms.
 
 - False Negatives present: Each filter removed some true variants (FN > 0)
 
@@ -1982,6 +1988,15 @@ Abbreviations:
 
 Something striking to notice: **Almost no variants are PASS**.
 
+> **Key message**: In tumor-only, targeted sequencing, it is common that only a handful of variants pass all somatic filters.
+>
+>This reflects:
+>
+>  - absence of matched normal
+>  - presence of germline DNA
+>  - conservative statistical modeling
+>  - Low PASS count is a feature, not a failure.
+
 ### 3. Final Filtering Results Summary: Filter performance
 
 | Filter | Variants Removed | False Negatives | Effectiveness | Typical Artifacts Caught |
@@ -2002,7 +2017,7 @@ FORMAT Fields (Sample-level):
 
 - AD: Allele Depth (REF,ALT read counts)
 
-- AF: Allele Fraction (ALT allele frequency)
+- AF: Allele Fraction (ALT allele frequency, alternative allele frequency or VAF (variant allele frequency))
 
 - DP: Depth (total reads at position)
 
@@ -2040,15 +2055,15 @@ INFO Fields (Variant-level):
 
 - ROQ: Read Orientation Quality
 
-- TLOD: Tumor LOD Score (log odds of variant being real)
+- TLOD: Tumor Log-Odds or Tumor LOD Score (log odds of variant being real)
 
 ### 4. `SRR30536566.filtered.vcf.gz` VCF File Analysis
 
-**Variant 1: chr1:114705278 - PASS (Likely Somatic)**
+**Variant 1: chr1:114705278 - germline**
 
 ```bash
 CHROM  POS       REF ALT QUAL FILTER  INFO
-chr1   114705278 A   G   .    PASS    TLOD=1676.10
+chr1   114705278 A   G   .    PASS    POPAF=4.31;TLOD=1676.10
 
 FORMAT: GT:AD:AF:DP:F1R2:F2R1:FAD:SB
 SAMPLE: 0/1:517,496:0.487:1013:210,216:241,212:473,448:217,300,227,269
@@ -2061,9 +2076,13 @@ SAMPLE: 0/1:517,496:0.487:1013:210,216:241,212:473,448:217,300,227,269
 
   - Tumor LOD (TLOD): 1676.10 → Very strong evidence
 
-  - Population AF (POPAF): 4.31 → Not common in population
+  - POPAF: 4.31% → An allele frequency in population between 4-5% is very common (germline). 
 
-  - Verdict: High-confidence somatic variant ✅
+  - Verdict: It's not a somatic variant ❌
+  
+>**Note**: POPAF ≈ 5% indicates the variant is common in the general population, but in tumor-only mode this field is informational and does not override strong somatic evidence (high TLOD, strand balance, read support).
+> Therefore, it's possible that this variant passed the filter because of context (known cancer gene: NRAS; expected in CRC biology) + somatic evidence (High TLOD, High depth and ALT read count -> VAF consistent with a clonal tumor mutation) 
+
 
 **Variant 2: chr19:49635871 - FAIL (Artifact)**
 
@@ -2127,13 +2146,19 @@ TLOD=1676.10
 
 **Key Findings from Your Examples**:
 
-1. `chr1:114705278` - Likely a true somatic variant
+1. `chr1:114705278` - GERMLINE variant
 
-  - Balanced strand support
+  - AF = 0.487  +  GT = 0/1  →  Germline heterozygous (expected VAF ~0.5%)
 
-  - High quality scores
+  - GERMQ = 1   →  very low germline error.
+    
+    - High GERMQ → unlikely germline
+    
+    - Low GERMQ → very likely germline
+    
+    - GERMQ=1 means Mutect2 is confident this is germline
 
-  - Moderate allele fraction
+  - Population allele frequency (POPAF) is high → POPAF = 4.31 (%)
 
 2. `chr19:49635871` - Sequencing artifact
 
@@ -2408,7 +2433,7 @@ DP=1262
     
   ✔ Likely founder clone
    
-  ✔ Virtually impossible to be an artifact
+  ✔ Extremely unlikely to be an artifact
 
 
 ✅ **PIK3CA Exon 20 Mutation (chr3:179226113)**
@@ -2436,7 +2461,7 @@ DP=559
 
   - Dual PIK3CA mutations (exon 9 + exon 20) = hyperactive pathway
 
-- Near-homozygous or LOH-associated
+  - High VAF may reflect clonal dominance, copy-number imbalance, or tumor purity effects; LOH cannot be inferred without CNV analysis.
 
 
 **Technical Quality**:
@@ -2445,7 +2470,7 @@ DP=559
 
   ✔ Very high VAF (69.8%) = likely LOH or amplification
 
-  ✔ High TLOD (1387.91) = most confident call
+  ✔ High TLOD (1387.91) = very high-confidence call
 
   ✔ This matches your earlier pileup data perfectly!
 
@@ -2474,8 +2499,18 @@ Reason for removal: VAF < 2% threshold
   1. Amplicon artifacts: PCR can create false indels at low frequencies
 
   2. Clinical actionability: Variants <2% VAF are rarely actionable
+  
+  3. Below ~2% VAF
+    
+    - Error rate approaches biological signal
 
-  3. Conservative approach: **Better to miss a subclonal variant than include a false positive**
+    - Validation becomes difficult (Sanger cannot detect it)
+
+  4. Conservative approach: 
+  
+    - **Better to miss a subclonal variant than include a false positive**
+    
+    - Conservative filtering prioritizes **specificity over sensitivity**, which is appropriate for clinical pipelines.
   
   
 **Post-Filtering Threshold Rationale**
@@ -2509,7 +2544,7 @@ Reason for removal: VAF < 2% threshold
 
   - **Population AF (POPAF)**: All > 1% = not common polymorphisms
 
-  - **Germline filter (GERMQ)**: All = 93 = low probability of being germline
+  - **Germline filter (GERMQ)**: All = 93 = high probability of being germline
 
 | Pattern | GERMQ | POPAF | Likely Interpretation |
 |---------|-------|-------|-----------------------|
@@ -2551,6 +2586,10 @@ Reason for removal: VAF < 2% threshold
 | **ROQ** | 93 | High orientation confidence | Strand bias model confident |
 | **PON** | Absent | Not in panel of normals | Not seen in normal samples |
 | **AS_SB_TABLE** | 23,142\|63,331 | REF: 23f/142r, ALT: 63f/331r | Some strand imbalance for ALT |
+
+>**Note**: 
+>
+>**GERMQ** is a probabilistic germline classifier. Known somatic hotspots (e.g. KRAS, NRAS, PIK3CA) can still receive high GERMQ values in tumor-only mode, and therefore GERMQ must be interpreted in biological context.
 
 
 **Key Implications for Your Patient**
@@ -2672,7 +2711,7 @@ Offline VEP requires the installation on the computer of approximately:
 | Plugins (optional) | 1–5 GB        |
 | Total              | **>20–25 GB** |
 
-**Advantage of 'online VEP'**
+**Advantage of 'VEP-Online'**
 
 Online VEP uses:
 
@@ -2688,7 +2727,7 @@ The **only difference** is:
 
 - where the computation runs
 
-**For ≤100 variants**, online VEP is:
+**For ≤100 variants**, VEP-Online is:
 
 ✔ faster
 
@@ -2703,7 +2742,7 @@ The **only difference** is:
 
 | Number of variants | Recommended method     |
 | ------------------ | ---------------------- |
-| 1–100              | **Ensembl VEP online** |
+| 1–100              | **Ensembl VEP-Online** |
 | 100–10,000         | VEP local or Docker    |
 | Large panels / WES | Local VEP / Funcotator |
 | Clinical pipeline  | Locked container       |
@@ -2712,7 +2751,7 @@ The **only difference** is:
 
 **Documentation**
 
-- **Ensembl VEP Online**: 
+- **Ensembl VEP-Online**: 
 
 <https://onlinelibrary.wiley.com/doi/10.1002/humu.24298>
 
@@ -2720,7 +2759,7 @@ The **only difference** is:
 
 <https://www.ensembl.org/info/docs/tools/vep/vep_formats.html#output>
 
-### Annotation using Ensembl VEP Online
+### Annotation using Ensembl VEP-Online
 
 1. **Decompress** the post-filtered file `SRR30536566.postfiltered.vcf.gz` without deleting the original:
 
@@ -2881,7 +2920,7 @@ Under:
 | **Pubmed**                   | Pubmed ID publications<br> that cite existing variant |
 
 
-### VEP online results TABLE (partial view)
+### VEP-Online results TABLE (partial view)
 
 | Uploaded variant | Location | Allele | Consequence | IMPACT | Symbol | Gene |
 |------------------|----------|--------|-------------|--------|--------|------|
@@ -2898,7 +2937,9 @@ Under:
 
 a) **Symbol**: 
 
-- **CSDE1** is **NOT** a called variant of `SRR30536566.postfiltered.vcf` data — it is an **annotation artifact** caused by transcript proximity and regulatory overlap. 
+- **CSDE1** is **NOT** a called variant of `SRR30536566.postfiltered.vcf` data — it is an **annotation artifact** caused by transcript proximity and regulatory overlap.
+
+- In other words: **CSDE1** appears because VEP annotates variants relative to all **nearby transcripts**, not because the variant was called in CSDE1.
 
 - **CSDE1** is also not in the panel of targeted sequencing genes! Therefore, the correct genes (as Symbol) are NRAS and PIK3CA.
 
@@ -2925,7 +2966,7 @@ b) **Consequence**: VEP does **not only annotate genes with coding variants**.
     > This is **annotation multiplicity**, not multiple variants.
 
 
-**Table 8A**: Categories of **Consequence** to be filtered out / excluded (non-protein-altering)
+**Table 8A**: **Consequence** categories to be filtered out / excluded (non-protein-altering)
 
 | Consequence                       | Label color (VEP) | Where is the variant?                  | Protein produced? | Biological meaning                                                                 | Clinical relevance (CRC) | Keep? |
 |----------------------------------|------------------|----------------------------------------|-------------------|------------------------------------------------------------------------------------|--------------------------|-------|
@@ -2934,9 +2975,23 @@ b) **Consequence**: VEP does **not only annotate genes with coding variants**.
 | intron_variant                    | 🔵 Blue           | Intron of a protein-coding gene        | ❌ No              | Removed during splicing; not affecting canonical splice sites                       | Very unlikely            | ❌ No |
 | NMD_transcript_variant            | 🔴 Red            | Transcript predicted to undergo NMD    | ❌ No (unstable)   | Transcript likely degraded via nonsense-mediated decay; variant itself is indirect | None for drivers         | ❌ No |
 
+| Consequence                        | Label color (VEP) | Where is the variant?                                   | Protein produced? | Biological meaning                                                                | Clinical relevance (CRC) | Keep? |
+| ---------------------------------- | ----------------- | ------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------- | ------------------------ | ----- |
+| non_coding_transcript_exon_variant | 🟢 Green          | Exon of a non-coding transcript                         | ❌ No              | Exonic variant, but transcript does not encode a protein (e.g. lncRNA, antisense) | None for drivers         | ❌ No  |
+| non_coding_transcript_variant      | 🟢 Green          | Anywhere in a non-coding transcript                     | ❌ No              | Variant in non-coding RNA; no amino acid or protein-level effect                  | None for drivers         | ❌ No  |
+| intron_variant                     | 🔵 Blue           | Intron of a protein-coding gene                         | ❌ No              | Spliced out; does not affect canonical splice sites                               | Very unlikely            | ❌ No  |
+| NMD_transcript_variant             | 🔴 Red            | Transcript predicted to undergo nonsense-mediated decay | ❌ No (unstable)   | Transcript likely degraded; variant effect is indirect                            | None for drivers         | ❌ No  |
+| downstream_gene_variant            | ⚪ Grey            | 3′ downstream of a gene (after transcription end)       | ❌ No              | Located outside gene body; may affect distant regulatory regions                  | None for CRC drivers     | ❌ No  |
+| upstream_gene_variant              | ⚫ Dark grey       | 5′ upstream of a gene (before transcription start)      | ❌ No              | Promoter-distal region; weak or no effect on gene expression                      | Rare, indirect at best   | ❌ No  |
+| 3_prime_UTR_variant                | 🔹 Sky blue       | 3′ untranslated region of mRNA                          | ✔ Yes (unchanged) | May affect mRNA stability or miRNA binding, but protein sequence unchanged        | Rarely actionable in CRC | ❌ No  |
+
 > A NMD transcript variant (Nonsense-Mediated Decay transcript variant) refers to a mRNA molecule that contains a Premature Termination Codon (PTC), making it a target for destruction by the cell's quality control system, NMD, to prevent the production of faulty, truncated proteins. 
 
->**Important**: All variants above have IMPACT = MODIFIER because they do not change a protein sequence. For cancer driver discovery, these variants add noise rather than insight.
+>**Note**: Variants in **Table 8A** may be biologically interesting in regulatory genomics, but they are not suitable for cancer (e.g. CRC) driver mutation reporting.
+
+>**Important**: All variants in **Table 8A** have IMPACT = MODIFIER because they do not change a protein sequence. For cancer driver discovery, these variants add noise rather than insight. Variants with MODIFIER impact do not alter protein sequence or function and are unlikely to act as oncogenic drivers.
+
+>**key message**: Typically, intronic variants are excluded from somatic analysis because most intronic variants are removed during splicing and do not affect protein structure or function unless they disrupt canonical splice donor or acceptor sites.
 
 **Table 8B**: Categories of **Consequence** to RETAIN (protein-altering, driver-relevant)
 
@@ -2955,7 +3010,7 @@ c) **IMPACT**:  Filter based on "MODERATE"" and "HIGH". See **Table 9** about **
 
 | IMPACT    | Definition (VEP)                                      | Typical consequences                         | Protein effect? | Clinical relevance in CRC | Keep? |
 |-----------|-------------------------------------------------------|----------------------------------------------|------------------|---------------------------|-------|
-| HIGH      | Truncates or abolishes protein function               | stop_gained, frameshift_variant, splice_acceptor/donor | Severe           | Rare but important        | ✅ Yes |
+| HIGH      | Truncates or abolishes protein function               | stop_gained, frameshift_variant, splice_acceptor/donor_variant | Severe           | Rare but important        | ✅ Yes |
 | MODERATE  | Changes amino acid sequence                           | missense_variant, inframe_insertion/deletion | Functional change| **Major CRC drivers**     | ✅ Yes |
 | LOW       | Minimal protein effect                                | synonymous_variant                            | None             | Usually benign            | ❌ No |
 | MODIFIER  | No direct effect on protein                           | intronic, non-coding, intergenic             | None             | Not relevant              | ❌ No |
@@ -2971,30 +3026,37 @@ c) **IMPACT**:  Filter based on "MODERATE"" and "HIGH". See **Table 9** about **
 | **Tab-delimited (.txt)** | Teaching + tables         |
 | **VEP annotated VCF**    | Advanced reuse            |
 
->**Important** Due to the fact that rows were filtered based on "Consequence" and "Impact", removing all non-coding variants (e.g. intron_variant, non-coding transcripts, among others), the variant:
-> - Location: 3:179226113
-> - Symbol: PIK3CA
+>**Important** 
+> The variant:
 >
-> WAS FILTERED OUT. 
+>  - Location: 3:179226113
 >
-> In addition, the "Clinical significance" of this variant was classified as "benign". Therefore, it was removed from the variant annotation table because it doesn't show potential pathogenicity to drive CRC, hence, not considered for therapeutics.
-> Thus, the variants with clinical relevance are finally two:
->   - NRAS    1:114713909 G > T
->   - PIK3CA  3:179218294 G > A
+>  - Symbol: PIK3CA
+>
+> was filtered out even though passed all technical filtering (Mutect2 + post-filter).
+>
+> Variant was later excluded from the annotation table due to:
+>
+>  - non-coding / intron / benign annotation (based on "Consequence" and "Impact" from VEP-Online results table)
+> 
+>  - lack of clinical relevance
+>
+> This was an **annotation-level filtering**, not variat calling failure.
 
 ❌ You do NOT need to save the table as:
-- JSON
 
-- GVF
+  - JSON
 
-- Raw consequence dumps
+  - GVF
+
+  - Raw consequence dumps
 
 
-### VEP online cannot filter columns
+### VEP-Online cannot filter columns
 
-VEP online can:
+VEP-Online can:
 
-| Action                       | VEP online |
+| Action                       | VEP-Online |
 | ---------------------------- | ---------- |
 | Filter variants (rows)                | ✅ Yes      |
 | Filter by Gene / Consequence / IMPACT, Others | ✅ Yes      |
@@ -3002,7 +3064,7 @@ VEP online can:
 | Export only chosen columns            | ❌ No       |
 | Create clinical-style report          | ❌ No       |
 
-> The “**Show/Hide columns**” option only affects your browser view, not the downloaded files. VEP online is not suitable for clinical reporting.
+> The “**Show/Hide columns**” option only affects your browser view, not the downloaded files. VEP-Online is not suitable for clinical reporting.
 
 >Therefore, 
 >
@@ -3081,6 +3143,11 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
   SRR30536566_clinical_report.tsv > SRR30536566_annotated_variants_clinical_report_improved.tsv
 ```
 
+### 5. Filter/Select clinically relevant anotated variants
+
+> **Key note**: Genes often have multiple transcripts. VEP annotates the variant relative to each transcript, producing multiple rows. Clinical reporting usually selects on "CANONICAL" and/or "MANE Select"" transcript. 
+
+
 ### Ideal final "clean" table (examples)
 
 | Location       | Gene   | Consequence      | HGVSp        | Exon | AF    | gnomAD AF | Impact   | SIFT        | PolyPhen          | Clinical significance |
@@ -3095,13 +3162,20 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 | **PIK3CA** | c.1624G>A | 3:179218294 | p.Glu542Lys | Missense | 10/21 | 27.7% | - | Deleterious | Probably damaging | Likely pathogenic | 0.880 | ✅ Hotspot |
 
 
-### Final table 👉 [SRR30536566_clinical_report_improved.tsv](SRR30536566_annotated_variants_clinical_report_improved.tsv)
+### Final clinical report table 👉 [SRR30536566_clinical_report_improved.tsv](SRR30536566_annotated_variants_clinical_report_improved.tsv)
 
 | Variant | Location | Consequence | Impact | Symbol | Gene | Exon | HGVSc_cDNA | HGVSp | Protein_pos | AA_change | Codons | REF_ALLELE | UPLOADED_ALLELE | STRAND | Canonical | MANE_Select | SIFT_prediction | PolyPhen_prediction | Tumor_AF | gnomAD_AF | Clinical_Significance | Somatic | PubMed | ClinPred |
 |---------|----------|-------------|--------|--------|------|------|------------|-------|-------------|-----------|--------|------------|-----------------|--------|-----------|-------------|-----------------|---------------------|----------|-----------|------------------------|--------|--------|----------|
 | . | 1:114713909-114713909 | missense_variant | MODERATE | NRAS | ENSG00000213281 | 3/7 | ENST00000369535.5:c.181C>A | ENSP00000358548.4:p.Gln61Lys | 61 | Q/K | Caa/Aaa | G | G/T | -1 | YES | NM_002524.5 | deleterious_low_confidence(0.01) | - | - | 0.0000006849 | uncertain_significance,drug_response,pathogenic,likely_pathogenic | 0,1,1,1 | 2674680,8120410,12460918,16273091,16291983,17699718,18390968,18633438,18948947,20130576,20179705,20619739,20736745,21107323,21305640,21729679,21829508,22761467,23392294,23414587,23515407,23538902,23569304,23614898,25157968,26619011,19657110,19966803,23076151,26821351,37384296,39635441 | 0.98360139131546 |
 | . | 3:179218294-179218294 | missense_variant | MODERATE | PIK3CA | ENSG00000121879 | 10/21 | ENST00000263967.4:c.1624G>A | ENSP00000263967.3:p.Glu542Lys | 542 | E/K | Gaa/Aaa | G | G/A | 1 | YES | NM_006218.4 | deleterious(0) | probably_damaging(0.915) | - | - | likely_pathogenic,not_provided,pathogenic/likely_pathogenic,pathogenic | 0,0,1,1 | 30089490,26900293,20619739,25157968,26619011,35127508,15016963,15254419,15647370,15805248,16906227,18676830,18725974,19029981,19223544,19366826,19513541,19903786,20453058,21430269,22162582,22162589,22271473,23946963,22658544,21558396,22357840,24559322,26851524,33076847,25599672,34776939,33917394,33105631,32422573,28708103,29700339,34462366,37195967,36765720,23480694,29446767,34496175,38015548,37712948,40004036,39208653 | 0.880067884922028 |
 
+
+> ⚠️ **Disclaimer** for students / scientist in general:
+This workflow is for educational and research purposes and is not CAP/CLIA certified for clinical diagnostics, which means is not legally valid for patient care. 
+**Clinical reports** require laboratory validation, standardized nomenclature, and medical oversight.
+CLIA (Clinical Laboratory Improvement Amendments – USA): Governs how clinical lab tests are validated and reported.
+CAP (College of American Pathologists): Accredits clinical laboratories and enforces standardized pipelines, QC, documentation, sign-off.
+This tutorial demonstrates a research-grade somatic variant analysis pipeline using tumor-only sequencing data. While biologically meaningful variants can be identified, the workflow is not validated for clinical diagnostics and should not be used for patient care without CAP/CLIA-certified confirmation and matched normal samples.
 
 ## Final steps:
 
@@ -3130,6 +3204,9 @@ This is apparently the end of the analysis. Once we reach this point, it is alwa
 | **chr3:179218294** | PIK3CA (exon 9) | 27.7% | **Sanger Sequencing** | dPCR (if <20% VAF expected) | High (prognostic marker) |
 | **chr3:179226113** | PIK3CA (exon 20) | 69.8% | **Sanger Sequencing** | IHC (PI3K pathway activation) | High (therapy target) |
 
+> **Note - Important**:
+> Variants below ~15–20% VAF may not be detectable by Sanger sequencing.
+
 ### Clinical Report Integration:*
 
 ```markdown
@@ -3154,5 +3231,6 @@ supporting their validity for clinical decision-making.
 2. **Visualize** the SNPs found annotated variants.
 
 **Click** here 👉 [Part III – Somatic - IGV analysis](README_somatic_igv_analysis.md) to learn how to visualize the reads of variants using **IGV** software, explained step-by-step.
+
 
 End of Part II.
