@@ -20,7 +20,7 @@
 - [Variant filtering](#variant-filtering--07_filter_mutect_callssh)
     - [Inspection of VCF file variants](#5-inspection-of-vcf-file-variants)
 - [Post-filter (amplicon-specific)](#post-filter-amplicon-specific--08_postfiltersh)
-    - [Folder structure: after running Post-filter variant](#folder-structure-after-running-post-filter-variant)
+    - [Folder structure: after running Post-Filter of filtered variants](#folder-structure-after-running-post-filter-of-filtered-variants)
 - [Variant annotation](#variant-annotation--vep-online)
     - [Creating SRR30536566 clinical report](#creating-srr30536566_clinical_reporttsv)
     - [Folder structure: after VEP-Online variant annotation](#folder-structure-after-vep-online-variant-annotation)
