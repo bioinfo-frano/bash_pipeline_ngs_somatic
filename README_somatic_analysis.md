@@ -2618,7 +2618,7 @@ gunzip -c SRR30536566.postfiltered.vcf.gz > SRR30536566.postfiltered.tsv
 ⚠️ **Do NOT hard-filter on POPAF**, it is biologically harmful, unless your explicit goal is germline exclusion, not somatic confidence.
 
 
-### Folder structure: after running Post-Filter variant.
+### Folder structure: after running Post-Filter of filtered variants.
 
 ```bash
 Genomics_cancer/
@@ -3246,9 +3246,9 @@ Genomics_cancer/
 │           └── SRR30536566.postfiltered_high_confidence.vcf.gz         # It has same filters as 'postfiltered' but higher TLOD filter (TLOD > 20)
 │           └── SRR30536566.postfiltered_high_confidence.vcf.gz.csi
 │       └── annotation/                                       
-│           └── my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.vcf                                       
-│           └── my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.vep.txt                                       
-│           └── my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.txt                                       
+│           └── my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.vcf                                    
+│           └── my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.vep.txt                      
+│           └── my6OLB3kfNEA9fgT.Consequence_ne_downstream_gene_variant_and_Consequence_ne_upstream_gene_variant_and_IMPACT_ne_MODIFIER_and_CANONICAL_re_Yes.txt                               
 │           └── SRR30536566_annotated_variants_clinical_report_improved.tsv     # Clean headers
 ├── scripts/
 │       └── 0_wget_gnomad_PoN.sh
