@@ -47,7 +47,7 @@ done
 # Apply hard filters
 # ============================================================
 
-echo "Applying thresholds:"
+echo "Applying post-filter thresholds:"
 echo "  DP >= $MIN_DP"
 echo "  ALT reads (AD[1]) >= $MIN_AD_ALT"
 echo "  VAF >= $MIN_VAF"
@@ -57,7 +57,19 @@ bcftools filter \
   -i "FORMAT/DP >= ${MIN_DP} && FORMAT/AD[0:1] >= ${MIN_AD_ALT} && FORMAT/AF >= ${MIN_VAF}" \
   -Oz -o "$POSTFILTER_VCF"
 
-bcftools index "$POSTFILTER_VCF"
+# ============================================================
+# Index the post-filtered VCF (required for IGV) → .tbi
+# ============================================================
+
+echo "Indexing post-filtered VCF"
+
+bcftools index -t "$POSTFILTER_VCF" # Option '-t' → .tbi, otherwise .csi. Both are valid index.
+
+# Sanity check: ensure index was created
+if [[ ! -f "${POSTFILTER_VCF}.tbi" ]]; then
+  echo "ERROR: Tabix index (.tbi) was not created"
+  exit 1
+fi
 
 # ============================================================
 # Variant counts
