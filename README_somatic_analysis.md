@@ -2608,7 +2608,7 @@ bcftools index -t SRR30536566.postfiltered_high_confidence.vcf.gz
 
 Both index formats are valid when visualizing variants with **IGV**. However, many tutorials mention `.tbi` explicitly and `.tbi` filenames are easier to recognize.
 
-**OPTIONAL: decompress and save post-filtered .vcf.gz as .tsv**
+**OPTIONAL: Decompress and save post-filtered .vcf.gz as .tsv**
 ```bash
 gunzip -c SRR30536566.postfiltered.vcf.gz > SRR30536566.postfiltered.tsv
 ```
