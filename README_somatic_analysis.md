@@ -3331,12 +3331,15 @@ Questions that can be answered in this step (some were already answered in varia
 
   - Is it associated with a clinical trial?
   
->**Note**
-**NCCN, ESMO, and AMP/ASCO/CAP are major clinical guideline bodies that define how cancer variants should be interpreted and used in therapy decisions**.  
+>**Note**:
 >
-The **Tier I–IV system (from AMP/ASCO/CAP)** classifies somatic variants by their clinical significance, from strongly actionable (Tier I) to benign/unknown significance (Tier IV). 
+>**NCCN, ESMO, and AMP/ASCO/CAP are major clinical guideline bodies that define how cancer variants should be interpreted and used in therapy decisions**.  
 >
->**Documentation**: "Standards and Guidelines for the Interpretation and Reporting of Sequence Variants in Cancer" <https://ocpe.mcw.edu/sites/default/files/course/2024-03/AMP-ASCO-CAP%20guidelines%20-%20somatic%20variants.pdf?>
+>The **Tier I–IV system (from AMP/ASCO/CAP)** classifies somatic variants by their clinical significance, from strongly actionable (Tier I) to benign/unknown significance (Tier IV). 
+>
+>**Documentation**: "Standards and Guidelines for the Interpretation and Reporting of Sequence Variants in Cancer"
+> 
+> <https://ocpe.mcw.edu/sites/default/files/course/2024-03/AMP-ASCO-CAP%20guidelines%20-%20somatic%20variants.pdf?>
 
 
 
