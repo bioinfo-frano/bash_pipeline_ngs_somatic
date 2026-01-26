@@ -3162,9 +3162,9 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 
 > ⚠️ **Disclaimer** for students / scientist in general:
 >
-This tutorial demonstrates a research-grade somatic variant analysis pipeline using tumor-only sequencing data. While biologically meaningful variants can be identified, the workflow is not validated for clinical diagnostics and should not be used for patient care without CAP/CLIA-certified confirmation and matched normal samples.
+>This tutorial demonstrates a research-grade somatic variant analysis pipeline using tumor-only sequencing data. While biologically meaningful variants can be identified, the workflow is not validated for clinical diagnostics and should not be used for patient care without CAP/CLIA-certified confirmation and matched normal samples.
 >
-**Clinical reports** require laboratory validation, standardized nomenclature, and medical oversight.
+>**Clinical reports** require laboratory validation, standardized nomenclature, and medical oversight.
 >   - CLIA (Clinical Laboratory Improvement Amendments – USA): Governs how clinical lab tests are validated and reported.
 >
 >   - CAP (College of American Pathologists): Accredits clinical laboratories and enforces standardized pipelines, QC, documentation, sign-off.
