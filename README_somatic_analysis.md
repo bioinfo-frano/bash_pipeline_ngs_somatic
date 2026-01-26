@@ -352,6 +352,9 @@ FilterMutectCalls (variant filtering)
 Post-filter
  ↓
 Variant Annotation (VEP, ClinVar, COSMIC, SnpEff)
+ ↓
+Clinical Annotation
+
 ```
 ---
 
@@ -3163,6 +3166,12 @@ This tutorial demonstrates a research-grade somatic variant analysis pipeline us
 CLIA (Clinical Laboratory Improvement Amendments – USA): Governs how clinical lab tests are validated and reported.
 CAP (College of American Pathologists): Accredits clinical laboratories and enforces standardized pipelines, QC, documentation, sign-off.
 
+>**ClinPred**: ClinPred is an efficient tool for identifying disease-relevant nonsynonymous variants from the exome.
+>
+>**Documentation**: 
+>    - <https://pmc.ncbi.nlm.nih.gov/articles/PMC6174354/>
+>
+>    - <https://sites.google.com/site/clinpred/>
 
 ## Final steps:
 
@@ -3284,6 +3293,46 @@ Genomics_cancer/
         └── filter_mutect_calls.log                             
         └── SRR30536566.postfilter.log                                 
 ```
+
+---
+---
+
+## Clinical Annotation
+
+From the variant annotation step, a comprehensive clinical report table was generated: [SRR30536566_clinical_report_improved.tsv](SRR30536566_annotated_variants_clinical_report_improved.tsv).
+This table summarizes **somatic single-nucleotide variants (SNVs)** detected in cancer-relevant genes and integrates functional predictions, population frequencies, and clinical annotations. Its purpose is to inform the oncologist which genes are altered in the tumor, whether these alterations are known or suspected cancer drivers, and how pathogenic or clinically relevant they may be.
+
+**Clinical annotation (also called therapeutic interpretation)** represents the step where molecular findings are translated into actionable clinical insights, such as diagnostic relevance, prognostic implications, or potential therapeutic options. This is often considered the **final and most critical step in a cancer genomics pipeline**, as it bridges bioinformatics analysis with clinical decision-making.
+
+
+>**IMPORTANT**: **Scope and limitations**
+This tutorial demonstrates a *research-grade* clinical annotation workflow.
+It is **not intended for diagnostic or therapeutic decision-making**. This tutotial:
+>
+>   - is a tumor-only analysis
+>   - has no matched normal
+>   - does not provide CNV / SV
+>   - show no RNA expression, no histology context and no clinical metadata (stage, treatment history)
+
+Questions that can be answered in this step (some were already answered in variant annotation):
+
+  - Is this variant actionable?
+
+  - Does it predict response or resistance to a drug?
+
+  - Is it part of a guideline (NCCN, ESMO, AMP/ASCO/CAP)?
+
+  - Is it prognostic or diagnostic?
+
+  - Is it part of an approved targeted therapy?
+
+  - Is it associated with a clinical trial?
+  
+
+
+
+
+
 
 
 **Click** here 👉 [Part III – Somatic - IGV analysis](README_somatic_igv_analysis.md) to learn how to visualize the reads of variants using **IGV** software, explained step-by-step.
