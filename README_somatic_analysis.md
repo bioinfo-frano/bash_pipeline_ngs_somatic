@@ -3161,11 +3161,14 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 
 
 > ⚠️ **Disclaimer** for students / scientist in general:
+>
 This tutorial demonstrates a research-grade somatic variant analysis pipeline using tumor-only sequencing data. While biologically meaningful variants can be identified, the workflow is not validated for clinical diagnostics and should not be used for patient care without CAP/CLIA-certified confirmation and matched normal samples.
+>
 **Clinical reports** require laboratory validation, standardized nomenclature, and medical oversight.
-CLIA (Clinical Laboratory Improvement Amendments – USA): Governs how clinical lab tests are validated and reported.
-CAP (College of American Pathologists): Accredits clinical laboratories and enforces standardized pipelines, QC, documentation, sign-off.
-
+>   - CLIA (Clinical Laboratory Improvement Amendments – USA): Governs how clinical lab tests are validated and reported.
+>
+>   - CAP (College of American Pathologists): Accredits clinical laboratories and enforces standardized pipelines, QC, documentation, sign-off.
+>
 >**ClinPred**: ClinPred is an efficient tool for identifying disease-relevant nonsynonymous variants from the exome.
 >
 >**Documentation**: 
@@ -3300,7 +3303,7 @@ Genomics_cancer/
 ## Clinical Annotation
 
 From the variant annotation step, a comprehensive clinical report table was generated: [SRR30536566_clinical_report_improved.tsv](SRR30536566_annotated_variants_clinical_report_improved.tsv).
-This table summarizes **somatic single-nucleotide variants (SNVs)** detected in cancer-relevant genes and integrates functional predictions, population frequencies, and clinical annotations. Its purpose is to inform the oncologist which genes are altered in the tumor, whether these alterations are known or suspected cancer drivers, and how pathogenic or clinically relevant they may be.
+This table summarizes **somatic single-nucleotide variants (SNVs)** detected in cancer-relevant genes and integrates functional predictions, population frequencies, and clinical significance. Its purpose is to inform the oncologist which genes are altered in the tumor, whether these alterations are known or suspected cancer drivers, and how pathogenic or clinically relevant they may be.
 
 **Clinical annotation (also called therapeutic interpretation)** represents the step where molecular findings are translated into actionable clinical insights, such as diagnostic relevance, prognostic implications, or potential therapeutic options. This is often considered the **final and most critical step in a cancer genomics pipeline**, as it bridges bioinformatics analysis with clinical decision-making.
 
@@ -3328,7 +3331,12 @@ Questions that can be answered in this step (some were already answered in varia
 
   - Is it associated with a clinical trial?
   
-
+>**Note**
+**NCCN, ESMO, and AMP/ASCO/CAP are major clinical guideline bodies that define how cancer variants should be interpreted and used in therapy decisions**.  
+>
+The **Tier I–IV system (from AMP/ASCO/CAP)** classifies somatic variants by their clinical significance, from strongly actionable (Tier I) to benign/unknown significance (Tier IV). 
+>
+>**Documentation**: "Standards and Guidelines for the Interpretation and Reporting of Sequence Variants in Cancer" <https://ocpe.mcw.edu/sites/default/files/course/2024-03/AMP-ASCO-CAP%20guidelines%20-%20somatic%20variants.pdf?>
 
 
 
