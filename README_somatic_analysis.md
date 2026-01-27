@@ -3366,15 +3366,15 @@ A) **CIViC** (Clinical Interpretation of Variants in Cancer): A public, expert�
 
 ![Figure 10: CIViC Moecular Profile](images/CIViC_MolecularProfiles_NRAS_1.png)
 
-7. The annotation details of this this NRAS variant will be displayed in another CIViC webpage along with a **Evidence** table, which has important information such as EID (evidence statement), Disease and Therapies..
+7. The annotation details of this this NRAS variant will be displayed in another CIViC webpage along with a **Evidence** table, which has important information such as EID (evidence ID), Disease and Therapies.
 
 ![Figure 11: CIViC NRAS Q61K-Therapy table](images/CIViC_MolecularProfiles_NRAS_2_test.png)
 
 >**Note**
 >
-> In table **Evidence**, order the therapies for "Colorectal Cancer" by clicking on **S** (drug sensitivity, it must show a  🖤) and **EL** (evidence level B, Clinical Evidence)
+> In table **Evidence**, order the therapies for "Colorectal Cancer" by clicking on **S** (drug sensitivity, it must show a  🖤) and **EL** (evidence level "B" - Clinical Evidence)
 >
->Even though, **NRAS Q61K** colorectal variant is sensitive to **Dactolisib**, apparently, this drug is still not accepted (**EL** "B"). The evidence is apparently clinical and based on in vitro cell lines studies. Check column **DESC** (evidence description)
+>Even though, **NRAS Q61K** colorectal variant is sensitive to **Dactolisib**, apparently, this drug is still not accepted (**EL** "B"). The evidence is apparently clinical and based on in vitro cell lines studies. This variant from colorectal cancer shows, apparently, resistance for **Cetuximab**. Check column **DESC** (evidence description), for detailed information.
 
 8. Follow the same pipeline for **PIK3A E542E**
 
