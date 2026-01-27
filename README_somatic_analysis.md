@@ -3463,8 +3463,8 @@ This makes it a powerful tool for clinical annotation of cancer variants.
 
 The OncoKB Evidence Levels (similar to AMP/ASCO/CAP tiers)
 
-OncoKB uses its own Levels of Evidence system, which is conceptually similar to the AMP/ASCO/CAP Tier I–IV system but more granular.
-Therapeutic Levels (1–4) and resistance levels (R1, R2, R3). The levels 1-4 show "the strength of evidence that the mutation is a predictive biomarker of drug sensitivity to FDA-approved or investigational agents for a specific indication" (Chakravarty et al., JCO PO 2017).
+OncoKB uses its own **Levels of Evidence** system, which is conceptually similar to the AMP/ASCO/CAP Tier I–IV system but more granular.
+Therapeutic Levels (1–4) and resistance levels (R1, R2, R3). The levels 1-4 show "**the strength of evidence that the mutation is a predictive biomarker of drug sensitivity to FDA-approved or investigational agents for a specific indication**" (Chakravarty et al., JCO PO 2017).
 
 These describe how actionable a variant is.
 
@@ -3480,9 +3480,11 @@ These describe how actionable a variant is.
 
 3. Select the specific mutation: E542K
 
+![Figure 20: OncoKB Variant Overview & Select cancer type](images/OncoKB_PIK3CA_Levels_therapy_alterations_FDA.png)
+
 Check the webpage on variant mutation
 
-![Figure 20: OncoKB Variant Overview & Select cancer type](images/OncoKB_PIK3CA_select_CRC.png)
+![Figure 21: OncoKB Variant Overview & Select cancer type](images/OncoKB_PIK3CA_select_CRC.png)
 
 4. Select cancer type: Colorectal cancer
 
@@ -3493,7 +3495,7 @@ Check the webpage on variant mutation
    
    Although the combination **Alpelisib + Fulvestrant** on PIK3CA E542K mutant HR+/HER2- metastatic breast cancer is a FDA-approved treatment, the clinical utility of these drug combinations in patients with PIK3CA E542K mutant colorectal cancer is **unknown**.
    
-![Figure 21: OncoKB Clinical Implications](images/OncoKB_Clinical_Implications.png)
+![Figure 22: OncoKB Clinical Implications](images/OncoKB_Clinical_Implications.png)
 
 
 **OncoKB** is a clinical actionability database that classifies cancer variants based on the strength of evidence linking them to therapies.
