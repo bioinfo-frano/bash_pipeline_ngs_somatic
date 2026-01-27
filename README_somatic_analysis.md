@@ -24,6 +24,7 @@
 - [Variant annotation](#variant-annotation--vep-online)
     - [Creating SRR30536566 clinical report](#creating-srr30536566_clinical_reporttsv)
     - [Folder structure: after VEP-Online variant annotation](#folder-structure-after-vep-online-variant-annotation)
+- [Clinical annotation](#clinical-annotation)
 
 
 
@@ -3317,7 +3318,7 @@ It is **not intended for diagnostic or therapeutic decision-making**. This tutot
 >   - does not provide CNV / SV
 >   - show no RNA expression, no histology context and no clinical metadata (stage, treatment history)
 
-Questions that can be answered in this step (some were already answered in variant annotation):
+### Questions that can be answered in this step (some were already answered in variant annotation):
 
   - Is this variant actionable?
 
@@ -3340,6 +3341,53 @@ Questions that can be answered in this step (some were already answered in varia
 >**Documentation**: "Standards and Guidelines for the Interpretation and Reporting of Sequence Variants in Cancer"
 > 
 > <https://ocpe.mcw.edu/sites/default/files/course/2024-03/AMP-ASCO-CAP%20guidelines%20-%20somatic%20variants.pdf?>
+
+
+### Clinical annotation tools/databases
+
+There is a handful of tools for clinical annotation, and next, it will be provided two:
+
+A) **CIViC** (Clinical Interpretation of Variants in Cancer): A public, expert‑curated database linking variants to clinical evidence, therapies, and disease contexts.
+
+1. Go to <https://civicdb.org/welcome>
+
+
+2. Click on "Molecular Profiles".
+
+![Figure 9: CIViC website](images/CIViC_MolecularProfiles_website.png)
+
+3. Type one of the annotated variants you found from sample `SRR30536566`, e.g. NRAS, on column **Name**. 
+
+4. Type 'Colorectal Cancer' on column **Diseases**, since the sample `SRR30536566` comes from a colorectal tumor.
+
+5. According to `SRR30536566_clinical_report_improved.tsv`, NRAS annotated variant has a mutation ("Gln61Lys") "Q61/K". 
+
+6. Therefore, in column **Name**, click on the variant **NRAS Q61K**. 
+
+![Figure 10: CIViC Moecular Profile](images/CIViC_MolecularProfiles_NRAS_1.png)
+
+7. The annotation details of this this NRAS variant will be displayed in another CIViC webpage along with a **Evidence** table, which has important information such as EID (evidence statement), Disease and Therapies..
+
+![Figure 11: CIViC NRAS Q61K-Therapy table](images/CIViC_MolecularProfiles_NRAS_2_test.png)
+
+>**Note**
+>
+> In table **Evidence**, order the therapies for "Colorectal Cancer" by clicking on **S** (drug sensitivity, it must show a  🖤) and **EL** (evidence level B, Clinical Evidence)
+>
+>Even though, **NRAS Q61K** colorectal variant is sensitive to **Dactolisib**, apparently, this drug is still not accepted (**EL** "B"). The evidence is apparently clinical and based on in vitro cell lines studies. Check column **DESC** (evidence description)
+
+8. Follow the same pipeline for **PIK3A E542E**
+
+![Figure 11: CIViC NRAS Q61K-Therapy table](images/CIViC_MolecularProfiles_NRAS_2_test.png)
+
+>**Note**
+>
+> In table **Evidence**, the variant **PIK3A E542E** has an accepted therapy (**EL** "A"), but for breast cancer and not colorectal cancer. According to the **DESC**, the evidence was collected from clinical trial phase 3 study.
+
+![Figure 12: CIViC PIK3A E542E-Therapy table](images/CIViC_MolecularProfiles_PIK3A_test.png)
+
+2) **PanDrugs**
+
 
 
 
