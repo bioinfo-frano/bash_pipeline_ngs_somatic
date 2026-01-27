@@ -3424,7 +3424,7 @@ In addition to the charts, there is a table showing evidence on drugs responsive
 ![Figure 17: PanDrugs: Table of treatments and responsiveness](images/PanDrugs_NRAS_PIK3A_somatic_table.png)
 
 
-### 3. OncoKB^TM^
+### 3. OncoKB<sup>TM</sup>
 
 
 
