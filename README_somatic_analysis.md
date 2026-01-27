@@ -3378,13 +3378,11 @@ A) **CIViC** (Clinical Interpretation of Variants in Cancer): A public, expertâ€
 
 8. Follow the same pipeline for **PIK3A E542E**
 
-![Figure 11: CIViC NRAS Q61K-Therapy table](images/CIViC_MolecularProfiles_NRAS_2_test.png)
+![Figure 12: CIViC PIK3A E542E-Therapy table](images/CIViC_MolecularProfiles_PIK3A_test.png)
 
 >**Note**
 >
 > In table **Evidence**, the variant **PIK3A E542E** has an accepted therapy (**EL** "A"), but for breast cancer and not colorectal cancer. According to the **DESC**, the evidence was collected from clinical trial phase 3 study.
-
-![Figure 12: CIViC PIK3A E542E-Therapy table](images/CIViC_MolecularProfiles_PIK3A_test.png)
 
 2) **PanDrugs**
 
