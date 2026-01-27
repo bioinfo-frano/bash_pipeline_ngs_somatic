@@ -3345,16 +3345,22 @@ It is **not intended for diagnostic or therapeutic decision-making**. This tutot
 
 ### Clinical annotation tools/databases
 
-There is a handful of tools for clinical annotation, and next, it will be provided two:
+There is a handful of open-access tools for clinical annotation. Next, it will be provided two:
 
-### CIViC (Clinical Interpretation of Variants in Cancer)
+### 1. CIViC (Clinical Interpretation of Variants in Cancer)
 
 A public, expert‑curated database linking variants to clinical evidence, therapies, and disease contexts.
+
+**Documentation**:
+    - <https://civicdb.org/pages/about>
+    - <https://civic.readthedocs.io/en/latest/>
+    - <https://www.nature.com/articles/ng.3774>
+
 
 1. Go to <https://civicdb.org/welcome>
 
 
-2. Click on "Molecular Profiles".
+2. Click on "**Molecular Profiles**".
 
 ![Figure 9: CIViC website](images/CIViC_MolecularProfiles_website.png)
 
@@ -3384,11 +3390,38 @@ A public, expert‑curated database linking variants to clinical evidence, thera
 
 >**Note**
 >
-> In table **Evidence**, the variant **PIK3A E542K** has an accepted therapy (**EL** "A"), but for breast cancer and not colorectal cancer. According to the **DESC**, the evidence was collected from clinical trial phase 3 study.
+> In table **Evidence**, the variant **PIK3A E542K** has an accepted therapy (**EL** "A"), which is the combination of drugs **Alpelisib** and **Fulvestrant**, but for breast cancer and not colorectal cancer. According to the **DESC**, the evidence was collected from clinical trial phase 3 study. On the other hand, **Aspirin** appears as showing clinical evidence or the potential to treat colorectal cancer (**EL** "B"), but this evidence has not yet been reviewed.
 
-### PanDrugs
+### 2. PanDrugs
 
+Web tool to prioritise anticancer drug treatments according to individual genomics data. PANDRUGS computes two scores, the **Gene Score (GScore)** and the **Drug Score (DScore)**. The GScore ranges from 0 to 1 and is estimated according to gene essentiality and tumoral vulnerability, gene relevance in cancer, the biological impact of mutations, the frequency of gene alterations and their clinical implications. The DScore ranges from 1 to 1, considers drug indication and status, gene–drug associations and number of hits and estimates resistance (negative values) or sensitivity (positive values)
 
+**Documentation**:
+
+   - [Jiménez-Santos, M. J. et al. (2023). PanDrugs2: prioritizing cancer therapies using integrated individual multi-omics data. Nucleic Acids Research. 51(Web Server Issue W1), pp. W411-W418.](https://doi.org/10.1093/nar/gkad412)
+   - [Piñeiro-Yáñez, E. et al. (2018). PanDrugs: a novel method to prioritize anticancer drug treatments according to individual genomic data. Genome medicine, 10(1), 41.](https://doi.org/10.1186/s13073-018-0546-1)
+   
+1. Go to <https://www.pandrugs.org/#!/>
+
+2. Click on "Query!✔" (green button).
+
+![Figure 13: PanDrugs: Welcome webpage](images/PanDrugs_website.png)
+
+3. Type the annotated variant genes or provide a variant gene list; check 'analysis options', and; check the type of cancer keyword (Colon, Rectum). Click on "Query" (green button).
+
+![Figure 14: PanDrugs: Gene loading and analysis options](images/PanDrugs_NRAS_PIK3A_somatic_query_genes.png)
+
+4. The results will appear in the "PanDrugs Candidate Therapies". In this page, there will be three plots (two pie charts and one dot plot) of which the "**Gene and Drugs score chart**" is the most revealing. 
+
+![Figure 15: PanDrugs: Gene and Drugs score chart](images/PanDrugs_NRAS_PIK3A_somatic.png).
+
+In the "**Gene and Drugs score chart**", it's possible to put attention at the quadrant "**Best candidates**" treatments and make a zoom to read in more detail each best candidate treatment.
+
+![Figure 16: PanDrugs: Gene and Drugs score chart: zoom-in "Best candidates"](images/PanDrugs_NRAS_PIK3A_somatic_zoom.png).
+
+In addition to the charts, there is a table showing evidence on drugs responsiveness to colorectal cancer treatment when the variant couple is NRAS and PIK3CA. The table can be ordered by DScore and GSCore and has the advantage to be downloadable as CSV.
+
+![Figure 17: PanDrugs: Table of treatments and responsiveness](images/PanDrugs_NRAS_PIK3A_somatic_table.png).
 
 
 
