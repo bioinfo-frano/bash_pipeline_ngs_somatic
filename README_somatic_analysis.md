@@ -3340,7 +3340,7 @@ It is **not intended for diagnostic or therapeutic decision-making**. This tutot
 >
 >**Documentation**: "Standards and Guidelines for the Interpretation and Reporting of Sequence Variants in Cancer"
 > 
-> <https://ocpe.mcw.edu/sites/default/files/course/2024-03/AMP-ASCO-CAP%20guidelines%20-%20somatic%20variants.pdf?>
+> [Li, MM et al., J Mol Diagn 2017](https://ocpe.mcw.edu/sites/default/files/course/2024-03/AMP-ASCO-CAP%20guidelines%20-%20somatic%20variants.pdf?)
 
 
 ### Clinical annotation tools/databases
@@ -3426,8 +3426,78 @@ In addition to the charts, there is a table showing evidence on drugs responsive
 
 ### 3. OncoKB<sup>TM</sup>
 
+OncoKB is a curated, expert‑reviewed precision oncology knowledge base developed at Memorial Sloan Kettering Cancer Center (MSKCC).
+Its purpose is to classify cancer gene alterations based on:
+
+  - Therapeutic actionability
+
+  - Biological significance
+
+  - Clinical evidence
+
+  - Regulatory approvals
+  
+**Documentation**:
+
+  - [Chakravarty et al., JCO PO 2017](https://ascopubs.org/doi/full/10.1200/PO.17.00011)
+  - [Suehnholz et al., Cancer Discovery 2024](https://aacrjournals.org/cancerdiscovery/article/14/1/49/732527/Quantifying-the-Expanding-Landscape-of-Clinical)
+
+It’s used by clinical labs, hospitals, and research groups to interpret somatic variants and guide treatment decisions.
+
+OncoKB links each variant to:
+
+  - FDA‑approved targeted therapies
+
+  - NCCN/ESMO guideline recommendations
+
+  - Drug sensitivity or resistance evidence
+
+  - Clinical trial relevance
+
+  - Mechanistic/biological function
+
+  - Evidence levels for actionability
+
+This makes it a powerful tool for clinical annotation of cancer variants.
 
 
+The OncoKB Evidence Levels (similar to AMP/ASCO/CAP tiers)
+
+OncoKB uses its own Levels of Evidence system, which is conceptually similar to the AMP/ASCO/CAP Tier I–IV system but more granular.
+Therapeutic Levels (1–4) and resistance levels (R1, R2, R3). The levels 1-4 show "the strength of evidence that the mutation is a predictive biomarker of drug sensitivity to FDA-approved or investigational agents for a specific indication" (Chakravarty et al., JCO PO 2017).
+
+These describe how actionable a variant is.
+
+![Figure 18: OncoKB Levels of Evidence scheme](images/OncoKB_TM_Levels_of_evidence2.png) (Chakravarty et al., JCO PO 2017)
+
+1. Go to <https://www.oncokb.org/>
+
+2. Type in the query window: PIK3CA
+
+3. Select "Therapeutic Levels" (default option)
+
+![Figure 19: OncoKB Query](images/OncoKB_Query.png)
+
+3. Select the specific mutation: E542K
+
+Check the webpage on variant mutation
+
+![Figure 20: OncoKB Variant Overview & Select cancer type](images/OncoKB_PIK3CA_select_CRC.png)
+
+4. Select cancer type: Colorectal cancer
+
+5. Result: 
+
+   - PIK3CA E542K variant is classified as **oncogenic**
+   - Clinical Implications of This Biomarker in Colorectal Cancer: 
+   
+   Although the combination **Alpelisib + Fulvestrant** on PIK3CA E542K mutant HR+/HER2- metastatic breast cancer is a FDA-approved treatment, the clinical utility of these drug combinations in patients with PIK3CA E542K mutant colorectal cancer is **unknown**.
+   
+![Figure 21: OncoKB Clinical Implications](images/OncoKB_Clinical_Implications.png)
+
+
+**OncoKB** is a clinical actionability database that classifies cancer variants based on the strength of evidence linking them to therapies.
+It’s one of the most trusted resources for turning raw genomic data into **clinically meaningful recommendations**.
 
 **Click** here 👉 [Part III – Somatic - IGV analysis](README_somatic_igv_analysis.md) to learn how to visualize the reads of variants using **IGV** software, explained step-by-step.
 
