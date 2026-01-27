@@ -3504,12 +3504,49 @@ It’s one of the most trusted resources for turning raw genomic data into **cli
 
 ### From tutorial to real clinical practice
 
-In a certified clinical laboratory, the variants identified here would be:
-- confirmed using tumor–normal sequencing
-- reviewed by molecular pathologists
-- discussed in a molecular tumor board (MTB)
-- reported following AMP/ASCO/CAP standards
-- interpreted in the context of patient history and treatment options
+In a **certified clinical laboratory**, the variants identified in this tutorial would typically be:
+
+- **Confirmed using tumor–normal sequencing**
+
+  - Two samples from the same patient are analyzed:
+
+    - DNA from cancer tissue (tumor)
+
+    - DNA from healthy tissue (e.g. blood or saliva)
+
+  - The goal is to distinguish:
+
+    - **Somatic variants** (present only in the tumor)
+
+    - **Germline variants** (inherited and present in all cells)
+
+  - This provides high confidence that variants such as **NRAS** and **PIK3CA** are truly tumor-specific
+
+- **Reviewed by molecular pathologists**
+
+- **Discussed in a Molecular Tumor Board (MTB)**
+
+  - An MTB is a **multidisciplinary clinical meeting** where genomic findings are evaluated in the context of:
+
+    - clinical guidelines
+
+    - available therapies
+
+    - patient history and disease stage
+
+  - The MTB formulates clinically appropriate treatment recommendations
+
+- **Reported according to AMP/ASCO/CAP standards**
+
+- **Interpreted in the full clinical context**, including:
+
+  - prior treatments
+
+  - comorbidities
+
+  - tumor histology
+
+  - therapeutic options and clinical trials
 
 
 ---
