@@ -3304,19 +3304,20 @@ Genomics_cancer/
 ## Clinical Annotation
 
 From the variant annotation step, a comprehensive clinical report table was generated: [SRR30536566_clinical_report_improved.tsv](SRR30536566_annotated_variants_clinical_report_improved.tsv).
-This table summarizes **somatic single-nucleotide variants (SNVs)** detected in cancer-relevant genes and integrates functional predictions, population frequencies, and clinical significance. Its purpose is to inform the oncologist which genes are altered in the tumor, whether these alterations are known or suspected cancer drivers, and how pathogenic or clinically relevant they may be.
+This table summarizes **somatic single-nucleotide variants (SNVs)** detected in cancer-relevant genes and integrates functional predictions, population frequencies, and clinical significance. Its purpose is to inform the oncologist which genes are altered in the tumor, whether these alterations are known or suspected cancer drivers with potential clinical relevance.
 
 **Clinical annotation (also called therapeutic interpretation)** represents the step where molecular findings are translated into actionable clinical insights, such as diagnostic relevance, prognostic implications, or potential therapeutic options. This is often considered the **final and most critical step in a cancer genomics pipeline**, as it bridges bioinformatics analysis with clinical decision-making.
 
 
->**IMPORTANT**: **Scope and limitations**
-This tutorial demonstrates a *research-grade* clinical annotation workflow.
-It is **not intended for diagnostic or therapeutic decision-making**. This tutotial:
+> **IMPORTANT: Scope and limitations**
 >
->   - is a tumor-only analysis
->   - has no matched normal
->   - does not provide CNV / SV
->   - show no RNA expression, no histology context and no clinical metadata (stage, treatment history)
+> This tutorial demonstrates a *research-grade* clinical annotation workflow.
+> It is **not intended for diagnostic or therapeutic decision-making**. This tutorial:
+>
+> - is a tumor-only analysis  
+> - has no matched normal sample  
+> - does not include CNV or SV detection  
+> - does not include RNA expression, histology context, or clinical metadata (stage, treatment history)
 
 ### Questions that can be answered in this step (some were already answered in variant annotation):
 
@@ -3372,9 +3373,9 @@ A public, expert‑curated database linking variants to clinical evidence, thera
 
 6. Therefore, in column **Name**, click on the variant **NRAS Q61K**. 
 
-![Figure 10: CIViC Moecular Profile](images/CIViC_MolecularProfiles_NRAS_1.png)
+![Figure 10: CIViC Molecular Profile](images/CIViC_MolecularProfiles_NRAS_1.png)
 
-7. The annotation details of this this NRAS variant will be displayed in another CIViC webpage along with a **Evidence** table, which has important information such as EID (evidence ID), Disease and Therapies.
+7. The annotation details of this NRAS variant will be displayed in another CIViC webpage along with a **Evidence** table, which has important information such as EID (evidence ID), Disease and Therapies.
 
 ![Figure 11: CIViC NRAS Q61K-Therapy table](images/CIViC_MolecularProfiles_NRAS_2_test.png)
 
@@ -3382,7 +3383,7 @@ A public, expert‑curated database linking variants to clinical evidence, thera
 >
 > In table **Evidence**, order the therapies for "Colorectal Cancer" by clicking on **S** (drug sensitivity, it must show a  🖤) and **EL** (evidence level "B" - Clinical Evidence)
 >
->Even though, **NRAS Q61K** colorectal variant is sensitive to **Dactolisib**, apparently, this drug is still not accepted (**EL** "B"). The evidence is apparently clinical and based on in vitro cell lines studies. This variant from colorectal cancer shows, apparently, resistance for **Cetuximab**. Check column **DESC** (evidence description), for detailed information.
+>Although, **NRAS Q61K** colorectal variant is sensitive to **Dactolisib**, apparently, this evidence is classified as **EL = B** and is not yet guideline-supported. The evidence is apparently clinical and based on in vitro cell lines studies. This variant from colorectal cancer shows, apparently, resistance for **Cetuximab**. Check column **DESC** (evidence description), for detailed information.
 
 8. Follow the same pipeline for **PIK3A E542K**
 
@@ -3394,7 +3395,7 @@ A public, expert‑curated database linking variants to clinical evidence, thera
 
 ### 2. PanDrugs
 
-Web tool to prioritise anticancer drug treatments according to individual genomics data. PANDRUGS computes two scores, the **Gene Score (GScore)** and the **Drug Score (DScore)**. The **GScore** ranges from 0 to 1 and is estimated according to gene essentiality and tumoral vulnerability, gene relevance in cancer, the biological impact of mutations, the frequency of gene alterations and their clinical implications. The **DScore** ranges from 1 to 1, considers drug indication and status, gene–drug associations and number of hits and estimates resistance (negative values) or sensitivity (positive values)
+Web tool to prioritise anticancer drug treatments according to individual genomics data. PANDRUGS computes two scores, the **Gene Score (GScore)** and the **Drug Score (DScore)**. The **GScore** ranges from 0 to 1 and is estimated according to gene essentiality and tumoral vulnerability, gene relevance in cancer, the biological impact of mutations, the frequency of gene alterations and their clinical implications. The **DScore** ranges from -1 to +1, considers drug indication and status, gene–drug associations and number of hits and estimates resistance (negative values) or sensitivity (positive values)
 
 **Documentation**:
 
@@ -3461,14 +3462,16 @@ OncoKB links each variant to:
 This makes it a powerful tool for clinical annotation of cancer variants.
 
 
-The OncoKB Evidence Levels (similar to AMP/ASCO/CAP tiers)
+### The OncoKB Evidence Levels (similar to AMP/ASCO/CAP tiers)
 
 OncoKB uses its own **Levels of Evidence** system, which is conceptually similar to the AMP/ASCO/CAP Tier I–IV system but more granular.
 Therapeutic Levels (1–4) and resistance levels (R1, R2, R3). The levels 1-4 show "**the strength of evidence that the mutation is a predictive biomarker of drug sensitivity to FDA-approved or investigational agents for a specific indication**" (Chakravarty et al., JCO PO 2017).
 
 These describe how actionable a variant is.
 
-![Figure 18: OncoKB Levels of Evidence scheme](images/OncoKB_TM_Levels_of_evidence2.png) (Chakravarty et al., JCO PO 2017)
+![Figure 18: OncoKB Levels of Evidence scheme](images/OncoKB_TM_Levels_of_evidence2.png)
+
+[Chakravarty et al., JCO PO 2017](https://ascopubs.org/doi/full/10.1200/PO.17.00011)
 
 1. Go to <https://www.oncokb.org/>
 
@@ -3489,7 +3492,7 @@ These describe how actionable a variant is.
 5. Result: 
 
    - PIK3CA E542K variant is classified as **oncogenic**
-   - **Clinical Implications of This Biomarker in Colorectal Cancer**:Although the combination **Alpelisib + Fulvestrant** on PIK3CA E542K mutant HR+/HER2- metastatic breast cancer is a FDA-approved treatment, the clinical utility of these drug combinations in patients with PIK3CA E542K mutant colorectal cancer is **unknown**.
+   - **Clinical Implications of This Biomarker in Colorectal Cancer**: Although the combination **Alpelisib + Fulvestrant** on PIK3CA E542K mutant HR+/HER2- metastatic breast cancer is a FDA-approved treatment, ***the clinical utility of these drug combinations in patients with PIK3CA E542K mutant colorectal cancer is unknown***.
    
 ![Figure 22: OncoKB Clinical Implications](images/OncoKB_Clinical_Implications.png)
 
@@ -3497,11 +3500,21 @@ These describe how actionable a variant is.
 **OncoKB** is a clinical actionability database that classifies cancer variants based on the strength of evidence linking them to therapies.
 It’s one of the most trusted resources for turning raw genomic data into **clinically meaningful recommendations**.
 
+---
+
+### From tutorial to real clinical practice
+
+In a certified clinical laboratory, the variants identified here would be:
+- confirmed using tumor–normal sequencing
+- reviewed by molecular pathologists
+- discussed in a molecular tumor board (MTB)
+- reported following AMP/ASCO/CAP standards
+- interpreted in the context of patient history and treatment options
 
 
 ---
 
-Finally, Part II has come to the end. 
+This concludes Part II of the tutorial, which covered end-to-end somatic variant analysis and clinical annotation from raw FASTQ sequencing data.
 
 **Click** here 👉 [Part III – Somatic - IGV analysis](README_somatic_igv_analysis.md) to learn how to visualize the reads of variants using **IGV** software, explained step-by-step.
 
