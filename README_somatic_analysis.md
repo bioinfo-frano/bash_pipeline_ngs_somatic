@@ -3347,7 +3347,9 @@ It is **not intended for diagnostic or therapeutic decision-making**. This tutot
 
 There is a handful of tools for clinical annotation, and next, it will be provided two:
 
-A) **CIViC** (Clinical Interpretation of Variants in Cancer): A public, expert‑curated database linking variants to clinical evidence, therapies, and disease contexts.
+### CIViC (Clinical Interpretation of Variants in Cancer)
+
+A public, expert‑curated database linking variants to clinical evidence, therapies, and disease contexts.
 
 1. Go to <https://civicdb.org/welcome>
 
@@ -3376,15 +3378,15 @@ A) **CIViC** (Clinical Interpretation of Variants in Cancer): A public, expert�
 >
 >Even though, **NRAS Q61K** colorectal variant is sensitive to **Dactolisib**, apparently, this drug is still not accepted (**EL** "B"). The evidence is apparently clinical and based on in vitro cell lines studies. This variant from colorectal cancer shows, apparently, resistance for **Cetuximab**. Check column **DESC** (evidence description), for detailed information.
 
-8. Follow the same pipeline for **PIK3A E542E**
+8. Follow the same pipeline for **PIK3A E542K**
 
 ![Figure 12: CIViC PIK3A E542E-Therapy table](images/CIViC_MolecularProfiles_PIK3A_test.png)
 
 >**Note**
 >
-> In table **Evidence**, the variant **PIK3A E542E** has an accepted therapy (**EL** "A"), but for breast cancer and not colorectal cancer. According to the **DESC**, the evidence was collected from clinical trial phase 3 study.
+> In table **Evidence**, the variant **PIK3A E542K** has an accepted therapy (**EL** "A"), but for breast cancer and not colorectal cancer. According to the **DESC**, the evidence was collected from clinical trial phase 3 study.
 
-2) **PanDrugs**
+### PanDrugs
 
 
 
