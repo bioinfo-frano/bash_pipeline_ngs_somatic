@@ -3482,18 +3482,14 @@ These describe how actionable a variant is.
 
 ![Figure 20: OncoKB Variant Overview & Select cancer type](images/OncoKB_PIK3CA_Levels_therapy_alterations_FDA.png)
 
-Check the webpage on variant mutation
+4. Select cancer type: Colorectal cancer
 
 ![Figure 21: OncoKB Variant Overview & Select cancer type](images/OncoKB_PIK3CA_select_CRC.png)
-
-4. Select cancer type: Colorectal cancer
 
 5. Result: 
 
    - PIK3CA E542K variant is classified as **oncogenic**
-   - Clinical Implications of This Biomarker in Colorectal Cancer: 
-   
-   Although the combination **Alpelisib + Fulvestrant** on PIK3CA E542K mutant HR+/HER2- metastatic breast cancer is a FDA-approved treatment, the clinical utility of these drug combinations in patients with PIK3CA E542K mutant colorectal cancer is **unknown**.
+   - **Clinical Implications of This Biomarker in Colorectal Cancer**:Although the combination **Alpelisib + Fulvestrant** on PIK3CA E542K mutant HR+/HER2- metastatic breast cancer is a FDA-approved treatment, the clinical utility of these drug combinations in patients with PIK3CA E542K mutant colorectal cancer is **unknown**.
    
 ![Figure 22: OncoKB Clinical Implications](images/OncoKB_Clinical_Implications.png)
 
@@ -3501,8 +3497,12 @@ Check the webpage on variant mutation
 **OncoKB** is a clinical actionability database that classifies cancer variants based on the strength of evidence linking them to therapies.
 It’s one of the most trusted resources for turning raw genomic data into **clinically meaningful recommendations**.
 
+
+
+---
+
+Finally, Part II has come to the end. 
+
 **Click** here 👉 [Part III – Somatic - IGV analysis](README_somatic_igv_analysis.md) to learn how to visualize the reads of variants using **IGV** software, explained step-by-step.
-
-
 
 End of Part II.
