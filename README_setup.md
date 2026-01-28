@@ -18,12 +18,29 @@
 ## Introduction
 
 Many students and scientists who want to learn genomic data analysis independently often rely on personal computers (e.g., laptops) with limited computational resources. These constraints can make it challenging to run secondary and tertiary NGS analyses starting from FASTQ files through variant annotation.
-One alternative is to use cloud-based resources (e.g., AWS EC2 instances with large amounts of RAM), where software dependencies can be installed via Conda. However, cloud services incur financial costs. 
+
+One alternative is to use cloud-based resources:
+
+- **AWS EC2 instances**: Virtual machines with configurable RAM, CPU, and storage, where software dependencies can be installed via Conda. 
+- **Terra.bio**: A cloud-native platform built on Google Cloud that provides pre-configured workflows, data management tools, and collaborative features specifically for biomedical research. Terra offers ready-to-use implementations of GATK and other genomics pipelines without requiring extensive infrastructure setup.
+- **Cancer Genomics Cloud (CGC)**: A cloud platform powered by **Seven Bridges** that provides specialized workflows for cancer genomics, including TCGA and other cancer datasets access, pre-configured analysis pipelines, and collaborative workspaces optimized for cancer research.
+
+
+However, **cloud services incur financial costs**. See below **Table 1** showing the costs for each cloud platform.
+
+| Platform | Fee Structure & Requirements | Estimated WGS Cost (per sample) | Key Considerations & Additional Costs |
+|----------|-----------------------------|--------------------------------|--------------------------------------|
+| **AWS** | Pay-as-you-go for EC2 (compute) and S3 (storage). No platform fee. Requires AWS account and technical setup. | **$8 – $25** | • Highly instance-dependent<br>• Can drop to $3-5 with spot instances<br>• Data transfer/egress fees apply<br>• Storage costs accumulate over time<br>• Free Tier: 12 months of limited resources |
+| **Terra.bio** | Direct passthrough of **GCP (Google Cloud Platform)** rates with **no markup**. Requires active Google Cloud billing account. Optional premium features may have separate fees. | **$6 – $15** | • Costs match GCP rates exactly<br>• Preemptible VMs reduce costs by 70-80%<br>• Additional: Persistent disks, data egress<br>• Free Trial: $300 credit for new GCP users |
+| **CGC (Cancer Genomics Cloud)** | Google/AWS cloud costs **plus 15-30% platform fee**. Often covered by NIH/NCI Cloud Credits for cancer researchers. Requires platform account. | **$15 – $40** | • Includes workflow management & support<br>• Optimized cancer genomics pipelines<br>• Higher baseline due to platform fee<br>• NCI Cloud Credits: Up to $10,000 annually for qualified researchers |
+
+>**Note on Cloud Cost Estimates**: The costs above are approximate and can vary significantly based on pipeline efficiency, data volume, storage strategy, and regional pricing. All three platforms offer free tiers or credits for new users: AWS Free Tier (12 months), Google Cloud Free Trial ($300 credit), and NCI Cloud Credits for cancer researchers. For educational purposes, consider starting with small datasets or using free credits before scaling to full WGS analyses.
+
 Therefore, for learners who prefer to work locally — typically with 8–16 GB RAM and limited disk storage (<60 GB) — it becomes essential to carefully select small sequencing datasets and design lightweight Conda environments. Equally important is the creation of a simple and efficient analysis pipeline and a well-defined folder structure.
 
-In practice, FASTQ file sizes vary widely depending on the sequencing strategy and target region. Small targeted sequencing panels may generate FASTQ files smaller than 1 GB, whereas larger experiments such as whole-exome sequencing (WES) or whole-genome sequencing (WGS) can easily produce tens to hundreds of gigabytes per sample. For users working on local machines with limited RAM and disk space, this variability has a direct impact on dataset selection and pipeline feasibility. Table 1 provides representative examples of FASTQ file sizes from cancer-related datasets deposited in the NCBI Sequence Read Archive (SRA).
+In practice, FASTQ file sizes vary widely depending on the sequencing strategy and target region. Small targeted sequencing panels may generate FASTQ files smaller than 1 GB, whereas larger experiments such as whole-exome sequencing (WES) or whole-genome sequencing (WGS) can easily produce tens to hundreds of gigabytes per sample. For users working on local machines with limited RAM and disk space, this variability has a direct impact on dataset selection and pipeline feasibility. **Table 2** provides representative examples of FASTQ file sizes from cancer-related datasets deposited in the NCBI Sequence Read Archive (SRA).
 
-**Table 1. Representative FASTQ file sizes from cancer-related SRA datasets**
+**Table 2. Representative FASTQ file sizes from cancer-related SRA datasets**
 
 | **Size Category** | **Estimated FASTQ Download Size (GB)** | **Sequencing Strategy** | **Example SRA Run (approx.)** | **Cancer Type / Comments** |
 |------------------|----------------------------------------|-------------------------|-------------------------------|---------------------------|
@@ -276,7 +293,7 @@ SCHEMA : NCBI:SRA:Illumina:db#2            # Illumina reads forward and reverse
 FMT    : sharq                             # Compressed format
 ```
 
-**Table 2: Interpretation of** `vdb-dump --info`.
+**Table 3: Interpretation of** `vdb-dump --info`.
 
 | **SCHEMA**                       | **FMT** | **What it really is**                              | **Suitable for FASTQ-first pipelines?** |
 | -------------------------------- | ------- | -------------------------------------------------- | --------------------------------------- |
@@ -291,7 +308,7 @@ FMT    : sharq                             # Compressed format
 If `SCHEMA` contains `align`, the dataset is **not raw**.
 
 
-**Table 3: Example of SRA dataset with raw and aligned FASTQ files.**
+**Table 4: Example of SRA dataset with raw and aligned FASTQ files.**
 
 | Accession   | SCHEMA       | FMT   | Raw FASTQ? |
 | ----------- | ------------ | ----- | ---------- |
@@ -301,7 +318,7 @@ If `SCHEMA` contains `align`, the dataset is **not raw**.
 | SRR35529667 | SRA:Illumina | sharq | ✅ Yes      | 
 | SRR32679397 | SRA:Illumina | sharq | ✅ Yes      | 
 
-As shown in Table 3, both raw and aligned FASTQ datasets can be used but the `SRR20701732` is not really a raw FASTQ file.
+As shown in Table 3 and Table 4, both raw and aligned FASTQ datasets can be used but the `SRR20701732` is not really a raw FASTQ file.
 
 **4. Download the SRA dataset**
 
