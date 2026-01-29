@@ -3006,6 +3006,7 @@ c) **IMPACT**:  Filter based on "MODERATE"" and "HIGH". See **Table 9** about **
 | LOW       | Minimal protein effect                                | synonymous_variant                            | None             | Usually benign            | ❌ No |
 | MODIFIER  | No direct effect on protein                           | intronic, non-coding, intergenic             | None             | Not relevant              | ❌ No |
 
+>**Note**: A full picture with all **Consequence** and **IMPACT** categories found in gene variants displayed on the transcript structure and organised as table can be found in Ensembl website: <*https://www.ensembl.org/info/genome/variation/prediction/predicted_data.html>
 
 9. **Save** the filtered table files from VEP -> move files to `~/annotation/`
 
