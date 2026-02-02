@@ -11,7 +11,7 @@
 - [Trimming + QC](#trimming--qc--02_trimsh)
 - [Alignment and BAM preprocessing](#alignment-and-bam-preprocessing--03_align__bam_preprocesssh)
     - [Folder structure: From QC – Trimming/Filtering – Alignment + BAM preprocessing](#folder-structure-from-qc---trimmingfiltering---alignment--bam-preprocessing)
-- [Variant calling with Mutect2](#variant-calling-with-mutect2--04_mutect2sh)
+- [Variant calling with Mutect2](#variant-calling-with-mutect2)
     - [Essential files for somatic variant calling with GATK Mutect2](#essential-files-for-somatic-variant-calling-with-gatk-mutect2)
     - [Folder structure: Input & Output files of Mutect2 Variant calling](#folder-structure-input--output-files-of-mutect2-variant-calling)
 - [Orientation bias model](#orientation-bias-model--05_learn_read_orientation_modelsh)
