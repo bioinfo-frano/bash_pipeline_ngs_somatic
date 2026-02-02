@@ -36,13 +36,22 @@ Perform a **somatic DNA-NGS analysis** following GATK best practices:
 
 ---
 
+### 3️⃣ Part III – Variant Visualization
+- Learn how to visualize annotated variants in IGV
+- Check potential artifacts and confirm annotated variants
+
+➡️ **Go to analysis:**  
+👉 [Part III – Variant Visualization](README_igv_Part3-3.md)
+
+---
+
 ## 🔮 Future extensions
 
 This repository is designed to grow. Planned additions include:
 
-- **Part III – Somatic - IGV analysis**
-  - Learn how to visualize annotated variants in IGV
-  - Check potential artifacts and confirm annotated variants
+- **Part IV - Synthetic pipeline (somatic analysis)**
+  - Bash pipeline
+  - Nextflow
 
 - **Part IV – Germline analysis**
   - Additional datasets
