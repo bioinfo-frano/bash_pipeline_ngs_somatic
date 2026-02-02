@@ -136,9 +136,9 @@ The IGV will look more or less like in **Figure 1 (right)**.
   
 >**Key message**: Ideally, **IGV must use the same reference genome that was used for alignment**. Unfortunately, IGV doesn't recognise .fasta reference genomes. There's a way to do so but it implies the use of **igvtools**; however, this is out of the scope of this tutorial.
 
-5. Click on "Go" and IGV will show now the specifics on **NRAS**.
+5. Click on "Go" and IGV will show now the specifics on **NRAS** and the location of the SNP.
 
-In Figure 2 (left), it's possible to see that **NRAS** is in the **chr.1**. On top, the **VCF** panel is showing exactly the location where the SNP is.
+In Figure 2 (left), it's possible to see that **NRAS** is in the **chr.1**. The **VCF** panel shows that the location of the SNP at the **exon 3** (Exon 3/7)
 
 **Reminder**: Visit 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table)
 
