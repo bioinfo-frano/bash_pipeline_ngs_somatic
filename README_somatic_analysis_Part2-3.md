@@ -3155,7 +3155,9 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 | **PIK3CA** | c.1624G>A | 3:179218294 | p.Glu542Lys | Missense | 10/21 | 27.7% | - | Deleterious | Probably damaging | Likely pathogenic | 0.880 | ✅ Hotspot |
 
 
-### Final clinical report table 👉 [SRR30536566_clinical_report_improved.tsv](SRR30536566_annotated_variants_clinical_report_improved.tsv)
+### Final clinical report table 
+
+👉 [SRR30536566_clinical_report_improved.tsv](SRR30536566_annotated_variants_clinical_report_improved.tsv)
 
 | Variant | Location | Consequence | Impact | Symbol | Gene | Exon | HGVSc_cDNA | HGVSp | Protein_pos | AA_change | Codons | REF_ALLELE | UPLOADED_ALLELE | STRAND | Canonical | MANE_Select | SIFT_prediction | PolyPhen_prediction | Tumor_AF | gnomAD_AF | Clinical_Significance | Somatic | PubMed | ClinPred |
 |---------|----------|-------------|--------|--------|------|------|------------|-------|-------------|-----------|--------|------------|-----------------|--------|-----------|-------------|-----------------|---------------------|----------|-----------|------------------------|--------|--------|----------|
