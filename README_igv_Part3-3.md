@@ -108,12 +108,9 @@ When opening IGV, the window will be almost completely blank as shown in **Figur
   - Select: **Human (hg38 1kg/GATK)**
 3. Load **BAM**, **BED** and **VCF** files
   - **Genomes** > **Load from File...**
-4. Type the name of one of the seven genes of dataset `SRR30536566`. 
+4. Type the name of one of the seven genes of dataset `SRR30536566`. For example "**NRAS**".
 
-**Reminder** of the seven genes from **Targeted sequencing panels** in  
-
-[Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis_Part2-3.md#variant-calling-with-mutect2--04_mutect2sh)
-
+**Reminder**: seven genes from **Targeted sequencing panels** in 👉 [Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis_Part2-3.md#variant-calling-with-mutect2--04_mutect2sh)
 
 ```bash
 Final CRC 7-gene BED file contents:
@@ -127,8 +124,6 @@ chr3	179148113	179240093	PIK3CA
 chr7	140719326	140924929	BRAF
 ```
 
-[Part II – Somatic analysis](README_somatic_analysis_Part2-3.md)
-
 The IGV will look more or less like in **Figure 1 (right)**. 
 
 
@@ -141,7 +136,12 @@ The IGV will look more or less like in **Figure 1 (right)**.
   
 >**Key message**: Ideally, **IGV must use the same reference genome that was used for alignment**. Unfortunately, IGV doesn't recognise .fasta reference genomes. There's a way to do so but it implies the use of **igvtools**; however, this is out of the scope of this tutorial.
 
+5. Click on "Go" and IGV will show now the specifics on **NRAS**.
 
+In Figure 2 (left), it's possible to see that **NRAS** is in the **chr.1**. On top, the **VCF** panel is showing exactly the location where the SNP is.
+
+**Reminder**: Visit "**Final clinical report table**" 👉 [Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis_Part2-3.md#variant-calling-with-mutect2--04_mutect2sh)
+-
 
 
 
