@@ -23,7 +23,7 @@
     - [Folder structure: after running Post-Filter of filtered variants](#folder-structure-after-running-post-filter-of-filtered-variants)
 - [Variant annotation](#variant-annotation--vep-online)
     - [Creating SRR30536566 clinical report](#creating-srr30536566_clinical_reporttsv)
-    - [Final clinical report table]([srr30536566_clinical_report_improvedtsv](srr30536566_annotated_variants_clinical_report_improvedtsv))
+    - [Final clinical report table](srr30536566_annotated_variants_clinical_report_improvedtsv)
     - [Folder structure: after VEP-Online variant annotation](#folder-structure-after-vep-online-variant-annotation)
 - [Clinical annotation](#clinical-annotation)
 
