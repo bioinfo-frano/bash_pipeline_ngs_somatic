@@ -112,6 +112,8 @@ When opening IGV, the window will be almost completely blank as shown in **Figur
 
 **Reminder** of the seven genes from **Targeted sequencing panels** in  
 [Part II – Somatic analysis](README_somatic_analysis_Part2-3.md)
+[Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis_Part2-3.md#variant-calling-with-mutect2)
+
 
 ```bash
 Final CRC 7-gene BED file contents:
