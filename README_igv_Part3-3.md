@@ -55,28 +55,9 @@ Go to <https://igv.org/doc/desktop/#DownloadPage/>
 
 ### Loading the data
 
-Ideally, in order to have a comprehensive view of the analysed DNA-NGS dataset, there should be loaded 5 different types of files. The files used for the visualization are those derived from the analysis of dataset `SRR30536566`, which was done in  👉 [Part II – Somatic analysis](README_somatic_analysis_Part2-3.md). The files are:
+Ideally, in order to have a comprehensive view of the analysed DNA-NGS dataset, there should be loaded 5 different types of files. The files used for the visualization are those derived from the analysis of dataset `SRR30536566`, which was done in  👉 [Part II – Somatic analysis](README_somatic_analysis_Part2-3.md). **Table 1** shows a full list of files necessary for IGV visualization.
 
-- **.bam**: `SRR30536566.sorted.markdup.md.bam`
-
-
-
-- **.bam.bai**: `SRR30536566.sorted.markdup.md.bam.bai`
-
-
-
-- **.vcf.gz**: `SRR30536566.postfiltered.vcf.gz`
-
-
-
-- **.vcf.gz.tbi**: `SRR30536566.postfiltered.vcf.gz.tbi`
-
-
-- **.gtf.gz**: `gencode.v38.annotation.gtf.gz`
-
-
-- **.bed** or **sorted.bed**: `crc_panel_7genes_sorted.hg38.bed`
-
+**Table 1A**: Files to upload into IGV.
 
 | Format File | File from `SRR30536566` | Purpose in IGV | Why It's Needed |
 |-------------|-------------------------|----------------|-----------------|
@@ -88,4 +69,32 @@ Ideally, in order to have a comprehensive view of the analysed DNA-NGS dataset, 
 | **BED** | `crc_panel_7genes_sorted.hg38.bed` | Highlights **targeted sequencing regions** as a colored track | Shows which genomic regions were actually sequenced in your panel |
 
 
+**Table 1B**: Germline Database File (**Optional**) to upload into IGV.
 
+| Format File | File from Resources | Purpose in IGV | Important Notes |
+|-------------|---------------------|----------------|-----------------|
+| **VCF** (germline database) | `af-only-gnomad.hg38.vcf.gz` (from somatic_resources/) | Shows **population allele frequencies** at known germline variant positions | **⚠️ WARNING**: This shows common germline variants in the general population, NOT a patient-matched normal. It helps identify variants that are likely germline (common in population) vs. potentially somatic (rare). |
+
+### Using Population Databases as Reference
+
+Since no matched normal sample is available for `SRR30536566`, you can use population databases as a reference:
+
+1. **gnomAD VCF** (`af-only-gnomad.hg38.vcf.gz`):
+   - Shows **population allele frequencies** at millions of positions
+   - **Purpose**: Identify variants that are common in the general population (likely germline)
+   - **Limitation**: Cannot prove a variant is somatic, only suggests it might be germline if common
+
+2. **What to look for**:
+   - If your variant overlaps a gnomAD position with high allele frequency (>1%), it's likely a germline variant
+   - If no gnomAD entry exists or frequency is very low (<0.1%), it *could* be somatic
+   - **Important**: Rare germline variants exist, so absence from gnomAD doesn't guarantee somatic status
+
+3. **Clinical context**:
+   - In clinical practice, **this is insufficient** - you need patient-matched normal
+
+4. For research/tutorial purposes, it provides useful context
+
+### Loading files to IGV.
+
+
+   
