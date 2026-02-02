@@ -5,7 +5,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Integrative Genomics Viewer (IGV)](#integrative-genomics-viewer-(igv))
+- [Integrative Genomics Viewer (IGV)](#integrative-genomics-viewer-igv)
 - [Bash shell scripting for NGS-DNA Somatic analysis](#v-bash-shell-scripting-for-ngs-dna-somatic-analysis)
 - [Quality control (QC)](#quality-control-qc--01_qcsh)
 - [Trimming + QC](#trimming--qc--02_trimsh)
