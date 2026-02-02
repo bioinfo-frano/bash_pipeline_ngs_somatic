@@ -140,11 +140,8 @@ The IGV will look more or less like in **Figure 1 (right)**.
 
 In Figure 2 (left), it's possible to see that **NRAS** is in the **chr.1**. On top, the **VCF** panel is showing exactly the location where the SNP is.
 
-**Reminder**: Visit 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md##final-clinical-report-table)
--
+**Reminder**: Visit 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table)
 
-xxxl
-[Final clinical report table](#final-clinical-report-table)
 
 
 
