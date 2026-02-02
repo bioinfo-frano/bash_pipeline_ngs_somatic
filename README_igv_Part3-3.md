@@ -111,7 +111,7 @@ When opening IGV, the window will be almost completely blank as shown in **Figur
 4. Type the name of one of the seven genes of dataset `SRR30536566`. 
 
 **Reminder** of the seven genes from **Targeted sequencing panels** in  
-[Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis.md#variant-calling-with-mutect2)
+[Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis.md#variant-calling-with-mutect2--04_mutect2sh)
 
 ```bash
 Final CRC 7-gene BED file contents:
