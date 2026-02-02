@@ -111,7 +111,7 @@ When opening IGV, the window will be almost completely blank as shown in **Figur
 4. Type the name of one of the seven genes of dataset `SRR30536566`. 
 
 **Reminder** of the seven genes from **Targeted sequencing panels** in  
-[Part II – Somatic analysis](README_somatic_analysis_Part2-3.md)
+
 [Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis_Part2-3.md#variant-calling-with-mutect2)
 
 
@@ -126,6 +126,8 @@ chr19	49635291	49640143	RRAS
 chr3	179148113	179240093	PIK3CA
 chr7	140719326	140924929	BRAF
 ```
+
+[Part II – Somatic analysis](README_somatic_analysis_Part2-3.md)
 
 The IGV will look more or less like in **Figure 1 (right)**. 
 
