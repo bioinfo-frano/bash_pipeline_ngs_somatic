@@ -61,13 +61,13 @@ Ideally, in order to have a comprehensive view of the analysed DNA-NGS dataset, 
 
 | Format File | File from `SRR30536566` | Purpose in IGV | Why It's Needed |
 |-------------|-------------------------|----------------|-----------------|
-| **Reference FASTA** (optional but recommended) | `Homo_sapiens_assembly38.fasta` | Provides the **reference genome sequence** against which the reads were aligned | IGV must use the same reference genome build (and contig naming) that was used for alignment. Loading your exact FASTA ensures coordinate compatibility and correct reference base display.<br>⚠️ **Problem**: It's not easy to load |
+| **Reference FASTA** (optional but recommended) | `Homo_sapiens_assembly38.fasta` | Provides the **reference genome sequence** against which the reads were aligned | IGV must use the same reference genome build (and contig naming) that was used for alignment. Loading your exact FASTA ensures coordinate compatibility and correct reference base display.<br>⚠️ **Problem**: It's not easy to load into IGV. |
 | **BAM** | `SRR30536566.sorted.markdup.md.bam` | Shows **aligned sequencing reads** mapped to the reference genome with coverage depth and read details | Core visualization file - shows actual read alignments, base quality scores, chromosome coordinates and how reads support variant calls. BAM + Index together are the minimum files for IGV visualization. |
-| **BAM Index** | `SRR30536566.sorted.markdup.md.bam.bai` | **Index** for the BAM file allowing fast navigation/access to any genomic position | Without this index, IGV would be extremely slow or unable to load large BAM files |
-| **VCF** (compressed) | `SRR30536566.postfiltered.vcf.gz` | Displays **variant calls** as colored bars showing variant positions, alleles, and quality metrics | Allows visual confirmation of variant calls against aligned reads |
-| **VCF Index** | `SRR30536566.postfiltered.vcf.gz.tbi` | **Index** for the VCF file enabling quick navigation to variant positions | Essential for random access in compressed VCF files |
+| **BAM Index** | `SRR30536566.sorted.markdup.md.bam.bai` | **Index** for the BAM file allowing fast navigation/access to any genomic position | Without this index, IGV would be extremely slow or unable to load large BAM files. |
+| **VCF** (compressed) | `SRR30536566.postfiltered.vcf.gz` | Displays **variant calls** as colored bars showing variant positions, alleles, and quality metrics | Allows visual confirmation of variant calls against aligned reads. |
+| **VCF Index** | `SRR30536566.postfiltered.vcf.gz.tbi` | **Index** for the VCF file enabling quick navigation to variant positions | Essential for random access in compressed VCF files. |
 | **GTF** (compressed) | `gencode.v38.annotation.gtf.gz` | Shows **gene annotations** - gene boundaries (start/stop genomic positions), codons & exons, gene strand (pos/neg), transcripts as separate tracks.<br> Some **.gtf** files provide information about the name and location of the specific primers used for targeted amplicon generation | Provides biological context (is variant in a gene? in an exon? which transcript?) |
-| **BED**<br>(browser extensible data) | `crc_panel_7genes_sorted.hg38.bed` | Highlights **targeted sequencing regions** as a colored track | Shows which genomic regions were actually sequenced in your panel.<br>Also shows start/stop regions of targeted genes. Usually, this file is provided by the producer of the gene panel to show the gene regions targeted by the primers they created |
+| **BED**<br>(browser extensible data) | `crc_panel_7genes_sorted.hg38.bed` | Highlights **targeted sequencing regions** as a colored track | Shows which genomic regions were actually sequenced in your panel.<br>Also shows start/stop regions of targeted genes. Usually, this file is provided by the producer of the gene panel to show the gene regions targeted by the primers they created. |
 
 
 **Table 1B**: Germline Database File (**Optional**) to upload into IGV.
@@ -76,7 +76,7 @@ Ideally, in order to have a comprehensive view of the analysed DNA-NGS dataset, 
 |-------------|---------------------|----------------|-----------------|
 | **VCF** (germline database) | `af-only-gnomad.hg38.vcf.gz`<br>(from `/somatic_resources/`) | Shows **population allele frequencies** at known germline variant positions | **⚠️ WARNING**: This shows common germline variants in the general population, NOT a patient-matched normal. It helps identify variants that are likely germline (common in population) vs. potentially somatic (rare). |
 
->**Note**: VCF, GTF and BED files are \ul{supporting files}, that means, they will help to understand better the visualization.
+>**Note**: VCF, GTF and BED files are **supporting files**, that means, they will help to understand better the visualization.
 
 ### Using Population Databases as Reference
 
@@ -103,7 +103,7 @@ When opening IGV, the window will be almost completely blank as shown in **Figur
 
 1. Click on **IGV** icon
 2. Load "**hg38**" huma reference genome
-  - **Genomes** > **Download Hosted Genome** → Pop-up window called **Hosted Genomes**
+  - **Genomes** > **Download Hosted Genome** → Pop-up window called **<span style="color:red">Hosted Genomes</span>**
   - Type "Human"
   - Select: **Human (hg38 1kg/GATK)**
 3. Load **BAM**, **BED** and **VCF** files
@@ -111,6 +111,7 @@ When opening IGV, the window will be almost completely blank as shown in **Figur
 
 After loading reference genome, BAM files and supporting files, type in the little window one of the seven genes from dataset `SRR30536566`. The IGV will look more or less like in **Figure 1 (right)**. 
 
+**Figure 1**: First glance at IGV (left panel and after loading IGV with the files)
 
 ![Figure 1: First glance at IGV (left panel and after loading IGV with the files)](images/IGV_starting_1.png)
 
