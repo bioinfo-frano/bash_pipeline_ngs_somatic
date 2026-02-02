@@ -103,7 +103,7 @@ When opening IGV, the window will be almost completely blank as shown in **Figur
 
 1. Click on **IGV** icon
 2. Load "**hg38**" huma reference genome
-  - **Genomes** > **Download Hosted Genome** → Pop-up window called **<span style="color:red">Hosted Genomes</span>**
+  - **Genomes** > **Download Hosted Genome** → Pop-up window called <span style="color:red;font-weight:bold">Hosted Genomes</span>
   - Type "Human"
   - Select: **Human (hg38 1kg/GATK)**
 3. Load **BAM**, **BED** and **VCF** files
