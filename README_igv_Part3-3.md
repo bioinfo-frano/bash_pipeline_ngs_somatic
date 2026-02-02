@@ -103,22 +103,41 @@ When opening IGV, the window will be almost completely blank as shown in **Figur
 
 1. Click on **IGV** icon
 2. Load "**hg38**" huma reference genome
-  - **Genomes** > **Download Hosted Genome** → Pop-up window called <span style="color:red;font-weight:bold">Hosted Genomes</span>
+  - **Genomes** > **Download Hosted Genome** → Pop-up window called **Hosted Genomes**
   - Type "Human"
   - Select: **Human (hg38 1kg/GATK)**
 3. Load **BAM**, **BED** and **VCF** files
   - **Genomes** > **Load from File...**
+4. Type the name of one of the seven genes of dataset `SRR30536566`. 
 
-After loading reference genome, BAM files and supporting files, type in the little window one of the seven genes from dataset `SRR30536566`. The IGV will look more or less like in **Figure 1 (right)**. 
+**Reminder** of the seven genes from **Targeted sequencing panels** in  
+[Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis.md#variant-calling-with-mutect2)
+
+```bash
+Final CRC 7-gene BED file contents:
+Chr Gene_Start  Gene_End  Gene_Name
+chr1	114704468	114716771	NRAS
+chr10	87863624	87971930	PTEN
+chr12	25205245	25250936	KRAS
+chr15	66386836	66491544	MAP2K1
+chr19	49635291	49640143	RRAS
+chr3	179148113	179240093	PIK3CA
+chr7	140719326	140924929	BRAF
+```
+
+The IGV will look more or less like in **Figure 1 (right)**. 
+
 
 **Figure 1**: First glance at IGV (left panel and after loading IGV with the files)
 
 ![Figure 1: First glance at IGV (left panel and after loading IGV with the files)](images/IGV_starting_1.png)
 
 
->**Note**: The **GTF** was not loaded into IGV just because it requieres more than 8GB RAM avaliable
+>**Note**: The **GTF** file was not loaded into IGV because it requieres more than 8GB RAM available.
   
->**Key message**: Ideally: **IGV must use the same reference genome that was used for alignment**. Unfortunately, IGV doesn't not recognise .fasta reference genomes. There's a way to do so but it implies to use **igvtools**, which is out of the scope of this tutorial.
+>**Key message**: Ideally, **IGV must use the same reference genome that was used for alignment**. Unfortunately, IGV doesn't recognise .fasta reference genomes. There's a way to do so but it implies the use of **igvtools**; however, this is out of the scope of this tutorial.
+
+
 
 
 
