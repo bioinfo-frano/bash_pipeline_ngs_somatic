@@ -128,7 +128,7 @@ chr7	140719326	140924929	BRAF
 The IGV will look more or less like in **Figure 1 (right)**. 
 
 
-**Figure 1**: First glance at IGV (left panel and after loading IGV with the files)
+**Figure 1**: First glance at IGV (left panel) and after loading BAM and supporting files.
 
 ![Figure 1: First glance at IGV (left panel and after loading IGV with the files)](images/IGV_starting_1.png)
 
