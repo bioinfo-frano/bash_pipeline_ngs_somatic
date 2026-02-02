@@ -53,7 +53,7 @@ Go to <https://igv.org/doc/desktop/#DownloadPage/>
 
 3. Open IGV - double click
 
-### Loading the data
+### Type of files
 
 Ideally, in order to have a comprehensive view of the analysed DNA-NGS dataset, there should be loaded 5 different types of files. The files used for the visualization are those derived from the analysis of dataset `SRR30536566`, which was done in  👉 [Part II – Somatic analysis](README_somatic_analysis_Part2-3.md). **Table 1** shows a full list of files necessary for IGV visualization.
 
@@ -73,7 +73,7 @@ Ideally, in order to have a comprehensive view of the analysed DNA-NGS dataset, 
 
 | Format File | File from Resources | Purpose in IGV | Important Notes |
 |-------------|---------------------|----------------|-----------------|
-| **VCF** (germline database) | `af-only-gnomad.hg38.vcf.gz` (from somatic_resources/) | Shows **population allele frequencies** at known germline variant positions | **⚠️ WARNING**: This shows common germline variants in the general population, NOT a patient-matched normal. It helps identify variants that are likely germline (common in population) vs. potentially somatic (rare). |
+| **VCF** (germline database) | `af-only-gnomad.hg38.vcf.gz`<br>(from `/somatic_resources/`) | Shows **population allele frequencies** at known germline variant positions | **⚠️ WARNING**: This shows common germline variants in the general population, NOT a patient-matched normal. It helps identify variants that are likely germline (common in population) vs. potentially somatic (rare). |
 
 ### Using Population Databases as Reference
 
@@ -94,7 +94,11 @@ Since no matched normal sample is available for `SRR30536566`, you can use popul
 
 4. For research/tutorial purposes, it provides useful context
 
-### Loading files to IGV.
+### Loading files to IGV
+
+
+
+
 
 
    
