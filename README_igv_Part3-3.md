@@ -151,7 +151,7 @@ From step number 4:
 
 - has a read coverage for mainly exons that extends a bit to the beginning and end of introns
 
-- has a SNP located in the **exon 3** as the **VCF** panel shows as a single line
+- has a SNV located in the **exon 3** as the **VCF** panel indicates a single base (two blue vertical lines)
 
 - is full covered by the **BED** file
 
@@ -159,7 +159,7 @@ From step number 4:
 
 **Figure 2**: **NRAS** gene structure overview at glance.
 
-![Figure 2](images/IGV_NRAS_zoom_out_1.png)
+![Figure 2](images/IGV_NRAS_zoom_out_1_labels.png)
 
 To visualize in more detail the SNP:
 
