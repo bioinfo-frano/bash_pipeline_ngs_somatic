@@ -182,8 +182,6 @@ It will pop up two windows:
    
    ✔ Matches expectation
    
-   - Key fields explained
-   
    **AD**: `648,115`
    Allele Depth
    
@@ -217,13 +215,13 @@ It will pop up two windows:
    Type: SNP
    ```
 
-   - **TLOD**: `323.24`  ✔ extremely strong
+   **TLOD**: `323.24`  ✔ extremely strong
    Tumor Log Odds → **This is the most important somatic quality metric**
    It measures confidence that variant ≠ sequencing noise
      - 10 is decent
      - 100 is excellent
    
-   - **AS_SB_TABLE**: `[328, 320|61, 54]`  ✔ No strand bias
+   **AS_SB_TABLE**: `[328, 320|61, 54]`  ✔ No strand bias
    Same strand-bias numbers as above:
    
    ```bash
@@ -231,23 +229,23 @@ It will pop up two windows:
    Alt: 61 F / 54 R
    ```
 
-   - **MMQ**: `[60, 60]` ✔ Maximum MQ → excellent alignment
+   **MMQ**: `[60, 60]` ✔ Maximum MQ → excellent alignment
    Median Mapping Quality
      - Ref reads: 60
      - Alt reads: 60
 
-  - **MBQ**: `[41, 41]` ✔ Both alleles high quality
+  **MBQ**: `[41, 41]` ✔ Both alleles high quality
   Median Base Quality
   
-  - **GERMQ**: `93`
+  **GERMQ**: `93`
   Germline quality score
     - High value means **unlikely germline**
     - Supports somatic interpretation
     
-  - **POPAF**: `5.6` Estimated population allele frequency (% × 10⁻⁴ scale depending on caller)
+  **POPAF**: `5.6` Estimated population allele frequency (% × 10⁻⁴ scale depending on caller)
   Low value → not common in population
   
-  - **AS_FilterStatus**: SITE
+  **AS_FilterStatus**: SITE
   Variant passed all site-level filters.
 
 8. Click on the amino acid **Q** on track "Sequence" at the same position of the SNV
