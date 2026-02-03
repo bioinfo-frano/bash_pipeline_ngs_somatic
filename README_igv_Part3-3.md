@@ -147,7 +147,7 @@ From step number 4:
 
 - is located on **chr1**
 
-- has 7 exons represented as blue boxes (thin lines are introns) according to the **hg38**
+- has 7 exons represented as blue thick lines (thin lines are introns) according to the **hg38**
 
 - has a read coverage for mainly exons that extends a bit to the beginning and end of introns
 
@@ -163,11 +163,118 @@ From step number 4:
 
 To visualize in more detail the SNP:
 
-6. Zoom in by increasing sliding bar to **+**
+6. Zoom in by increasing sliding bar to **+** and center at exon 3, where the SNV is.
+
+7. Click on the two blue lines from the **VCF** track.
+
+It will pop up two windows:
+
+- **Genotype Information**: Sample-level, from FORMAT column of **VCF**.
+
+   - Header
+   
+   ```bash
+   Sample: DMBEL-EIDR-071
+   Genotype: G/T
+   Type: HET
+   ```
+   ✔ Heterozygous NRAS Q61 mutation
+   
+   ✔ Matches expectation
+   
+   - Key fields explained
+   
+   **AD**: `648,115`
+   Allele Depth
+   
+   - 648 reads supporting reference (G)
+   - 115 reads supporting alternate (T)
+   
+   **Allele Frequency: 0.154** → Calculated as: `115 / (648 + 115) ≈ 0.154`
+   
+   **Depth**: 763 → Total reads at this position (good coverage).
+   
+   **Strand Bias**: `328,320,61,54` ✔ Alt allele well balanced → trustworthy variant
+   
+   ```bash
+   Ref Forward: 328
+   Ref Reverse: 320
+   Alt Forward: 61
+   Alt Reverse: 54
+   ```
+   
+   **Quality**: `-1`
+   This is normal for somatic callers (Mutect2)
+   
+
+- **Variant attributes**: Site-level (INFO fields)
+
+   - Header
+
+   ```bash
+   Reference: G*
+   Alternate: T
+   Type: SNP
+   ```
+
+   - **TLOD**: `323.24`  ✔ extremely strong
+   Tumor Log Odds → **This is the most important somatic quality metric**
+   It measures confidence that variant ≠ sequencing noise
+     - 10 is decent
+     - 100 is excellent
+   
+   - **AS_SB_TABLE**: `[328, 320|61, 54]`  ✔ No strand bias
+   Same strand-bias numbers as above:
+   
+   ```bash
+   Ref: 328 F / 320 R
+   Alt: 61 F / 54 R
+   ```
+
+   - **MMQ**: `[60, 60]` ✔ Maximum MQ → excellent alignment
+   Median Mapping Quality
+     - Ref reads: 60
+     - Alt reads: 60
+
+  - **MBQ**: `[41, 41]` ✔ Both alleles high quality
+  Median Base Quality
+  
+  - **GERMQ**: `93`
+  Germline quality score
+    - High value means **unlikely germline**
+    - Supports somatic interpretation
+    
+  - **POPAF**: `5.6` Estimated population allele frequency (% × 10⁻⁴ scale depending on caller)
+  Low value → not common in population
+  
+  - **AS_FilterStatus**: SITE
+  Variant passed all site-level filters.
+
+8. Click on the amino acid **Q** on track "Sequence" at the same position of the SNV
+
+It will pop up one window:
+
+```markdown
+name: NRAS
+location: chr1:114704469-114716771 (-)
+id: NM_002524.5
+--------------
+Exon number: 3
+Amino acid coding number: 61
+chr1:114713800-114713978
+https://www.ncbi.nlm.nih.gov/gene/?term=NM_002524.5
+```
+
+**Figure 3** shows the pop up windows with the information about variant attribute, genotype and amino acid of NRAS's SNV.
+
+![Figure 3](images/IGV_NRAS_zoom_in_2_labeled.png)
+
+### IGV-based variant interpretation
+***Visual inspection in IGV (reference genome: hg38 1kg/GATK) confirmed a heterozygous somatic single-nucleotide variant in the NRAS gene (NM_002524.5), located in exon 3 at genomic position chr1:114,713,909 (G>T). This variant affects codon 61, resulting in an amino-acid substitution from glutamine (Q) to lysine (K) (p.Gln61Lys, Q61K).***
+***The variant is supported by high read depth (~760×), a variant allele frequency of ~15%, balanced forward and reverse strand representation, high mapping and base qualities, and a strong somatic log-odds score (TLOD = 323), with no evidence of strand bias or sequencing artifact. These features are consistent with a high-confidence somatic NRAS Q61K mutation.***
 
 
-
-**Reminder**: Visit 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table)
+**Visit** 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table) and compared the information about NRAS (G>T | Q61) variant with the one provided by IGV.
 
 
 
