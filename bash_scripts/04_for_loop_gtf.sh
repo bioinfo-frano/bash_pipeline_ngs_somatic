@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GTF="gencode.v38.annotation.gtf.gz"
+GTF="../reference/GRCh38/intervals/gencode.v38.annotation.gtf.gz"
 GENES=("KRAS" "NRAS" "BRAF" "PIK3CA" "PTEN" "RRAS" "MAP2K1")
 
 echo "Checking for required genes in $GTF..."

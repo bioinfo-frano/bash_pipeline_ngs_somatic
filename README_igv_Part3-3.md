@@ -16,7 +16,7 @@
 
 ## Introduction
 
-The last part of this basic tutorial on DNA-NGS analysis of a small FASTQ dataset consists of visualizing the reads mapped to the reference genome and confirm the called variants shown in [Part II – Somatic analysis](README_somatic_analysis_Part2-3.md) using the dataset `SRR30536566`. A software widely used for this purpose is called **IGV**.
+The last part of this basic tutorial on DNA-NGS analysis of a small FASTQ dataset consists of visualizing the reads mapped to the reference genome and confirming the called variants shown in [Part II – Somatic analysis](README_somatic_analysis_Part2-3.md) using the dataset `SRR30536566`. A software widely used for this purpose is called **IGV**.
 
 In this section then, I will show you:
 
@@ -26,28 +26,28 @@ In this section then, I will show you:
 
 - how to load the data
 
-- and how IGV helps assessing whether variants are true from artifacts
+- and how IGV helps assess whether variants are real or artifacts
 
->**Note**: This tutorial will not show complex gene alterations like copy number variations (CNV), translocations or other types of structural variant (SV).
+> **Note**: This tutorial will not cover complex genomic alterations such as copy number variations (CNVs), translocations, or other types of structural variants (SVs).
 
 **Documentation**
 
 - <https://igv.org/>: Check "**Citing IGV**". Recommendation reference: <http://cancerres.aacrjournals.org/content/77/21/e31.long>
 - <https://igv.org/doc/desktop/>: Installation
-- **Best practices for variant calling in clinical sequencing **. DOI: <https://doi.org/10.1186/s13073-020-00791-w>
+- **Best practices for variant calling in clinical sequencing**. DOI: <https://doi.org/10.1186/s13073-020-00791-w>
 - Dr. Sarah Dean, PhD - <https://www.youtube.com/watch?v=VyNpu3ubAGY>: Excellent tutorial!
 
 
 ## Integrative Genomics Viewer (IGV)
 
-IGV is an ope-source tool for visualization of NGS data, allowing the observation of mapped reads to the reference genome from NGS datasets and the understanding of different types of variant calls from genomes more intuitively. In this sense, it's possible to explore different type of mutations, including single nucleotide variants (SNV) such as SNP and Indels, SV, but also RNA interference screens, gene expression, methylation and genomic annotations ([Robison, et al. 2011](https://www.nature.com/articles/nbt.1754)).
+IGV is an open-source tool for visualization of NGS data, allowing the observation of mapped reads to the reference genome from NGS datasets and the understanding of different types of variant calls from genomes more intuitively. In this sense, it's possible to explore different type of mutations, including single nucleotide variants (SNVs) and small insertions/deletions (indels), SV, but also RNA interference screens, gene expression, methylation and genomic annotations ([Robison, et al. 2011](https://www.nature.com/articles/nbt.1754)).
 
 
 ### IGV: Installation
 
 Go to <https://igv.org/doc/desktop/#DownloadPage/> 
 
-1. Click on the type of computer you have to downloading IGV. For those working with Mac, pay attention to the Chip your computer has (Apple or Intel Chip). Because IGV works with Java, I would recommend to download the package of IGV that **includes** Java.
+1. Click on the type of computer you have to download IGV. For those working with Mac, pay attention to the chip architecture your computer has (Apple or Intel Chip). Because IGV works with Java, I would recommend to download the package of IGV that **includes** Java.
 
 2. Once downloaded, unpack it. Then move the icon to Applications (for those having Mac).
 
@@ -55,7 +55,7 @@ Go to <https://igv.org/doc/desktop/#DownloadPage/>
 
 ### Type of files
 
-Ideally, in order to have a comprehensive view of the analysed DNA-NGS dataset, there should be loaded 5 different types of files. The files used for the visualization are those derived from the analysis of dataset `SRR30536566`, which was done in  👉 [Part II – Somatic analysis](README_somatic_analysis_Part2-3.md). **Table 1** shows a full list of files necessary for IGV visualization.
+Ideally, in order to have a comprehensive view of the analyzed DNA-NGS dataset, there should be loaded 5 different types of files. The files used for the visualization are those derived from the analysis of dataset `SRR30536566`, which was done in  👉 [Part II – Somatic analysis](README_somatic_analysis_Part2-3.md). **Table 1** shows a full list of files necessary for IGV visualization.
 
 **Table 1A**: Files to upload into IGV.
 
@@ -102,15 +102,15 @@ Since no matched normal sample is available for `SRR30536566`, you can use popul
 When opening IGV, the window will be almost completely blank as shown in **Figure 1 (left)**
 
 1. Click on **IGV** icon
-2. Load "**hg38**" huma reference genome
+2. Load "**hg38**" human reference genome
   - **Genomes** > **Download Hosted Genome** → Pop-up window called **Hosted Genomes**
   - Type "Human"
   - Select: **Human (hg38 1kg/GATK)**
 3. Load **BAM**, **BED** and **VCF** files
-  - **Genomes** > **Load from File...**
+  - **File** > **Load from File...**
 4. Type the name of one of the seven genes of dataset `SRR30536566`. For example "**NRAS**".
 
-**Reminder**: seven genes from **Targeted sequencing panels** in 👉 [Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis_Part2-3.md#variant-calling-with-mutect2--04_mutect2sh)
+**Reminder**: There are seven genes from **Targeted sequencing panels**. See 👉 [Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis_Part2-3.md#variant-calling-with-mutect2--04_mutect2sh)
 
 ```bash
 Final CRC 7-gene BED file contents:
@@ -132,13 +132,40 @@ The IGV will look more or less like in **Figure 1 (right)**.
 ![Figure 1: First glance at IGV (left panel and after loading IGV with the files)](images/IGV_starting_1.png)
 
 
->**Note**: The **GTF** file was not loaded into IGV because it requieres more than 8GB RAM available.
+> **Note**: The **GTF** file was not loaded into IGV because it requires more than 8 GB of available RAM.
   
->**Key message**: Ideally, **IGV must use the same reference genome that was used for alignment**. Unfortunately, IGV doesn't recognise .fasta reference genomes. There's a way to do so but it implies the use of **igvtools**; however, this is out of the scope of this tutorial.
+>**Key message**: Ideally, **IGV must use the same reference genome that was used for alignment**. Unfortunately, IGV doesn't easily handle .fasta reference genomes as the hosted genomes. There's a way to do so but it implies the use of **igvtools**; however, this is out of the scope of this tutorial.
 
-5. Click on "Go" and IGV will show now the specifics on **NRAS** and the location of the SNP.
 
-In Figure 2 (left), it's possible to see that **NRAS** is in the **chr.1**. The **VCF** panel shows that the location of the SNP at the **exon 3** (Exon 3/7)
+### Assessing the validity of called variants
+
+### 1. NRAS
+
+From step number 4:
+
+5. Click on "Go" and IGV will display **NRAS**. In **Figure 2**, it's possible to see that **NRAS**:
+
+- is located on **chr1**
+
+- has 7 exons represented as blue boxes (thin lines are introns) according to the **hg38**
+
+- has a read coverage for mainly exons that extends a bit to the beginning and end of introns
+
+- has a SNP located in the **exon 3** as the **VCF** panel shows as a single line
+
+- is full covered by the **BED** file
+
+- is downstream the **CSDE1** gene
+
+**Figure 2**: **NRAS** gene structure overview at glance.
+
+![Figure 2](images/IGV_NRAS_zoom_out_1.png)
+
+To visualize in more detail the SNP:
+
+6. Zoom in by increasing sliding bar to **+**
+
+
 
 **Reminder**: Visit 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table)
 
