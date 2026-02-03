@@ -159,7 +159,7 @@ From step number 4:
 
 **Figure 2**: **NRAS** gene structure overview at glance.
 
-![Figure 2](images/IGV_NRAS_zoom_out_1_labels.png)
+![Figure 2](images/IGV_NRAS_zoom_out_1_labeled.png)
 
 To visualize in more detail the SNP:
 
