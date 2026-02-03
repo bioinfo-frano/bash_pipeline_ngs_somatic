@@ -103,11 +103,14 @@ When opening IGV, the window will be almost completely blank as shown in **Figur
 
 1. Click on **IGV** icon
 2. Load "**hg38**" human reference genome
-  - **Genomes** > **Download Hosted Genome** → Pop-up window called **Hosted Genomes**
-  - Type "Human"
-  - Select: **Human (hg38 1kg/GATK)**
+   - **Genomes** > **Download Hosted Genome** → Pop-up window called **Hosted Genomes**
+   - Type "Human"
+   - Select: **Human (hg38 1kg/GATK)**
 3. Load **BAM**, **BED** and **VCF** files
-  - **File** > **Load from File...**
+   - **File** > **Load from File...**
+
+All the files uploaded to IGV will appear at the left side of IGV window and each of them represents different **tracks**. 
+
 4. Type the name of one of the seven genes of dataset `SRR30536566`. For example "**NRAS**".
 
 **Reminder**: There are seven genes from **Targeted sequencing panels**. See 👉 [Part II – Somatic analysis – Variant calling with Mutect2](README_somatic_analysis_Part2-3.md#variant-calling-with-mutect2--04_mutect2sh)
@@ -145,17 +148,17 @@ From step number 4:
 
 5. Click on "Go" and IGV will display **NRAS**. In **Figure 2**, it's possible to see that **NRAS**:
 
-- is located on **chr1**
+   - is located on **chr1**
 
-- has 7 exons represented as blue thick lines (thin lines are introns) according to the **hg38**
+   - has 7 exons represented as blue thick lines (thin lines are introns) according to the **hg38**
 
-- has a read coverage for mainly exons that extends a bit to the beginning and end of introns
+   - has a read coverage for mainly exons that extends a bit to the beginning and end of introns
 
-- has a SNV located in the **exon 3** as the **VCF** panel indicates a single base (two blue vertical lines)
+   - has a SNV located in the **exon 3** as the **VCF** panel indicates a single base (two blue color bars)
 
-- is full covered by the **BED** file
+   - is full covered by the **BED** file
 
-- is downstream the **CSDE1** gene
+   - is downstream the **CSDE1** gene
 
 **Figure 2**: **NRAS** gene structure overview at glance.
 
@@ -163,15 +166,15 @@ From step number 4:
 
 To visualize in more detail the SNP:
 
-6. Zoom in by increasing sliding bar to **+** and center at exon 3, where the SNV is.
+6. Zoom in by increasing the sliding bar (top right) to **+** and focus the SNV at the center of the window using the center line, exactly at the **VCF** bar on exon 3.
 
-7. Click on the two blue lines from the **VCF** track.
+7. Click on the two blue bars from the **VCF** track.
 
-It will pop up two windows:
+Two windows will pop up:
 
-- **Genotype Information**: Sample-level, from FORMAT column of **VCF**.
+A. **Genotype Information**: Sample-level, from FORMAT column of **VCF**.
 
-   - Header
+   Header
    
    ```bash
    Sample: DMBEL-EIDR-071
@@ -205,9 +208,9 @@ It will pop up two windows:
    This is normal for somatic callers (Mutect2)
    
 
-- **Variant attributes**: Site-level (INFO fields)
+B. **Variant attributes**: Site-level (INFO fields)
 
-   - Header
+   Header
 
    ```bash
    Reference: G*
@@ -248,9 +251,9 @@ It will pop up two windows:
   **AS_FilterStatus**: SITE
   Variant passed all site-level filters.
 
-8. Click on the amino acid **Q** on track "Sequence" at the same position of the SNV
+8. Click on the amino acid **Q** on track "**Sequence**" at the same position of the SNV
 
-It will pop up one window:
+One window will pop up showing the foowing information:
 
 ```markdown
 name: NRAS
@@ -263,7 +266,7 @@ chr1:114713800-114713978
 https://www.ncbi.nlm.nih.gov/gene/?term=NM_002524.5
 ```
 
-**Figure 3** shows the pop up windows with the information about variant attribute, genotype and amino acid of NRAS's SNV.
+**Figure 3** shows the pop-up windows with the information about variant attribute, genotype and amino acid of NRAS's SNV.
 
 ![Figure 3](images/IGV_NRAS_zoom_in_2_labeled.png)
 
@@ -275,6 +278,19 @@ https://www.ncbi.nlm.nih.gov/gene/?term=NM_002524.5
 **Visit** 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table) and compared the information about NRAS (G>T | Q61) variant with the one provided by IGV.
 
 
+### Improving visualization of SNV
+
+1. Right click on read alignments
+2. Select **Sort alignments by** → **base**
+
+This will center the alignment on base, allowing the easy visualization of the SNV on the top of the alignments. See **Figure 4 (left)** where the base "**T**" is in red.
+The aligned reads not showing any base are actually having bases matching to the reference genome at that position, which is "**G**"
+
+3. Also, the reads can be colored based **read strand**. See **Figure 4 (right)** where the SNV "**T**" is practically distributed equally on both aligned read strands, showing no evident strand bias.
+
+
+
+**Figure 4** shows read alignments forward (pink) and reverse (blue)
 
 
 
