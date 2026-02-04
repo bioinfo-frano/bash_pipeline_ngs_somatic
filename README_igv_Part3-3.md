@@ -10,9 +10,6 @@
 - [Opening and Loading files into IGV](#opening-and-loading-files-into-igv)
 - [Assessing the validity of called variants: NRAS](#assessing-the-validity-of-called-variants)
 - [Assessing the validity of called variants: PIK3CA](#2-pik3ca)
-- [Trimming + QC](#trimming--qc--02_trimsh)
-- [Alignment and BAM preprocessing](#alignment-and-bam-preprocessing--03_align__bam_preprocesssh)
-    - [Folder structure: From QC – Trimming/Filtering – Alignment + BAM preprocessing](#folder-structure-from-qc---trimmingfiltering---alignment--bam-preprocessing)
 
 
 
@@ -282,7 +279,7 @@ https://www.ncbi.nlm.nih.gov/gene/?term=NM_002524.5
 >The variant is supported by high read depth (~760×), a variant allele frequency of ~15%, balanced forward and reverse strand representation, high mapping and base qualities, and a strong somatic log-odds score (**TLOD = 323**), with no evidence of strand bias or sequencing artifact. These features are consistent with a **high-confidence somatic NRAS Q61K mutation**.
 
 
-**Visit** 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table) and **compare** the information about NRAS (G>T | Q61) variant with image and info provided by IGV.
+**Visit** 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table) and **compare** the information about NRAS (G>T | Gln61Lys) variant with image and info provided by IGV.
 
 
 ### Improving visualization of SNV
@@ -330,6 +327,152 @@ This will color the aligned reads based on strand. See **Figure 4 (right)** wher
 ![Figure 6](images/IGV_PIK3CA_snv1.png)
 
 ### IGV-based PIK3CA E542K variant interpretation
->Visual inspection in IGV (reference genome: hg38 1kg/GATK) confirmed a heterozygous somatic single-nucleotide variant in the PIK3CA gene (NM_006218.4), located in exon 10 at genomic position chr3:179,218,294 (G>A). This variant affects codon 542, resulting in an amino-acid substitution from glutamic acid (E) to lysine (K) (p.Glu542Lys, E542K).
+>Visual inspection in IGV (reference genome: hg38 1kg/GATK) confirmed a heterozygous somatic single-nucleotide variant in the **PIK3CA** gene (NM_006218.4), located in **exon 10** at genomic position **chr3:179,218,294 (G>A)**. This variant affects codon 542, resulting in an amino-acid substitution from **glutamic acid (E)** to **lysine (K)** (**p.Glu542Lys, E542K**).
 >The variant is supported by very high sequencing depth (>1,200×), with 347 reads supporting the alternate allele and a variant allele frequency of ~28%, consistent with a somatic event. Read support is well balanced across forward and reverse strands, with high mapping quality (MMQ = 60) and high base quality (MBQ = 41) for both reference and alternate alleles.
->Somatic confidence is extremely strong (TLOD = 1026.18), with no evidence of strand bias or sequencing artifacts, and the variant passed all site-level filters (AS_FilterStatus = SITE). These features are consistent with a high-confidence somatic PIK3CA E542K hotspot mutation.   
+>Somatic confidence is extremely strong (**TLOD = 1026.18**), with no evidence of strand bias or sequencing artifacts, and the variant passed all site-level filters (AS_FilterStatus = SITE). These features are consistent with a **high-confidence somatic PIK3CA E542K hotspot mutation**.
+
+**Visit** 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table) and **compare** the information about NRAS (G>A | Glu542Lys) variant with image and info provided by IGV.
+
+
+## Identifying SNV Artifacts in IGV: A Practical Guide
+
+### Why Artifact Detection Matters in IGV
+Even after sophisticated bioinformatics filtering, some false positive variants can survive. IGV visualization allows you to catch these artifacts by examining the raw read evidence. This skill is particularly crucial in **tumor-only analyses** where you lack a matched normal for comparison.
+
+### Common SNV Artifacts and Their IGV Signatures
+
+### 1. Strand Bias Artifacts
+
+**What it is**: Variant reads come predominantly from one sequencing strand (forward or reverse).
+
+**How to spot in IGV**:
+
+  - **Visually**: Right-click on BAM track → `Color alignments by` → `read strand`
+
+  - **Check**: If all/most variant reads are pink (forward) or blue (reverse)
+
+  - **Quantitative**: In variant pop-up, check strand bias numbers:
+
+        - **Severe bias**: Alt Forward: 50, Alt Reverse: 2
+
+        - **Acceptable**: Alt Forward: 28, Alt Reverse: 25
+
+**Common causes**:
+
+  - **FFPE damage**: Cytosine deamination → C→T variants on reverse strand
+
+  - **Oxidative damage**: Guanine oxidation → G→T variants on forward strand
+
+  - **PCR bias**: Amplification favors one strand
+
+Example from your data:
+The NRAS variant shows `Alt Forward: 61, Alt Reverse: 54` → **balanced** (not artifact).
+
+### 2. Read-End Artifacts
+
+**What it is**: Variants appearing only at the very beginning or end of reads.
+
+**How to spot in IGV**:
+
+  - Zoom to base-level view
+
+  - Check if variant bases cluster at:
+
+      - **First 5 bases** of reads (5' end)
+
+      - **Last 5 bases** of reads (3' end)
+
+  - Right-click BAM → `View as pairs` to see read ends clearly
+
+**Why problematic**:
+
+  - Sequencing errors are more common at read ends
+
+  - Adapter contamination can cause false variants
+
+  - Mapping uncertainty increases near read boundaries
+
+**IGV tip**: Use `Sort alignments by` → `start location` to group read ends together.
+
+
+### 3. Low Base Quality (Q-score) Artifacts
+
+**What it is**: Variant bases have consistently low quality scores.
+
+**How to spot in IGV**:
+
+  - **Color by base quality**: Right-click BAM → `Shade base by quality`
+
+  - Look for red/orange bases at variant position (low quality)
+
+  - Check MBQ in variant pop-up: `MBQ: [41, 20]` → ALT base quality=20 is concerning
+
+**Quality score interpretation**:
+
+  - **Q≥30**: Excellent (1 error per 1000 bases)
+
+  - **Q20-30**: Acceptable (1 error per 100 bases)
+
+  - **Q<20**: Poor (≥1% error rate)
+  
+### 4. Mapping Quality Artifacts
+
+**What it is**: Reads supporting variant map poorly to the genome.
+
+**How to spot in IGV**:
+
+  - **Color by mapping quality**: Right-click BAM → `Sort alignments by` → `mapping quality`
+
+  - Check MMQ in variant pop-up: MMQ: [60, 30] → ALT reads map poorly (30 vs 60)
+
+  - Look for **reads with multiple alignments** (MAPQ=0)
+
+**Red flags**:
+
+  - ALT reads have MAPQ<30 while REF reads have MAPQ>50
+
+  - Variant in repetitive region (centromeres, telomeres, segmental duplications)
+
+### 5. Homopolymer/Polymerase Slippage Artifacts
+
+**What it is**: False variants in regions of identical bases (e.g., AAAAAA).
+
+**How to spot in IGV**:
+
+  - Zoom out to see sequence context
+
+  - Look for **runs of identical bases** (≥5 same bases)
+
+  - Check if variant disrupts a homopolymer run
+
+    Example: In `TTTTTT` region, a T→C might be sequencing error
+
+**IGV tip**: Right-click BAM → `Show all bases` to see homopolymers clearly.
+
+### 6. PCR Duplicate Artifacts
+
+**What it is**: Identical reads from PCR amplification create false variant clusters.
+
+**How to spot in IGV**:
+
+   - **Color by duplicate status**: Right-click BAM → Duplicates
+
+   - Look for **clusters of identical reads** with same start/end positions
+
+   - Check if variant is supported only by duplicates
+
+**But note**: Amplicon sequencing (like your data) naturally has duplicates! The key is whether the variant appears in **multiple independent molecules**.
+
+### 7. Reference Base Errors
+
+**What it is**: Reference genome has wrong base at that position.
+
+**How to spot in IGV**:
+
+  - Load multiple samples from different individuals
+
+  - If all show same "variant" against reference, it's likely a reference error
+
+  - Check dbSNP/gnomAD: if allele frequency is ~100%, it's reference error
+
+The NRAS Q61K is known cancer mutation, not reference error.
