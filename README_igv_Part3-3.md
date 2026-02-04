@@ -236,12 +236,12 @@ B. **Variant attributes**: Site-level (INFO fields)
    Alt: 61 F / 54 R
    ```
 
-   **MMQ**: `[60, 60]` ✔ Maximum MQ → excellent alignment
+   **MMQ**: `[60, 60]` ✔ Maximum MQ → excellent mapping quality
    Median Mapping Quality
      - Ref reads: 60
      - Alt reads: 60
 
-  **MBQ**: `[41, 41]` ✔ Both alleles high quality
+  **MBQ**: `[41, 41]` ✔ Both alleles with high base quality
   Median Base Quality
   
   **GERMQ**: `93`
