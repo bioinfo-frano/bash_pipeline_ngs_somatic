@@ -280,17 +280,22 @@ https://www.ncbi.nlm.nih.gov/gene/?term=NM_002524.5
 
 ### Improving visualization of SNV
 
-1. Right click on read alignments
-2. Select **Sort alignments by** → **base**
+1. Place the center line on the variant bars position 
+2. Right click in the middle of the center line
+3. Select **Sort alignments by** → **base**
 
-This will center the alignment on base, allowing the easy visualization of the SNV on the top of the alignments. See **Figure 4 (left)** where the base "**T**" is in red.
-The aligned reads not showing any base are actually having bases matching to the reference genome at that position, which is "**G**"
+This will allow the reordering of aligned reads, facilitating the visualization of the SNV. See **Figure 4 (left)** where the base "**T**" (SNV) is in red.
+The aligned reads not showing any base are actually those having bases matching to the reference genome at that position, which is "**G**".
 
-3. Also, the reads can be colored based **read strand**. See **Figure 4 (right)** where the SNV "**T**" is practically distributed equally on both aligned read strands, showing no evident strand bias.
+4. Right click on any aligned read
+5. Select **Color alignments by** → **read strand**
+
+This will color the aligned reads based on strand. See **Figure 4 (right)** where the SNV "**T**" is practically distributed equally on both aligned read strands, showing no evident strand bias.
 
 
+**Figure 4** Left panel shows reordered aligned reads based on **base**. Right panel shows read alignments in colors based on strand: forward (pink) and reverse (blue) aligned reads.
 
-**Figure 4** shows read alignments forward (pink) and reverse (blue)
+![Figure 4](images/IGV_NRAS_snv1.png)
 
 
 
