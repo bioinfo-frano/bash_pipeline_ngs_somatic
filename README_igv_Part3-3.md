@@ -32,15 +32,18 @@ In this section then, I will show you:
 
 **Documentation**
 
-- <https://igv.org/>: Check "**Citing IGV**". Recommendation reference: <http://cancerres.aacrjournals.org/content/77/21/e31.long>
-- <https://igv.org/doc/desktop/>: Installation
+- Main website: <https://igv.org/> → Check "**Citing IGV**". Recommendation reference: <http://cancerres.aacrjournals.org/content/77/21/e31.long>
+- IGV installation: <https://igv.org/doc/desktop/>: 
 - **Best practices for variant calling in clinical sequencing**. DOI: <https://doi.org/10.1186/s13073-020-00791-w>
-- Dr. Sarah Dean, PhD - <https://www.youtube.com/watch?v=VyNpu3ubAGY>: Excellent tutorial!
+- **Integrative genomics viewer**. Nature Biotechnology. Robinson, et al. 2011: <https://www.nature.com/articles/nbt.1754>
+- **Dr. Sarah Dean, PhD** - <https://www.youtube.com/watch?v=VyNpu3ubAGY>: Excellent tutorial!
 
 
 ## Integrative Genomics Viewer (IGV)
 
-IGV is an open-source tool for visualization of NGS data, allowing the observation of mapped reads to the reference genome from NGS datasets and the understanding of different types of variant calls from genomes more intuitively. In this sense, it's possible to explore different type of mutations, including single nucleotide variants (SNVs) and small insertions/deletions (indels), SV, but also RNA interference screens, gene expression, methylation and genomic annotations ([Robison, et al. 2011](https://www.nature.com/articles/nbt.1754)).
+IGV is an open-source tool for visualization of NGS data, allowing the observation of mapped reads to the reference genome from NGS datasets and the understanding of different types of variant calls from genomes more intuitively. In this sense, it's possible to explore different type of mutations, including single nucleotide variants (SNVs) and small insertions/deletions (indels), SV, but also RNA interference screens, gene expression, methylation and genomic annotations ([Robinson, et al. 2011](https://www.nature.com/articles/nbt.1754)). 
+
+>**Key message**: The aim of this tutorial is not really to teach how to use IGV but rather provide a step-by-step way to visualize the SNVs found in the somatic DNA-NGS analysis from Part II. If you want to learn how to use IGV in detail, please check the **documentation**.
 
 
 ### IGV: Installation
@@ -99,17 +102,17 @@ Since no matched normal sample is available for `SRR30536566`, you can use popul
 
 ### Opening and Loading files into IGV
 
-When opening IGV, the window will be almost completely blank as shown in **Figure 1 (left)**
+When opening IGV for the first time, the window will be almost completely blank as shown in **Figure 1 (left panel)**
 
 1. Click on **IGV** icon
 2. Load "**hg38**" human reference genome
-   - **Genomes** > **Download Hosted Genome** → Pop-up window called **Hosted Genomes**
-   - Type "Human"
+   - Go to: **Genomes** > **Download Hosted Genome** → Pop-up window called **Hosted Genomes**
+   - Type "Human" or "hg38"
    - Select: **Human (hg38 1kg/GATK)**
 3. Load **BAM**, **BED** and **VCF** files
-   - **File** > **Load from File...**
+   - Go to: **File** > **Load from File...**
 
-All the files uploaded to IGV will appear at the left side of IGV window and each of them represents different **tracks**. 
+All the files uploaded to IGV will appear at the left side of IGV window and each of them represents different **track**.
 
 4. Type the name of one of the seven genes of dataset `SRR30536566`. For example "**NRAS**".
 
@@ -127,7 +130,7 @@ chr3	179148113	179240093	PIK3CA
 chr7	140719326	140924929	BRAF
 ```
 
-The IGV will look more or less like in **Figure 1 (right)**. 
+The IGV will look more or less like in **Figure 1 (right)**, showing 4 tracks: VCF (subdivided in two), BAM (subdivided in two), Reference "hg38", (sorted) BED
 
 
 **Figure 1**: First glance at IGV (left panel) and after loading BAM and supporting files. Each file has its own track in IGV.
@@ -275,7 +278,7 @@ https://www.ncbi.nlm.nih.gov/gene/?term=NM_002524.5
 ***The variant is supported by high read depth (~760×), a variant allele frequency of ~15%, balanced forward and reverse strand representation, high mapping and base qualities, and a strong somatic log-odds score (TLOD = 323), with no evidence of strand bias or sequencing artifact. These features are consistent with a high-confidence somatic NRAS Q61K mutation.***
 
 
-**Visit** 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table) and compared the information about NRAS (G>T | Q61) variant with the one provided by IGV.
+**Visit** 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table) and **compare** the information about NRAS (G>T | Q61) variant with image and info provided by IGV.
 
 
 ### Improving visualization of SNV
@@ -298,8 +301,21 @@ This will color the aligned reads based on strand. See **Figure 4 (right)** wher
 ![Figure 4](images/IGV_NRAS_snv1.png) 
 
 
+### 2. PIK3CA
 
+- **Figure 5**: Overview of PIK3CA, showing exon numbers ("Refseq All" track) and SNV bars (VCF track)
 
+![Figure 5](images/IGV_PIK3CA_overview1.png)
+
+>**Key message**: 
+>
+>  1. Apparently, PIKC3A has 3 exons 1 that can be used for alternative splicing and, because of that, the numbering of exons of PIK3CA can be tricky.
+>
+>  Reference: <https://doi.org/10.1242/jcs.013029>
+>
+>  2. There are two SNV: one is located in **exon 10**, which in some literature is shown as exon 9, and another in exon 17.
+>
+>  Reference: <https://pmc.ncbi.nlm.nih.gov/articles/PMC3777497/>
 
 
    

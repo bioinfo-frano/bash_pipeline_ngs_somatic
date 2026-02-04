@@ -2382,7 +2382,7 @@ Coordinates: chr1:114,713,909
   ✔ Likely clonal or early driver
 
 
-✅ **PIK3CA Exon 9 Mutation (chr3:179218294)**
+✅ **PIK3CA Exon 10 Mutation (chr3:179218294)**
 
 ```text
 Gene: PIK3CA
@@ -2394,7 +2394,7 @@ DP=1262
 
 **Likely Amino Acid Change**:
 
-  - E545K (c.1633G>A) - most common in exon 9
+  - E545K (c.1633G>A) - most common in exon 10
 
   - E542K (c.1624G>A) - less common alternative
 
@@ -2423,7 +2423,7 @@ DP=1262
   ✔ Extremely unlikely to be an artifact
 
 
-✅ **PIK3CA Exon 20 Mutation (chr3:179226113)**
+✅ **PIK3CA Exon 17 Mutation (chr3:179226113)**
 ```text
 Gene: PIK3CA
 Change: C>G (missense)
@@ -2446,7 +2446,7 @@ DP=559
 
   - Associated with tumor aggressiveness
 
-  - Dual PIK3CA mutations (exon 9 + exon 20) = hyperactive pathway
+  - Dual PIK3CA mutations (exon 10 + exon 17) = hyperactive pathway
 
   - High VAF may reflect clonal dominance, copy-number imbalance, or tumor purity effects; LOH cannot be inferred without CNV analysis.
 
@@ -3028,7 +3028,7 @@ c) **IMPACT**:  Filter based on "MODERATE"" and "HIGH". See **Table 9** about **
 >
 > was filtered out even though passed all technical filtering (Mutect2 + post-filter).
 >
-> Variant was excluded from the annotation table due to:
+> The variant was excluded from the annotation table due to:
 >
 >  - non-coding / intron / benign annotation (based on "Consequence" and "Impact" from VEP-Online results table)
 > 
@@ -3204,14 +3204,14 @@ This is apparently the end of the analysis. Once we reach this point, it is alwa
 
 | Variant | Gene | VAF | Recommended Validation Method | Alternative Method | Clinical Priority |
 |---------|------|-----|------------------------------|-------------------|------------------|
-| **chr1:114713909** | NRAS | 15.4% | **Sanger Sequencing** | Pyrosequencing | High (therapy decision) |
-| **chr3:179218294** | PIK3CA (exon 9) | 27.7% | **Sanger Sequencing** | dPCR (if <20% VAF expected) | High (prognostic marker) |
-| **chr3:179226113** | PIK3CA (exon 20) | 69.8% | **Sanger Sequencing** | IHC (PI3K pathway activation) | High (therapy target) |
+| **chr1:114713909** | NRAS (exon 3) | 15.4% | **Sanger Sequencing** | Pyrosequencing | High (therapy decision) |
+| **chr3:179218294** | PIK3CA (exon 10) | 27.7% | **Sanger Sequencing** | dPCR (if <20% VAF expected) | High (prognostic marker) |
+| **chr3:179226113** | PIK3CA (exon 17) | 69.8% | **Sanger Sequencing** | IHC (PI3K pathway activation) | High (therapy target) |
 
 > **Note - Important**:
 > Variants below ~15–20% VAF may not be detectable by Sanger sequencing.
 
-### Clinical Report Integration:*
+### Clinical Report Integration:
 
 ```markdown
 ### **VALIDATION SECTION**
