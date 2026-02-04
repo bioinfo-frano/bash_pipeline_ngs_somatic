@@ -6,8 +6,9 @@
 
 - [Introduction](#introduction)
 - [Integrative Genomics Viewer (IGV)](#integrative-genomics-viewer-igv)
-- [Bash shell scripting for NGS-DNA Somatic analysis](#v-bash-shell-scripting-for-ngs-dna-somatic-analysis)
-- [Quality control (QC)](#quality-control-qc--01_qcsh)
+- [IGV: Installation](#igv-installation)
+- [Opening and Loading files into IGV](#opening-and-loading-files-into-igv)
+- [Assessing the validity of called variants](#assessing-the-validity-of-called-variants)
 - [Trimming + QC](#trimming--qc--02_trimsh)
 - [Alignment and BAM preprocessing](#alignment-and-bam-preprocessing--03_align__bam_preprocesssh)
     - [Folder structure: From QC – Trimming/Filtering – Alignment + BAM preprocessing](#folder-structure-from-qc---trimmingfiltering---alignment--bam-preprocessing)
@@ -32,7 +33,8 @@ In this section then, I will show you:
 
 **Documentation**
 
-- Main website: <https://igv.org/> → Check "**Citing IGV**". Recommendation reference: <http://cancerres.aacrjournals.org/content/77/21/e31.long>
+- Main website: <https://igv.org/> → Check "**Citing IGV**". 
+  - Recommended reference: <http://cancerres.aacrjournals.org/content/77/21/e31.long>
 - IGV installation: <https://igv.org/doc/desktop/>: 
 - **Best practices for variant calling in clinical sequencing**. DOI: <https://doi.org/10.1186/s13073-020-00791-w>
 - **Integrative genomics viewer**. Nature Biotechnology. Robinson, et al. 2011: <https://www.nature.com/articles/nbt.1754>
