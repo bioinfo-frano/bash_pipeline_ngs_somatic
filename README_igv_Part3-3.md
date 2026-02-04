@@ -295,7 +295,7 @@ This will color the aligned reads based on strand. See **Figure 4 (right)** wher
 
 **Figure 4** Left panel shows reordered aligned reads based on **base**. Right panel shows read alignments in colors based on strand: forward (pink) and reverse (blue) aligned reads.
 
-![Figure 4](images/IGV_NRAS_snv1.png)
+![Figure 4](images/IGV_NRAS_snv1.png) 
 
 
 
