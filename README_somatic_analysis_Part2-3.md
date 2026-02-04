@@ -3146,7 +3146,7 @@ sed '1s/.*/Variant\tLocation\tConsequence\tImpact\tSymbol\tGene\tExon\tHGVSc_cDN
 | Location       | Gene   | Consequence      | HGVSp        | Exon | AF    | gnomAD AF | Impact   | SIFT        | PolyPhen          | Clinical significance |
 | -------------- | ------ | ---------------- | ------------ | ---- | ----- | --------- | -------- | ----------- | ----------------- | --------------------- |
 | chr1:114713909 | NRAS   | missense_variant | p.Gln61Lys   | 3    | 0.154 | 0         | MODERATE | deleterious | probably_damaging | Pathogenic            |
-| chr3:179218294 | PIK3CA | missense_variant | p.Glu545Lys  | 9    | 0.277 | 0         | MODERATE | deleterious | probably_damaging | Pathogenic            |
+| chr3:179218294 | PIK3CA | missense_variant | p.Glu542Lys  | 9    | 0.277 | 0         | MODERATE | deleterious | probably_damaging | Pathogenic            |
 
 
 | Gene | Variant | Genomic Coordinate | Protein Change | Consequence | Exon | Tumor VAF | gnomAD AF | SIFT | PolyPhen | ClinVar | ClinPred | Evidence |

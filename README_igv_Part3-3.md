@@ -313,9 +313,13 @@ This will color the aligned reads based on strand. See **Figure 4 (right)** wher
 >
 >  Reference: <https://doi.org/10.1242/jcs.013029>
 >
->  2. There are two SNV: one is located in **exon 10**, which in some literature is shown as exon 9, and another in exon 17.
+>  2. There are two SNV: one is located in **exon 10**, which in some literature is shown as exon 9, and another one in exon 17. 
 >
 >  Reference: <https://pmc.ncbi.nlm.nih.gov/articles/PMC3777497/>
+>
+> It's important to remind that from a clinical perspective, the SNV located in exon 10 is related to cancer and considered a **HOTSPOT**. This SNV is a real somatic mutation of "Gain-of-Function", increasing the PI3K/AKT/mTOR signaling pathway, inducing an uncontrolled cell proliferation and clinically associated with poor prognosis.
+>
+>  Reference: <https://pmc.ncbi.nlm.nih.gov/articles/PMC3164550/>
 
 
    
