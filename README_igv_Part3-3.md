@@ -353,9 +353,9 @@ Even after sophisticated bioinformatics filtering, some false positive variants 
 
   - **Quantitative**: In variant pop-up, check strand bias numbers:
 
-        - **Severe bias**: Alt Forward: 50, Alt Reverse: 2
+      - **Severe bias**: Alt Forward: 50, Alt Reverse: 2
 
-        - **Acceptable**: Alt Forward: 28, Alt Reverse: 25
+      - **Acceptable**: Alt Forward: 28, Alt Reverse: 25
 
 **Common causes**:
 
