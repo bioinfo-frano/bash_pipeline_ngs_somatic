@@ -41,7 +41,7 @@ In this section then, I will show you:
 
 ## Integrative Genomics Viewer (IGV)
 
-IGV is an open-source tool for visualization of NGS data, allowing the observation of mapped reads to the reference genome from NGS datasets and the understanding of different types of variant calls from genomes more intuitively. In this sense, it's possible to explore different type of mutations, including single nucleotide variants (SNVs) and small insertions/deletions (indels), SV, but also RNA interference screens, gene expression, methylation and genomic annotations ([Robinson, et al. 2011](https://www.nature.com/articles/nbt.1754)). 
+IGV is an open-source tool for visualization of NGS data, allowing the observation of mapped reads to the reference genome from NGS datasets and the understanding of different types of variant calls from genomes more intuitively. In this sense, it's possible to explore different type of mutations, including single nucleotide variants (SNVs) and small insertions/deletions (indels), SVs, but also RNA interference screens, gene expression, methylation and genomic annotations ([Robinson, et al. 2011](https://www.nature.com/articles/nbt.1754)). 
 
 >**Key message**: The aim of this tutorial is not really to teach how to use IGV but rather provide a step-by-step way to visualize the SNVs found in the somatic DNA-NGS analysis from Part II. If you want to learn how to use IGV in detail, please check the **documentation**.
 
@@ -64,7 +64,7 @@ Ideally, in order to have a comprehensive view of the analyzed DNA-NGS dataset, 
 
 | Format File | File from `SRR30536566` | Purpose in IGV | Why It's Needed |
 |-------------|-------------------------|----------------|-----------------|
-| **Reference FASTA** (optional but recommended) | `Homo_sapiens_assembly38.fasta` | Provides the **reference genome sequence** against which the reads were aligned | IGV must use the same reference genome build (and contig naming) that was used for alignment. Loading your exact FASTA ensures coordinate compatibility and correct reference base display.<br>⚠️ **Problem**: It's not easy to load into IGV. |
+| **Reference FASTA** (hosted or custom FASTA) | `Homo_sapiens_assembly38.fasta` | Provides the **reference genome sequence** against which the reads were aligned | IGV must use the same reference genome build and contig naming convention used for alignment. In practice, using the hosted hg38 1kg/GATK genome is sufficient and recommended for this tutorial. |
 | **BAM** | `SRR30536566.sorted.markdup.md.bam` | Shows **aligned sequencing reads** mapped to the reference genome with coverage depth and read details | Core visualization file - shows actual read alignments, base quality scores, chromosome coordinates and how reads support variant calls. BAM + Index together are the minimum files for IGV visualization. |
 | **BAM Index** | `SRR30536566.sorted.markdup.md.bam.bai` | **Index** for the BAM file allowing fast navigation/access to any genomic position | Without this index, IGV would be extremely slow or unable to load large BAM files. |
 | **VCF** (compressed) | `SRR30536566.postfiltered.vcf.gz` | Displays **variant calls** as colored bars showing variant positions, alleles, and quality metrics | Allows visual confirmation of variant calls against aligned reads. |
@@ -140,7 +140,7 @@ The IGV will look more or less like in **Figure 1 (right)**, showing 4 tracks: V
 
 > **Note**: The **GTF** file was not loaded into IGV because it requires more than 8 GB of available RAM.
   
->**Key message**: Ideally, **IGV must use the same reference genome that was used for alignment**. Unfortunately, IGV doesn't easily handle .fasta reference genomes as the hosted genomes. There's a way to do so but it implies the use of **igvtools**; however, this is out of the scope of this tutorial.
+>**Key message**: Ideally, **IGV must use the same reference genome that was used for alignment**. Although IGV supports loading custom FASTA reference genomes, hosted genomes (such as hg38 1kg/GATK) are strongly preferred because they bundle the reference sequence together with gene annotations and cytobands, and avoid additional preprocessing steps (e.g. igvtools genome creation and Java configuration).
 
 
 ### Assessing the validity of called variants
@@ -207,8 +207,9 @@ A. **Genotype Information**: Sample-level, from FORMAT column of **VCF**.
    Alt Reverse: 54
    ```
    
-   **Quality**: `-1`
-   This is normal for somatic callers (Mutect2)
+   **Quality**: `-1` → It doesn't mean "low quality". `Quality: -1` is not a quality score — it is a signal that genotype quality is undefined for somatic callers like Mutect2. 
+   The genotype-level “Quality” field shown as -1 reflects that Mutect2 does not assign a conventional genotype quality (GQ) score. For somatic variants, confidence is instead encoded in site-level metrics such as TLOD and filtering annotations (in other words: TLOD, Read depth, VAF, Strand bias, Base & mapping quality, Filter status).
+  
    
 
 B. **Variant attributes**: Site-level (INFO fields)
@@ -227,7 +228,7 @@ B. **Variant attributes**: Site-level (INFO fields)
      - 10 is decent
      - 100 is excellent
    
-   **AS_SB_TABLE**: `[328, 320|61, 54]`  ✔ No strand bias
+   **AS_SB_TABLE**: `[328, 320|61, 54]`  ✔ No strand bias. A strong imbalance (e.g. alternate reads appearing predominantly on one strand) would suggest a sequencing or alignment artifact.
    Same strand-bias numbers as above:
    
    ```bash
@@ -256,7 +257,7 @@ B. **Variant attributes**: Site-level (INFO fields)
 
 8. Click on the amino acid **Q** on track "**Sequence**" at the same position of the SNV
 
-One window will pop up showing the foowing information:
+One window will pop up showing the following information:
 
 ```markdown
 name: NRAS
@@ -269,13 +270,13 @@ chr1:114713800-114713978
 https://www.ncbi.nlm.nih.gov/gene/?term=NM_002524.5
 ```
 
-**Figure 3** shows the pop-up windows with the information about variant attribute, genotype and amino acid of NRAS's SNV.
+**Figure 3** shows the pop-up windows with the information about variant attribute, genotype and mutated amino acid of NRAS's SNV.
 
 ![Figure 3](images/IGV_NRAS_zoom_in_2_labeled.png)
 
-### IGV-based variant interpretation
-***Visual inspection in IGV (reference genome: hg38 1kg/GATK) confirmed a heterozygous somatic single-nucleotide variant in the NRAS gene (NM_002524.5), located in exon 3 at genomic position chr1:114,713,909 (G>T). This variant affects codon 61, resulting in an amino-acid substitution from glutamine (Q) to lysine (K) (p.Gln61Lys, Q61K).***
-***The variant is supported by high read depth (~760×), a variant allele frequency of ~15%, balanced forward and reverse strand representation, high mapping and base qualities, and a strong somatic log-odds score (TLOD = 323), with no evidence of strand bias or sequencing artifact. These features are consistent with a high-confidence somatic NRAS Q61K mutation.***
+### IGV-based NRAS Q61K variant interpretation
+>Visual inspection in IGV (reference genome: hg38 1kg/GATK) confirmed a heterozygous somatic single-nucleotide variant in the **NRAS** gene (NM_002524.5), located in **exon 3** at genomic position **chr1:114,713,909 (G>T)**. This variant affects codon 61, resulting in an amino-acid substitution from **glutamine (Q)** to **lysine (K)** (**p.Gln61Lys, Q61K**).
+>The variant is supported by high read depth (~760×), a variant allele frequency of ~15%, balanced forward and reverse strand representation, high mapping and base qualities, and a strong somatic log-odds score (**TLOD = 323**), with no evidence of strand bias or sequencing artifact. These features are consistent with a **high-confidence somatic NRAS Q61K mutation**.
 
 
 **Visit** 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table) and **compare** the information about NRAS (G>T | Q61) variant with image and info provided by IGV.
@@ -317,9 +318,15 @@ This will color the aligned reads based on strand. See **Figure 4 (right)** wher
 >
 >  Reference: <https://pmc.ncbi.nlm.nih.gov/articles/PMC3777497/>
 >
-> It's important to remind that from a clinical perspective, the SNV located in exon 10 is related to cancer and considered a **HOTSPOT**. This SNV is a real somatic mutation of "Gain-of-Function", increasing the PI3K/AKT/mTOR signaling pathway, inducing an uncontrolled cell proliferation and clinically associated with poor prognosis.
+> **Reminder**: From a clinical stand point, the SNV located in exon 10 is related to cancer and considered a **HOTSPOT**. This SNV is a real somatic mutation of "Gain-of-Function", increasing the PI3K/AKT/mTOR signaling pathway, and inducing an uncontrolled cell proliferation, which finally is clinically associated with poor prognosis.
 >
 >  Reference: <https://pmc.ncbi.nlm.nih.gov/articles/PMC3164550/>
 
+- **Figure 6**: Information about variant attribute, genotype and mutated amino acid (Aac.)of PIK3CA's SNV.
 
-   
+![Figure 6](images/IGV_PIK3CA_snv1.png)
+
+### IGV-based PIK3CA E542K variant interpretation
+>Visual inspection in IGV (reference genome: hg38 1kg/GATK) confirmed a heterozygous somatic single-nucleotide variant in the PIK3CA gene (NM_006218.4), located in exon 10 at genomic position chr3:179,218,294 (G>A). This variant affects codon 542, resulting in an amino-acid substitution from glutamic acid (E) to lysine (K) (p.Glu542Lys, E542K).
+>The variant is supported by very high sequencing depth (>1,200×), with 347 reads supporting the alternate allele and a variant allele frequency of ~28%, consistent with a somatic event. Read support is well balanced across forward and reverse strands, with high mapping quality (MMQ = 60) and high base quality (MBQ = 41) for both reference and alternate alleles.
+>Somatic confidence is extremely strong (TLOD = 1026.18), with no evidence of strand bias or sequencing artifacts, and the variant passed all site-level filters (AS_FilterStatus = SITE). These features are consistent with a high-confidence somatic PIK3CA E542K hotspot mutation.   
