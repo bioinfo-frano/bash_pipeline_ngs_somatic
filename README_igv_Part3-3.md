@@ -11,6 +11,7 @@
 - [Assessing the validity of called variants: NRAS](#assessing-the-validity-of-called-variants)
 - [Assessing the validity of called variants: PIK3CA](#2-pik3ca)
 - [Identifying SNV Artifacts in IGV: A Practical Guide](#identifying-snv-artifacts-in-igv-a-practical-guide)
+- [Pop-up information](#pop-up-information-read-level-fields)
 - [Visualizing apparent SNVs and artifacts](#visualizing-apparent-SNVs-and-artifacts)
 
 
@@ -363,14 +364,17 @@ Even after sophisticated bioinformatics filtering, some false positive variants 
 
 **Common causes**:
 
-  - **FFPE damage**: Cytosine deamination → C→T variants on reverse strand
+  - **FFPE damage**: Cytosine deamination in formalin-fixed samples causes **C→T changes on one DNA strand and the complementary G→A changes on the opposite strand**. In IGV, this often appears as variants supported almost exclusively by reads from a single strand.
 
-  - **Oxidative damage**: Guanine oxidation → G→T variants on forward strand
+  - **Oxidative damage**: Guanine oxidation (e.g. 8-oxo-G lesions) leads to G→T transversions, frequently showing strand-specific enrichment depending on library preparation and read orientation.
 
-  - **PCR bias**: Amplification favors one strand
+  - **PCR bias**: During library preparation, PCR may preferentially amplify fragments from one strand, resulting in variant reads being over-represented on only the forward or reverse strand.
 
 Example from your data:
 The NRAS variant shows `Alt Forward: 61, Alt Reverse: 54` → **balanced** (not artifact).
+
+>**Key warning sign in IGV**:
+Variants supported predominantly or exclusively by reads from one strand (e.g. 95% forward, 5% reverse) should be considered suspicious, even if depth and base quality are high.
 
 ### 2. Read-End Artifacts
 
@@ -439,13 +443,40 @@ The NRAS variant shows `Alt Forward: 61, Alt Reverse: 54` → **balanced** (not 
   
   - Check if variant-supporting reads cluster at bottom (low MQ)
 
-**Understanding MAPQ vs MQ**:
+**Understanding MAPQ vs MQ in IGV**
 
-`MQ = 60` in the read pop-up is the **mate's mapping quality** (for paired-end reads). The primary mapping quality is shown as:
+MAPQ (Mapping Quality) reflects the confidence that this read is correctly aligned to its genomic location.
 
-  - Mapping = Primary @ MAPQ 50 (in your example)
+- Shown in IGV as: `Mapping = Primary @ MAPQ 60`
 
-  - This is the **alignment quality** for that read (50 = excellent)
+- Typical interpretation:
+
+  - MAPQ ≥50 → excellent, uniquely mapped
+
+  - MAPQ 20–40 → moderate confidence
+
+  - MAPQ <20 → unreliable alignment
+
+MQ (Mate Mapping Quality) represents the mapping quality of the mate read in a paired-end fragment.
+
+- In IGV, `MQ = 60` means **the other read in the pair** is also confidently and uniquely mapped.
+
+Why this matters:
+
+- High MAPQ + high MQ → both reads in the pair are well aligned
+
+- Low MQ can indicate:
+
+  - Mate mapped to repetitive regions
+
+  - Structural variation
+
+  - Mis-pairing or alignment ambiguity
+
+**Key takeaway**:
+
+MAPQ evaluates ***this read***; MQ evaluates ***its mate***. High values for both strengthen confidence in variant support.
+
 
 ### 5. Homopolymer/Polymerase Slippage Artifacts
 
@@ -559,6 +590,191 @@ When reviewing variants in IGV, document:
 
 
 ---
+
+## Pop-up information: Read-level fields
+
+| Field               | Meaning                                   | Interpretation                          |
+| ------------------- | ----------------------------------------- | --------------------------------------- |
+| **Read name**       | Unique identifier for the sequencing read | Helps track duplicates or PCR artifacts |
+| **Sample**          | Sample identifier                         | Useful when multiple samples are loaded |
+| **Library**         | Library prep type (e.g. AMPLICON)         | Important for interpreting duplicates   |
+| **Read group (RG)** | Sequencing batch/unit                     | Used for recalibration and QC           |
+| **Read length**     | Length of the sequenced read              | Short reads are more error-prone        |
+| **Mapping**         | Alignment status and MAPQ                 | Shows confidence of alignment           |
+| **Reference span**  | Genomic coordinates covered by read       | Defines read coverage                   |
+| **Base = X @ QV Y** | Observed base and base quality            | QV ≥30 is reliable                      |
+
+### Flags
+
+It's an integer encoding multiple read properties
+
+**Flags (SAM FLAG field)**
+
+The **Flags** value encodes multiple yes/no properties about the read, such as:
+
+- Is the read paired?
+
+- Is it properly paired?
+
+- Is it mapped to the forward or reverse strand?
+
+- Is it the first or second read in the pair?
+
+- Is it marked as a PCR duplicate?
+
+For example:
+
+- `Flags = 163` → properly paired, second in pair, reverse strand
+
+- `Flags = 147` → properly paired, second in pair, reverse strand
+
+- `Flags = 1187` → duplicate read (PCR duplicate)
+
+Practical IGV use:
+
+- Reads marked as duplicates should not be trusted as independent evidence
+
+- Flags help explain why some reads are greyed out or ignored by variant callers
+
+
+### CIGAR
+
+The CIGAR string describes how a read aligns to the reference:
+
+- `M` = aligned base (match or mismatch)
+
+- `S` = soft clipping (base present in read but not aligned)
+
+- `I` = insertion relative to reference
+
+- `D` = deletion relative to reference
+
+Examples:
+
+`74M` → 74 bases aligned
+
+`2S87M` → first 2 bases soft-clipped, remaining 87 aligned
+
+Why it matters:
+
+- Soft clipping near variant sites may indicate:
+
+   - Alignment uncertainty
+
+   - Structural variation
+
+   - Artifacts at read ends
+
+
+### Insert size
+
+Insert size represents the **distance between paired reads**, including the unsequenced fragment between them.
+
+- Positive value: expected orientation
+
+- Negative value: opposite orientation (depends on strand)
+
+Examples:
+
+- `Insert size = 258` → normal fragment length
+
+- `Insert size = -377`→ valid but reversed orientation
+
+Red flags:
+
+Extremely large or inconsistent insert sizes may indicate:
+
+- Misalignment
+
+- Structural variants
+
+- Chimeric reads
+
+
+### PG — Program Group
+
+The PG tag records which bioinformatics tool last modified the read.
+
+Example:
+
+- `PG = MarkDuplicates`
+
+This means:
+
+- The read was processed by Picard MarkDuplicates
+
+- PCR duplicates may be flagged
+
+Why this matters:
+
+- Variant callers may downweight or ignore duplicate reads
+
+- IGV can optionally hide duplicates to assess independent evidence
+
+
+### Hidden tags (MD, RG, etc.)
+
+Hidden tags: IGV hides some SAM tags by default to reduce clutter.
+
+Common hidden tags:
+
+- MD: Encodes mismatches relative to reference
+
+- RG: Read group metadata
+
+These tags are used internally by:
+
+- Variant callers
+
+- Base quality recalibration
+
+- Alignment validation
+
+You usually don’t need them for visual inspection, but they contribute to quality metrics shown elsewhere in IGV.
+
+
+
+### F1R2 and F2R1 — visual representation
+
+**F1R2 / F2R1** describe which read in a paired-end fragment supports the variant and on which strand.
+
+```markdown
+Paired-end fragment orientation (Illumina-style)
+
+Fragment DNA:
+5' -------------------------------------- 3'
+3' -------------------------------------- 5'
+
+Read 1 (R1) → sequenced first
+Read 2 (R2) → sequenced second
+
+------------------------------------------------
+F1R2 orientation:
+- Read 1 (R1): Forward strand
+- Read 2 (R2): Reverse strand
+
+   ---> R1 (forward)
+<--- R2 (reverse)
+
+------------------------------------------------
+F2R1 orientation:
+- Read 2 (R2): Forward strand
+- Read 1 (R1): Reverse strand
+
+   ---> R2 (forward)
+<--- R1 (reverse)
+```
+
+**Why this matters for variant calling**
+
+- Balanced F1R2 and F2R1 support indicates no strand- or read-pair bias
+
+- Variants supported only by one orientation may indicate:
+
+   - PCR artifacts
+   - Strand-specific damage
+   - Alignment bias
+
 ---
 
 ## Visualizing apparent SNVs and artifacts
@@ -652,7 +868,9 @@ Observations:
 
 >**Two interpretations**:
 >
-> - This is **probably a germline SNP** because is ~100% alternate allele, extremely high depth, no strand bias, clean signal. Somatic mutations are almost never 100% unless: Tumor purity ~100%, LOH, copy-number events, clonal hematopoiesis or constitutional mosaicism. In a targeted panel without a matched normal, Mutect2 penalizes variants that behave like germline haplotypes by using population allele frequency priors (e.g. gnomAD). (gnomAD, internal models) and suppresses homozygous-alternate sites.
+> - **This is probably a germline SNP** because it shows ~100% alternate allele fraction, extremely high sequencing depth, no strand bias, and a clean, consistent signal across reads. Somatic mutations are almost never present at ~100% allele fraction unless in special contexts such as very high tumor purity, loss of heterozygosity (LOH), copy-number alterations, clonal hematopoiesis, or constitutional mosaicism.
+>
+> In a targeted panel without a matched normal sample, **Mutect2 penalizes variants that behave like germline haplotypes by using population allele-frequency priors (e.g. gnomAD and internal models)** and therefore tends to suppress homozygous-alternate sites, even if they appear visually robust in IGV.
 >
 > - Since the SNP G/A lies withing the exon 5-6-7 but beyond the stop codon of exon 5, at 3'UTR (non-coding) region, this **mutation is clinically irrelevant**. It's a `3' UTR variant` with an IMPACT: MODIFIER.
 
@@ -755,9 +973,17 @@ Qualities: 41, 41
 >**Interpretation**: Insertion of two As in low-complexity region of As. **Conclusion**: This insertion is not trustworthy.
 
 ---
+
 This concludes Part III of the tutorial on visualization of somatic variant by IGV.
 
-In **Part IV** I will show you a way to run the whole DNA-NGS script using a single **Bash script** and how to prepare a **Nextflow** script to also run the whole DNA-NGS analysis at once.
+Final Remarks
+
+In this part of the tutorial, we used Integrative Genomics Viewer (IGV) to visually inspect somatic variant calls derived from a targeted DNA-NGS dataset. By integrating read-level evidence (coverage, allele balance, strand representation, base and mapping quality) with variant-level metrics (TLOD, filter status) and genomic context (coding vs non-coding regions vs low-complexity regions), we demonstrated how IGV serves as a critical quality-control step in somatic variant analysis.
+
+Importantly, this section highlighted that not all visually convincing variants are biologically or clinically relevant, and that somatic callers such as Mutect2 are intentionally conservative — particularly in tumor-only analyses without matched normal samples. IGV visualization allows analysts to understand why variants are retained or filtered, distinguish true somatic mutations from sequencing artifacts or germline variation, and confidently interpret high-impact cancer hotspot mutations.
+
+In **Part IV**, we will focus on automation and reproducibility by running the entire DNA-NGS analysis pipeline using a single Bash script, followed by an introduction to Nextflow for scalable and reproducible workflow execution.
+
 
 Go back to the beginning of 👉 [Part III – Variant Visualization](README_igv_Part3-3.md)
 
