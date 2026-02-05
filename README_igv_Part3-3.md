@@ -11,6 +11,8 @@
 - [Assessing the validity of called variants: NRAS](#assessing-the-validity-of-called-variants)
 - [Assessing the validity of called variants: PIK3CA](#2-pik3ca)
 - [Identifying SNV Artifacts in IGV: A Practical Guide](#identifying-snv-artifacts-in-igv-a-practical-guide)
+- [Apparent SNVs and artifacts: examples](#apparent-snvs-and-artifacts-examples)
+
 
 
 ## Introduction
@@ -553,3 +555,5 @@ When reviewing variants in IGV, document:
 - [ ] Possible artifact (explain: [reason])
 - [ ] Needs orthogonal validation
 
+
+## Apparent SNVs and artifacts: examples
