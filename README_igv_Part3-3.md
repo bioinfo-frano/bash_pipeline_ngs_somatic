@@ -590,9 +590,9 @@ N : 0
 
 Observations:
 
-- G is the major allele: 563 reads (~61%)
-- C is the minor allele: 358 reads (~39%)
-- A and T are negligible noise (4 reads each)
+   - G is the major allele: 563 reads (~61%)
+   - C is the minor allele: 358 reads (~39%)
+   - A and T are negligible noise (4 reads each)
 
 This looks like a clean biallelic site (heterozygous), with: High depth, strong support for both alleles, balanced strand representation for both C and G.
 
@@ -627,7 +627,7 @@ Qualities: 41, 41, 41, 41, 41
 
 ![Figure 8](images/IGV_snp_germline_homopolymer_2.png)
 
-1. Left side: Is this a true clinical SNV in KRAS A/G?
+1. Left side: Is this a true clinical SNV in KRAS A>G?
 
 **Coverage Pop-Up information**
 ```bash
@@ -639,14 +639,18 @@ G : 1311 (100%)
 ```
 Observations:
 
-- Reference base = A
-- All reads show G
-- No homopolymer context
-- Looks like alt-homozygous (G/G)
+   - Reference base = A
+   - All reads show G
+   - No homopolymer context
+   - Looks like alt-homozygous (G/G)
 
->**Interpretation**: This is **almost certainly a germline SNP** because is ~100% alternate allele, extremely high depth, no strand bias, clean signal. Somatic mutations are almost never 100% unless: Tumor purity ~100%, LOH, copy-number events. In a targeted panel without a matched normal, Mutect2 penalizes variants that behave like germline haplotypes when uses population priors (gnomAD, internal models) and suppresses homozygous-alternate sites. Also, the reference condon, which is "TCA" encodes a "S" (serine) and in the alternative the condon changes to "TCG", which encodes also a "S". Conclusion, this is an alt-homozygous (G/G), which is a synonymic mutation. Clinically irrelevant.
+>**Two interpretations**:
+>
+> - This is **probably a germline SNP** because is ~100% alternate allele, extremely high depth, no strand bias, clean signal. Somatic mutations are almost never 100% unless: Tumor purity ~100%, LOH, copy-number events. In a targeted panel without a matched normal, Mutect2 penalizes variants that behave like germline haplotypes when uses population priors (gnomAD, internal models) and suppresses homozygous-alternate sites.
+>
+> - Since the SNP G/A lies withing the exon 5-6-7 but beyond the stop codon of exon 5, at 3'UTR (non-coding) region, this **mutation is clinically irrelevant**. It's a `3' UTR variant` with an IMPACT: MODIFIER.
 
-2. Right side: Is this a true clinical SNV in KRAS A/T?
+2. Right side: Is this a true clinical SNV in KRAS A>T?
 
 **Coverage Pop-Up information**
 ```bash
@@ -659,8 +663,8 @@ N : 0
 ```
 Observations:
 
-- Reference base: A (~90%)
-- Reads showing T: ~10%
+   - Reference base: A (~90%)
+   - Reads showing T: ~10%
 
 >**Interpretation**: Unfortunately, there are zero reverse reads supporting "T". Strand bias.
 
@@ -669,7 +673,7 @@ Observations:
 
 ##![Figure 9](images/IGV_strandbias_deletion1.png)
 
-1. Left side: Which SNV is a clinical one in KRAS: T/A or T/C?
+1. Left side: Which SNV is a clinical one in KRAS: T>A or T>C?
 
 **Coverage Pop-Up information**
 ```bash
@@ -685,7 +689,63 @@ INS: 2
 Observations:
 
 Strand distribution for A:
-    - 2 forward 
-    - 54 reverse ⟵ 🚨
+   - 2 forward 
+   - 54 reverse ⟵ 🚨
 
->**Interpretation**: **classic strand-specific artifact**. 
+>**Interpretation**: Alt allele is heaviy biased to one strand: **classic strand-specific artifact** probably because of sequencing/alignment artifact.
+>Also, there's a well supported T>C mutation from aligned reads forward and reverse; however, this mutation is located in the 3'UTR (non-coding) region. Clinically irrelevant.
+
+2. Right side: Is this a true deletion?
+
+**Coverage Pop-Up information**
+```bash
+Total count: 263
+A : 0
+T : 262 (100%, 122+, 140- )
+C : 0
+G : 1 (0%, 0+, 1- )
+N : 0
+DEL: 1402
+INS: 0
+```
+```bash
+Total count: 255
+A : 1 (0%, 0+, 1- )
+T : 237 (93%, 107+, 130- )
+C : 16 (6%, 6+, 10- )
+G : 1 (0%, 0+, 1- )
+N : 0
+DEL: 1398
+INS: 0
+```
+
+Observations:
+
+   - Reference region: `AACTTTTTTTTCCC` → homopolymer region
+   - Forward + reverse support
+   
+>**Interpretation:  Homopolymer indels are not trustworthy without: 
+>
+>   - Orthogonal validation
+>
+>   - Long-read data
+>
+>   - Known hotspot annotation
+>
+> This indel was not called because of ❌ Low-complexity region; ❌ Indel ambiguity ; ❌ High false-positive rate class    → **Conclusion**: Alignment artifact, correctly filtered.
+
+### **Problem 4 - Figure 10** 
+
+##![Figure 10](images/IGV_lowcomplreg_3.png)
+
+1. Is this a true insertion of two AA?
+
+**Coverage Pop-Up information**
+```bash
+Insertion (2 bases): AA
+Qualities: 41, 41
+```
+
+>**Interpretation**: Insertion of two As in low-complexity region of As. **Conclusion**: This insertion is not trustworthy.
+
+
