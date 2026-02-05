@@ -11,7 +11,7 @@
 - [Assessing the validity of called variants: NRAS](#assessing-the-validity-of-called-variants)
 - [Assessing the validity of called variants: PIK3CA](#2-pik3ca)
 - [Identifying SNV Artifacts in IGV: A Practical Guide](#identifying-snv-artifacts-in-igv-a-practical-guide)
-- [Apparent SNVs and artifacts: examples](#apparent-snvs-and-artifacts-examples)
+- [How to read “non-called but visible” variants? Apparent SNVs and artifacts](#how-to-read-non--called-but-visible--variants--apparent-snvs-and-artifacts)
 
 
 
@@ -558,7 +558,7 @@ When reviewing variants in IGV, document:
 
 ## How to read “non-called but visible” variants? Apparent SNVs and artifacts
 
-Before analysing these pseudo variants, one key principle to keep in mind:
+Before analyzing these pseudo variants, one key principle to keep in mind:
 
 >**Mutect2 is a somatic caller**, not a generic variant detector.
 It is designed to suppress germline variation, alignment artifacts, and low-informative sites — even if they look “real” in IGV.
