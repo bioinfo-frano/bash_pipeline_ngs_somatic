@@ -11,13 +11,15 @@
 - [Assessing the validity of called variants: NRAS](#assessing-the-validity-of-called-variants)
 - [Assessing the validity of called variants: PIK3CA](#2-pik3ca)
 - [Identifying SNV Artifacts in IGV: A Practical Guide](#identifying-snv-artifacts-in-igv-a-practical-guide)
-- [How to read “non-called but visible” variants? Apparent SNVs and artifacts](#how-to-read-non-called-but-visible-variants-apparent-snvs-and-artifacts)
+- [Visualizing apparent SNVs and artifacts](#visualizing-apparent-SNVs-and-artifacts)
 
 
 
 ## Introduction
 
-The last part of this basic tutorial on DNA-NGS analysis of a small FASTQ dataset consists of visualizing the reads mapped to the reference genome and confirming the called variants shown in [Part II – Somatic analysis](README_somatic_analysis_Part2-3.md) using the dataset `SRR30536566`. A software widely used for this purpose is called **IGV**.
+The last part of this basic tutorial on DNA-NGS analysis of a small FASTQ dataset consists of visualizing the reads mapped to the reference genome and confirming the called variants shown in [Part II – Somatic analysis](README_somatic_analysis_Part2-3.md) using the dataset `SRR30536566`. A software widely used for this purpose is called Integrative Genomics Viewer or **IGV**.
+
+The IGV version used for this tutorial is: **2.19.7**
 
 In this section then, I will show you:
 
@@ -142,7 +144,7 @@ The IGV will look more or less like in **Figure 1 (right)**, showing 4 tracks: V
 
 > **Note**: The **GTF** and the **gnomAD** (`af-only-gnomad.hg38.vcf.gz`) files were not loaded into IGV because each of them requires more than 8 GB of available RAM.
   
->**Key message**: Ideally, **IGV must use the same reference genome that was used for alignment**. Although IGV supports loading custom FASTA reference genomes, hosted genomes (such as hg38 1kg/GATK) are strongly preferred because they bundle the reference sequence together with gene annotations and cytobands, and avoid additional preprocessing steps (e.g. igvtools genome creation and Java configuration).
+>**Key message**: Ideally, **IGV must use the same reference genome that was used for alignment**. Although IGV supports loading custom FASTA reference genomes, hosted genomes (such as hg38 1kg/GATK) are strongly preferred because they bundle the reference sequence together with gene annotations and cytobands, and avoid additional preprocessing steps (e.g. FASTA indexing, dictionary creation, and optional igvtools genome creation).
 
 
 ### Assessing the validity of called variants
@@ -169,7 +171,7 @@ From step number 4:
 
 ![Figure 2](images/IGV_NRAS_zoom_out_1_labeled.png)
 
-To visualize in more detail the SNP:
+To visualize in more detail the SNV:
 
 6. Zoom in by increasing the sliding bar (top right) to **+** and focus the SNV at the center of the window using the center line, exactly at the **VCF** bar on exon 3.
 
@@ -210,7 +212,7 @@ A. **Genotype Information**: Sample-level, from FORMAT column of **VCF**.
    ```
    
    **Quality**: `-1` → It doesn't mean "low quality". `Quality: -1` is not a quality score — it is a signal that genotype quality is undefined for somatic callers like Mutect2. 
-   The genotype-level “Quality” field shown as -1 reflects that Mutect2 does not assign a conventional genotype quality (GQ) score. For somatic variants, confidence is instead encoded in site-level metrics such as TLOD and filtering annotations (in other words: TLOD, Read depth, VAF, Strand bias, Base & mapping quality, Filter status).
+   The genotype-level “Quality” field shown as `-1` reflects that Mutect2 does not assign a conventional genotype quality (GQ) score because somatic variants are not diploid genotypes in the classical sense. For somatic variants, confidence is instead encoded in site-level metrics such as TLOD and filtering annotations (in other words: TLOD, Read depth, VAF, Strand bias, Base & mapping quality, Filter status).
   
    
 
@@ -278,7 +280,7 @@ https://www.ncbi.nlm.nih.gov/gene/?term=NM_002524.5
 
 ### IGV-based NRAS Q61K variant interpretation
 >Visual inspection in IGV (reference genome: hg38 1kg/GATK) confirmed a heterozygous somatic single-nucleotide variant in the **NRAS** gene (NM_002524.5), located in **exon 3** at genomic position **chr1:114,713,909 (G>T)**. This variant affects codon 61, resulting in an amino-acid substitution from **glutamine (Q)** to **lysine (K)** (**p.Gln61Lys, Q61K**).
->The variant is supported by high read depth (~760×), a variant allele frequency of ~15%, balanced forward and reverse strand representation, high mapping and base qualities, and a strong somatic log-odds score (**TLOD = 323**), with no evidence of strand bias or sequencing artifact. These features are consistent with a **high-confidence somatic NRAS Q61K mutation**.
+>The variant is supported by high read depth (~760×), a variant allele frequency (VAF) of ~15%, balanced forward and reverse strand representation, high mapping and base qualities, and a strong somatic log-odds score (**TLOD = 323**), with no evidence of strand bias or sequencing artifact. These features are consistent with a **high-confidence somatic NRAS Q61K mutation**.
 
 
 **Visit** 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table) and **compare** the information about NRAS (G>T | Gln61Lys) variant with image and info provided by IGV.
@@ -312,7 +314,7 @@ This will color the aligned reads based on strand. See **Figure 4 (right)** wher
 
 >**Key message**: 
 >
->  1. Apparently, PIKC3A has 3 exons 1 that can be used for alternative splicing and, because of that, the numbering of exons of PIK3CA can be tricky.
+>  1. PIK3CA has multiple transcripts with alternative first exons (1a, 1b, 1c). Because exon numbering is transcript-specific, the same coding exon may be referred to as exon 9 or exon 10 in different publications.
 >
 >  Reference: <https://doi.org/10.1242/jcs.013029>
 >
@@ -330,7 +332,7 @@ This will color the aligned reads based on strand. See **Figure 4 (right)** wher
 
 ### IGV-based PIK3CA E542K variant interpretation
 >Visual inspection in IGV (reference genome: hg38 1kg/GATK) confirmed a heterozygous somatic single-nucleotide variant in the **PIK3CA** gene (NM_006218.4), located in **exon 10** at genomic position **chr3:179,218,294 (G>A)**. This variant affects codon 542, resulting in an amino-acid substitution from **glutamic acid (E)** to **lysine (K)** (**p.Glu542Lys, E542K**).
->The variant is supported by very high sequencing depth (>1,200×), with 347 reads supporting the alternate allele and a variant allele frequency of ~28%, consistent with a somatic event. Read support is well balanced across forward and reverse strands, with high mapping quality (MMQ = 60) and high base quality (MBQ = 41) for both reference and alternate alleles.
+>The variant is supported by very high sequencing depth (>1,200×), with 347 reads supporting the alternate allele and a VAF of ~28%, consistent with a somatic event. Read support is well balanced across forward and reverse strands, with high mapping quality (MMQ = 60) and high base quality (MBQ = 41) for both reference and alternate alleles.
 >Somatic confidence is extremely strong (**TLOD = 1026.18**), with no evidence of strand bias or sequencing artifacts, and the variant passed all site-level filters (AS_FilterStatus = SITE). These features are consistent with a **high-confidence somatic PIK3CA E542K hotspot mutation**.
 
 **Visit** 👉 [Part II – Somatic analysis – Final clinical report table](README_somatic_analysis_Part2-3.md#final-clinical-report-table) and **compare** the information about NRAS (G>A | Glu542Lys) variant with image and info provided by IGV.
@@ -559,11 +561,11 @@ When reviewing variants in IGV, document:
 ---
 ---
 
-## How to read “non-called but visible” variants? Apparent SNVs and artifacts
+## Visualizing apparent SNVs and artifacts
 
 Before analyzing these pseudo variants, one key principle to keep in mind:
 
->**Mutect2 is a somatic caller**, not a generic variant detector.
+>**Mutect2 is a somatic caller, not a generic variant detector**.
 It is designed to suppress germline variation, alignment artifacts, and low-informative sites — even if they look “real” in IGV.
 
 >Each problem analysis will be provided as a figure with the "coverage/depth pop-up" information.
@@ -603,6 +605,7 @@ This looks like a clean biallelic site (heterozygous), with: High depth, strong 
 - Located between exon 15 and exon 16 of PIK3CA
 - Not within coding sequence
 - Not at canonical splice sites (±1–2 bp, sometimes ±8 bp depending on filters)
+- Even deep intronic variants can be retained if they are in known regulatory or splice-enhancer regions — but this is not the case here.
 
 Most somatic pipelines (including Mutect2 + post-filtering):
 ❌ Do not retain deep intronic variants
@@ -623,7 +626,7 @@ Insertion (5 bases): ACTTG
 Qualities: 41, 41, 41, 41, 41
 ```
 
->**Interpretation**: Although the high quality of the inserted bases, the insertion is placed only in the reverse reads without support from fordward reads. Also, in the case of being a true insertion, this should be located in an intronic region between the exon 17 and 18 of PIK3CA. This insertion should be an artefact, showing strand bias and probably irrelevant.
+>**Interpretation**: Although the high quality of the inserted bases, the insertion is placed only in the reverse reads without support from forward reads. Also, in the case of being a true insertion, this should be located in an intronic region between the exon 17 and 18 of PIK3CA. This insertion should be an artefact, showing strand bias and probably irrelevant.
 
 
 ### **Problem 2 - Figure 8** 
@@ -649,7 +652,7 @@ Observations:
 
 >**Two interpretations**:
 >
-> - This is **probably a germline SNP** because is ~100% alternate allele, extremely high depth, no strand bias, clean signal. Somatic mutations are almost never 100% unless: Tumor purity ~100%, LOH, copy-number events. In a targeted panel without a matched normal, Mutect2 penalizes variants that behave like germline haplotypes when uses population priors (gnomAD, internal models) and suppresses homozygous-alternate sites.
+> - This is **probably a germline SNP** because is ~100% alternate allele, extremely high depth, no strand bias, clean signal. Somatic mutations are almost never 100% unless: Tumor purity ~100%, LOH, copy-number events, clonal hematopoiesis or constitutional mosaicism. In a targeted panel without a matched normal, Mutect2 penalizes variants that behave like germline haplotypes by using population allele frequency priors (e.g. gnomAD). (gnomAD, internal models) and suppresses homozygous-alternate sites.
 >
 > - Since the SNP G/A lies withing the exon 5-6-7 but beyond the stop codon of exon 5, at 3'UTR (non-coding) region, this **mutation is clinically irrelevant**. It's a `3' UTR variant` with an IMPACT: MODIFIER.
 
@@ -695,7 +698,7 @@ Strand distribution for A:
    - 2 forward 
    - 54 reverse ⟵ 🚨
 
->**Interpretation**: Alt allele is heaviy biased to one strand: **classic strand-specific artifact** probably because of sequencing/alignment artifact.
+>**Interpretation**: Alt allele is heavily biased to one strand: **classic strand-specific artifact** probably because of sequencing/alignment artifact.
 >Also, there's a well supported T>C mutation from aligned reads forward and reverse; however, this mutation is located in the 3'UTR (non-coding) region. Clinically irrelevant.
 
 2. Right side: Is this a true deletion?
@@ -727,7 +730,7 @@ Observations:
    - Reference region: `AACTTTTTTTTCCC` → homopolymer region
    - Forward + reverse support
    
->**Interpretation:  Homopolymer indels are not trustworthy without: 
+>**Interpretation**:  **Short indels in homopolymer regions are particularly error-prone in short-read sequencing** and should be interpreted with caution unless supported by:
 >
 >   - Orthogonal validation
 >
@@ -754,7 +757,7 @@ Qualities: 41, 41
 ---
 This concludes Part III of the tutorial on visualization of somatic variant by IGV.
 
-In **Part IV** I will show you a way to run the whole DNA-NGS script using a single **Bash script**. In addition, I will show you how to prepare a **Nextflow** script and run the whole DNA-NGS analysis at once.
+In **Part IV** I will show you a way to run the whole DNA-NGS script using a single **Bash script** and how to prepare a **Nextflow** script to also run the whole DNA-NGS analysis at once.
 
 Go back to the beginning of 👉 [Part III – Variant Visualization](README_igv_Part3-3.md)
 
