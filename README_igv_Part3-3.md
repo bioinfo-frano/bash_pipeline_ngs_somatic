@@ -138,7 +138,7 @@ The IGV will look more or less like in **Figure 1 (right)**, showing 4 tracks: V
 ![Figure 1: First glance at IGV (left panel and after loading IGV with the files)](images/IGV_starting_1.png)
 
 
-> **Note**: The **GTF** file was not loaded into IGV because it requires more than 8 GB of available RAM.
+> **Note**: The **GTF** and the **gnomAD** (`af-only-gnomad.hg38.vcf.gz`) files were not loaded into IGV because each of them requires more than 8 GB of available RAM.
   
 >**Key message**: Ideally, **IGV must use the same reference genome that was used for alignment**. Although IGV supports loading custom FASTA reference genomes, hosted genomes (such as hg38 1kg/GATK) are strongly preferred because they bundle the reference sequence together with gene annotations and cytobands, and avoid additional preprocessing steps (e.g. igvtools genome creation and Java configuration).
 
@@ -401,11 +401,19 @@ The NRAS variant shows `Alt Forward: 61, Alt Reverse: 54` → **balanced** (not 
 
 **How to spot in IGV**:
 
-  - **Color by base quality**: Right-click BAM → `Shade base by quality`
+  - **Enable quality shading:**: Right-click BAM → `Shade base by quality`
 
-  - Look for red/orange bases at variant position (low quality)
+  - Bases will be shaded: **dark gray** = high quality, **light gray** = low quality
 
   - Check MBQ in variant pop-up: `MBQ: [41, 20]` → ALT base quality=20 is concerning
+
+**Alternative method**:
+
+  - Click on individual variant-supporting reads
+
+  - In the pop-up, look for Base = [letter] @ QV [number]
+
+  - Example: Base = T @ QV 37 = excellent quality (37)
 
 **Quality score interpretation**:
 
@@ -421,17 +429,19 @@ The NRAS variant shows `Alt Forward: 61, Alt Reverse: 54` → **balanced** (not 
 
 **How to spot in IGV**:
 
-  - **Color by mapping quality**: Right-click BAM → `Sort alignments by` → `mapping quality`
+  - **Sort by mapping quality**: Right-click BAM → `Sort alignments by` → `mapping quality`
 
-  - Check MMQ in variant pop-up: MMQ: [60, 30] → ALT reads map poorly (30 vs 60)
+  - Reads will group: **top** = high MQ (60), **bottom** = low MQ (0-30)
+  
+  - Check if variant-supporting reads cluster at bottom (low MQ)
 
-  - Look for **reads with multiple alignments** (MAPQ=0)
+**Understanding MAPQ vs MQ**:
 
-**Red flags**:
+`MQ = 60` in the read pop-up is the **mate's mapping quality** (for paired-end reads). The primary mapping quality is shown as:
 
-  - ALT reads have MAPQ<30 while REF reads have MAPQ>50
+  - Mapping = Primary @ MAPQ 50 (in your example)
 
-  - Variant in repetitive region (centromeres, telomeres, segmental duplications)
+  - This is the **alignment quality** for that read (50 = excellent)
 
 ### 5. Homopolymer/Polymerase Slippage Artifacts
 
@@ -439,15 +449,16 @@ The NRAS variant shows `Alt Forward: 61, Alt Reverse: 54` → **balanced** (not 
 
 **How to spot in IGV**:
 
-  - Zoom out to see sequence context
+  - **Show sequence context**: Right-click BAM → Check `Show all bases`
 
   - Look for **runs of identical bases** (≥5 same bases)
 
   - Check if variant disrupts a homopolymer run
 
     Example: In `TTTTTT` region, a T→C might be sequencing error
+    
+  - Zoom out to see 50-100bp around the variant
 
-**IGV tip**: Right-click BAM → `Show all bases` to see homopolymers clearly.
 
 ### 6. PCR Duplicate Artifacts
 
@@ -455,13 +466,16 @@ The NRAS variant shows `Alt Forward: 61, Alt Reverse: 54` → **balanced** (not 
 
 **How to spot in IGV**:
 
-   - **Color by duplicate status**: Right-click BAM → Duplicates
-
-   - Look for **clusters of identical reads** with same start/end positions
-
+   - **Show duplicates**: Right-click BAM → `Duplicates` → Check `Show duplicates`
    - Check if variant is supported only by duplicates
 
-**But note**: Amplicon sequencing (like your data) naturally has duplicates! The key is whether the variant appears in **multiple independent molecules**.
+**For amplicon data** (like yours):
+
+   - All reads are technical duplicates by design!
+
+   - Focus on whether variant appears in **multiple independent amplicons**
+
+   - Look for different **UMI sequences** (if UMIs were used)
 
 ### 7. Reference Base Errors
 
@@ -476,3 +490,66 @@ The NRAS variant shows `Alt Forward: 61, Alt Reverse: 54` → **balanced** (not 
   - Check dbSNP/gnomAD: if allele frequency is ~100%, it's reference error
 
 The NRAS Q61K is known cancer mutation, not reference error.
+
+### When to Trust vs. Reject a Variant in IGV
+
+**Trust the Variant if**:
+
+   ✅ Balanced strand support (40/60 to 60/40 ratio)
+
+   ✅ High base quality (Q≥30 for alt bases)
+
+   ✅ High mapping quality (MAPQ≥50 for alt reads)
+
+   ✅ Not at read extremes (position 20-80 in read)
+
+   ✅ Multiple independent reads support it
+
+  ✅ Biological context makes sense (hotspot, expected consequence)
+
+**Reject as Artifact if**:
+
+   ❌ Extreme strand bias (>80% on one strand)
+
+   ❌ Low alt base quality (Q<20)
+
+   ❌ Poor alt mapping quality (MAPQ<20)
+
+   ❌ Variant at first/last 5bp of reads
+
+   ❌ Only in PCR duplicates
+
+  ❌ In homopolymer or simple repeat region
+
+  ❌ Clustered with other variants in 50bp region
+  
+
+### Documenting Your IGV Findings
+
+When reviewing variants in IGV, document:
+
+### **IGV Assessment for [Variant Name]**
+
+**Visual Inspection:**
+- [ ] Strand balance: [F/R ratio]
+- [ ] Read distribution: [Even/Clustered]
+- [ ] Position in reads: [Middle/Ends]
+- [ ] Coverage: [Depth] with [X] alt reads
+
+**Quality Metrics:**
+- MBQ (Ref/Alt): [X]/[X]
+- MMQ (Ref/Alt): [X]/[X]
+- Strand Bias Table: [F/R | F/R]
+- Read Position (MPOS): [X]
+
+**Context:**
+- Region: [Coding/Non-coding]
+- Known hotspot: [Yes/No]
+- Homopolymer nearby: [Yes/No]
+- Database frequency: [X]% in gnomAD
+
+**Conclusion:**
+- [ ] High confidence somatic
+- [ ] Possible artifact (explain: [reason])
+- [ ] Needs orthogonal validation
+
