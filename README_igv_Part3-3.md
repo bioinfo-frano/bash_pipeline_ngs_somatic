@@ -556,6 +556,9 @@ When reviewing variants in IGV, document:
 - [ ] Needs orthogonal validation
 
 
+---
+---
+
 ## How to read “non-called but visible” variants? Apparent SNVs and artifacts
 
 Before analyzing these pseudo variants, one key principle to keep in mind:
@@ -571,7 +574,7 @@ It is designed to suppress germline variation, alignment artifacts, and low-info
 
 1. Left side: Is this a true clinical SNV in PIK3CA C/G?
 
-**Coverage Pop-Up information**
+   **Coverage Pop-Up information**
 ```bash
 chr3:179,224,643
 Total count: 929
@@ -596,7 +599,7 @@ Observations:
 
 This looks like a clean biallelic site (heterozygous), with: High depth, strong support for both alleles, balanced strand representation for both C and G.
 
-**Why isn't a SNV?** because of the **genomic context**
+**Why isn't a SNV?** because of the **genomic context**:
 - Located between exon 15 and exon 16 of PIK3CA
 - Not within coding sequence
 - Not at canonical splice sites (±1–2 bp, sometimes ±8 bp depending on filters)
@@ -614,7 +617,7 @@ This SNP has:
 
 2. Right side: Is this insertion an artifact?
 
-**Coverage Pop-Up information**
+   **Coverage Pop-Up information**
 ```bash
 Insertion (5 bases): ACTTG
 Qualities: 41, 41, 41, 41, 41
@@ -629,7 +632,7 @@ Qualities: 41, 41, 41, 41, 41
 
 1. Left side: Is this a true clinical SNV in KRAS A>G?
 
-**Coverage Pop-Up information**
+   **Coverage Pop-Up information**
 ```bash
 Total count: 1316
 A : 3
@@ -675,7 +678,7 @@ Observations:
 
 1. Left side: Which SNV is a clinical one in KRAS: T>A or T>C?
 
-**Coverage Pop-Up information**
+   **Coverage Pop-Up information**
 ```bash
 Total count: 989
 A : 56 (6%, 2+, 54- )
@@ -697,7 +700,7 @@ Strand distribution for A:
 
 2. Right side: Is this a true deletion?
 
-**Coverage Pop-Up information**
+   **Coverage Pop-Up information**
 ```bash
 Total count: 263
 A : 0
@@ -740,7 +743,7 @@ Observations:
 
 1. Is this a true insertion of two AA?
 
-**Coverage Pop-Up information**
+  **Coverage Pop-Up information**
 ```bash
 Insertion (2 bases): AA
 Qualities: 41, 41
@@ -748,4 +751,13 @@ Qualities: 41, 41
 
 >**Interpretation**: Insertion of two As in low-complexity region of As. **Conclusion**: This insertion is not trustworthy.
 
+---
+This concludes Part III of the tutorial on visualization of somatic variant by IGV.
 
+In **Part IV** I will show you a way to run the whole DNA-NGS script using a single **Bash script**. In addition, I will show you how to prepare a **Nextflow** script and run the whole DNA-NGS analysis at once.
+
+Go back to the beginning of 👉 [Part III – Variant Visualization](README_igv_Part3-3.md)
+
+Go to the main page 👉 [Part I](READM.md)
+
+End of Part III.
