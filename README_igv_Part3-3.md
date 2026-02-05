@@ -987,6 +987,6 @@ In **Part IV**, we will focus on automation and reproducibility by running the e
 
 Go back to the beginning of 👉 [Part III – Variant Visualization](README_igv_Part3-3.md)
 
-Go to the main page 👉 [Part I](READM.md)
+Go to the main page 👉 [Part I](README.md)
 
 End of Part III.
