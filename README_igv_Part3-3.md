@@ -11,7 +11,7 @@
 - [Assessing the validity of called variants: NRAS](#assessing-the-validity-of-called-variants)
 - [Assessing the validity of called variants: PIK3CA](#2-pik3ca)
 - [Identifying SNV Artifacts in IGV: A Practical Guide](#identifying-snv-artifacts-in-igv-a-practical-guide)
-- [How to read “non-called but visible” variants? Apparent SNVs and artifacts](#how-to-read-non--called-but-visible--variants--apparent-snvs-and-artifacts)
+- [How to read “non-called but visible” variants? Apparent SNVs and artifacts](#how-to-read-non-called-but-visible-variants-apparent-snvs-and-artifacts)
 
 
 
@@ -588,7 +588,7 @@ N : 0
 | **A / T / C / G**    | Number of reads supporting each base                                |
 | **(%, +, -)**        | Variant allele fraction, forward-strand reads, reverse-strand reads |
 
-Therefore:
+Observations:
 
 - G is the major allele: 563 reads (~61%)
 - C is the minor allele: 358 reads (~39%)
@@ -610,7 +610,7 @@ This SNP has:
 - No established disease association
 - Not reportable in a clinical context
 
->**Summary**: A high-confidence intronic SNV was observed in PIK3CA between exons 15 and 16 with ~39% alternate allele fraction; however, this variant lies outside coding and splice regions and is predicted to have no functional impact (MODIFIER). It was therefore not considered clinically relevant and was excluded from downstream reporting.
+>**Interpretation**: A high-confidence intronic SNV was observed in PIK3CA between exons 15 and 16 with ~39% alternate allele fraction; however, this variant lies outside coding and splice regions and is predicted to have no functional impact (MODIFIER). It was therefore not considered clinically relevant and was excluded from downstream reporting.
 
 2. Right side: Is this insertion an artifact?
 
@@ -620,7 +620,7 @@ Insertion (5 bases): ACTTG
 Qualities: 41, 41, 41, 41, 41
 ```
 
->**Summary**: Although the high quality of the inserted bases, the insertion is placed only in the reverse reads without support from fordward reads. Also, in the case of being a true insertion, this should be located in an intronic region between the exon 17 and 18 of PIK3CA. This insertion should be an artefact, showing strand bias and probably irrelevant.
+>**Interpretation**: Although the high quality of the inserted bases, the insertion is placed only in the reverse reads without support from fordward reads. Also, in the case of being a true insertion, this should be located in an intronic region between the exon 17 and 18 of PIK3CA. This insertion should be an artefact, showing strand bias and probably irrelevant.
 
 
 ### **Problem 2 - Figure 8** 
@@ -637,14 +637,14 @@ T : 1
 C : 1
 G : 1311 (100%)
 ```
-Therefore:
+Observations:
 
 - Reference base = A
 - All reads show G
 - No homopolymer context
 - Looks like alt-homozygous (G/G)
 
->**Summary**: This is **almost certainly a germline SNP** because is ~100% alternate allele, extremely high depth, no strand bias, clean signal. Somatic mutations are almost never 100% unless: Tumor purity ~100%, LOH, copy-number events. In a targeted panel without a matched normal, Mutect2 penalizes variants that behave like germline haplotypes when uses population priors (gnomAD, internal models) and suppresses homozygous-alternate sites. Also, the reference condon, which is "TCA" encodes a "S" (serine) and in the alternative the condon changes to "TCG", which encodes also a "S". Conclusion, this is an alt-homozygous (G/G), which is a synonymic mutation. Clinically irrelevant.
+>**Interpretation**: This is **almost certainly a germline SNP** because is ~100% alternate allele, extremely high depth, no strand bias, clean signal. Somatic mutations are almost never 100% unless: Tumor purity ~100%, LOH, copy-number events. In a targeted panel without a matched normal, Mutect2 penalizes variants that behave like germline haplotypes when uses population priors (gnomAD, internal models) and suppresses homozygous-alternate sites. Also, the reference condon, which is "TCA" encodes a "S" (serine) and in the alternative the condon changes to "TCG", which encodes also a "S". Conclusion, this is an alt-homozygous (G/G), which is a synonymic mutation. Clinically irrelevant.
 
 2. Right side: Is this a true clinical SNV in KRAS A/T?
 
@@ -657,16 +657,35 @@ C : 2 (0%, 1+, 1- )
 G : 1 (0%, 0+, 1- )
 N : 0
 ```
-Therefore:
+Observations:
 
 - Reference base: A (~90%)
 - Reads showing T: ~10%
 
->**Summary**: Unfortunately, there are zero reverse reads supporting "T". Strand bias.
+>**Interpretation**: Unfortunately, there are zero reverse reads supporting "T". Strand bias.
 
 
 ### **Problem 3 - Figure 9** 
 
-##![Figure 9](images/IGV_snp_germline_homopolymer_2.png)
+##![Figure 9](images/IGV_strandbias_deletion1.png)
 
-1.
+1. Left side: Which SNV is a clinical one in KRAS: T/A or T/C?
+
+**Coverage Pop-Up information**
+```bash
+Total count: 989
+A : 56 (6%, 2+, 54- )
+T : 4 (0%, 1+, 3- )
+C : 928 (94%, 454+, 474- )
+G : 1 (0%, 1+, 0- )
+N : 0
+DEL: 0
+INS: 2
+```
+Observations:
+
+Strand distribution for A:
+    - 2 forward 
+    - 54 reverse ⟵ 🚨
+
+>**Interpretation**: **classic strand-specific artifact**. 
