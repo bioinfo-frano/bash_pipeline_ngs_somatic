@@ -31,7 +31,7 @@
 
 ## Introduction
 
-Building on [Part I – Preparation & setup](README_setup.md), this tutorial demonstrates how to analyze DNA NGS data on a **local workstation or laptop**.
+Building on [Part I – Preparation & setup](README_setup_Part1-3.md), this tutorial demonstrates how to analyze DNA NGS data on a **local workstation or laptop**.
 The workflow is designed to run under **limited computational resources**, and has been tested on macOS (Intel-based MacBook Pro). With minor adaptations, the same approach can be applied to Linux systems.
 
 In **Part I**, steps I–IV were completed. In this part, we focus on **bash scripting** to implement a complete somatic NGS-DNA analysis pipeline.
