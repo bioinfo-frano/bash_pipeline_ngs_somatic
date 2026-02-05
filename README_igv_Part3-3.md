@@ -10,7 +10,7 @@
 - [Opening and Loading files into IGV](#opening-and-loading-files-into-igv)
 - [Assessing the validity of called variants: NRAS](#assessing-the-validity-of-called-variants)
 - [Assessing the validity of called variants: PIK3CA](#2-pik3ca)
-
+- [Identifying SNV Artifacts in IGV: A Practical Guide](#identifying-snv-artifacts-in-igv-a-practical-guide)
 
 
 ## Introduction
