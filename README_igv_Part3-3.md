@@ -962,7 +962,10 @@ Observations:
 
 ![Figure 10](images/IGV_lowcomplreg_3.png)
 
-<img src="images/IGV_lowcomplreg_3.png" alt="Figure 10" width="50%">
+<p align="center">
+  <img src="images/IGV_lowcomplreg_3.png" alt="Figure 10" width="60%">
+</p>
+
 
 
 1. Is this a true insertion of two AA?
