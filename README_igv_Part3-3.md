@@ -766,6 +766,7 @@ F2R1 orientation:
 ```
 
 ### F1R2 Pattern:
+```html
 <!-- F1R2 - Forward Read 1, Reverse Read 2 -->
 <style>
   .base-F { color: #FF6B6B; font-weight: bold; }  /* Forward - Red */
@@ -780,7 +781,7 @@ F2R1 orientation:
   <div><span class="base-F">F1</span>: 5' - <span class="base-F">A T G C C T G A</span> - 3' <em>(Forward strand)</em></div>
   <div><span class="base-R">R2</span>: 5' - <span class="base-R">A C G T C C A A</span> - 3' <em>(Reverse strand)</em></div>
 </div>
-
+```
 ### Temporal Order Summary Table
 
 | Time | Step | What Happens | Resulting Read | Orientation |
