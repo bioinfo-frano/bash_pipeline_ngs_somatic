@@ -742,6 +742,7 @@ You usually don’t need them for visual inspection, but they contribute to qual
 ### F1R2 Pattern:
 
 REFERENCE FORWARD (+): 5' - A T G C C T G A T T G G A C G T - 3'
+
 REFERENCE REVERSE (-): 3' - T A C G G A C T A A C C T G C A - 5'
 
 🔴 **F1**: 5' - **A T G C C T G A** - 3' _(Forward strand)_  
@@ -750,6 +751,7 @@ REFERENCE REVERSE (-): 3' - T A C G G A C T A A C C T G C A - 5'
 ### F2R1 Pattern
 
 REFERENCE REVERSE (-): 5' - A C G T C C A A T C A G G C A T - 3'
+
 REFERENCE FORWARD (+): 3' - T A C G G A C T A A C C T G C A - 5'
 
 🔵 **R1**: 5' - **A C G T C C A A** - 3' _(Reverse strand)_  
@@ -779,7 +781,7 @@ REFERENCE FORWARD (+): 3' - T A C G G A C T A A C C T G C A - 5'
 
 ## Interpretation matrix of strands
 
-
+```text
            F1R2   F2R1   CONCLUSION
           ┌──────┬──────┬─────────────────────────┐
 Good:     │  50  │  50  │ ✅ REAL VARIANT          │
@@ -790,7 +792,7 @@ Artifact: │  95  │   5  │ ❌ LIKELY ARTIFACT       │
           ├──────┼──────┼─────────────────────────┤
 Artifact: │   5  │  95  │ ❌ LIKELY ARTIFACT       │
           └──────┴──────┴─────────────────────────┘
-
+```
 
 ### Quick Reference Table - Strand Bias Patterns
 
