@@ -779,7 +779,7 @@ REFERENCE FORWARD (+): 3' - T A C G G A C T A A C C T G C A - 5'
 
 
 
-## Interpretation matrix of strands
+### Interpretation matrix of strands
 
 ```text
            F1R2   F2R1   CONCLUSION
