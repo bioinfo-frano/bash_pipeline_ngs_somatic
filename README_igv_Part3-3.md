@@ -895,7 +895,7 @@ Observations:
 
 ### **Problem 3 - Figure 9** 
 
-##![Figure 9](images/IGV_strandbias_deletion1.png)
+![Figure 9](images/IGV_strandbias_deletion1.png)
 
 1. Left side: Which SNV is a clinical one in KRAS: T>A or T>C?
 
@@ -960,7 +960,10 @@ Observations:
 
 ### **Problem 4 - Figure 10** 
 
-##![Figure 10](images/IGV_lowcomplreg_3.png)
+![Figure 10](images/IGV_lowcomplreg_3.png)
+
+<img src="images/IGV_lowcomplreg_3.png" alt="Figure 10" width="50%">
+
 
 1. Is this a true insertion of two AA?
 
