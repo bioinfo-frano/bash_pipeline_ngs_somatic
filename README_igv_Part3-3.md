@@ -765,6 +765,41 @@ F2R1 orientation:
 <--- R1 (reverse)
 ```
 
+### F1R2 Pattern:
+<!-- F1R2 - Forward Read 1, Reverse Read 2 -->
+<style>
+  .base-F { color: #FF6B6B; font-weight: bold; }  /* Forward - Red */
+  .base-R { color: #4ECDC4; font-weight: bold; }  /* Reverse - Teal */
+  .ref { color: #666; }
+</style>
+
+<div style="font-family: monospace; line-height: 1.5;">
+  <div class="ref">REFERENCE FORWARD (+): 5' - A T G C C T G A T T G G A C G T - 3'</div>
+  <div class="ref">REFERENCE REVERSE (-): 3' - T A C G G A C T A A C C T G C A - 5'</div>
+  <br>
+  <div><span class="base-F">F1</span>: 5' - <span class="base-F">A T G C C T G A</span> - 3' <em>(Forward strand)</em></div>
+  <div><span class="base-R">R2</span>: 5' - <span class="base-R">A C G T C C A A</span> - 3' <em>(Reverse strand)</em></div>
+</div>
+
+### Temporal Order Summary Table
+
+| Time | Step | What Happens | Resulting Read | Orientation |
+|------|------|--------------|----------------|-------------|
+| **T0** | Library Prep | DNA fragments ligated to adapters | - | - |
+| **T1** | Cluster Amplification | Bridge amplification on flow cell | - | - |
+| **T2** | **Read 1 Synthesis** | Sequencing by synthesis (SBS) | **First read of pair** | Determines F1 or R1 |
+| **T3** | Bridge Replication | Synthesize complementary strand | - | - |
+| **T4** | **Read 2 Synthesis** | SBS on opposite strand | **Second read of pair** | Determines R2 or F2 |
+
+### Quick Reference Guide - Orientation Symbols in IGV
+
+| Symbol | Meaning | Synthesized When | Color of read in IGV |
+|--------|---------|------------------|--------------|
+| **F1** | Read 1 on + strand | First synthesis cycle | 🔴 Red/Pink |
+| **R2** | Read 2 on - strand | Second synthesis cycle | 🔵 Blue/Teal |
+| **R1** | Read 1 on - strand | First synthesis cycle | 🔵 Blue/Teal |
+| **F2** | Read 2 on + strand | Second synthesis cycle | 🔴 Red/Pink |
+
 **Why this matters for variant calling**
 
 - Balanced F1R2 and F2R1 support indicates no strand- or read-pair bias
@@ -774,6 +809,36 @@ F2R1 orientation:
    - PCR artifacts
    - Strand-specific damage
    - Alignment bias
+
+
+INTERPRETATION MATRIX:
+
+```markdown
+           F1R2   F2R1   CONCLUSION
+          ┌──────┬──────┬─────────────────────────┐
+Good:     │  50  │  50  │ ✅ REAL VARIANT          │
+          ├──────┼──────┼─────────────────────────┤
+Warning:  │  70  │  30  │ ⚠️ MILD BIAS - CHECK     │
+          ├──────┼──────┼─────────────────────────┤
+Artifact: │  95  │   5  │ ❌ LIKELY ARTIFACT       │
+          ├──────┼──────┼─────────────────────────┤
+Artifact: │   5  │  95  │ ❌ LIKELY ARTIFACT       │
+          └──────┴──────┴─────────────────────────┘
+```
+
+### Quick Reference Table - Strand Bias Patterns
+
+| Pattern | F1R2 | F2R1 | Likely Cause | Action |
+|---------|------|------|--------------|--------|
+| **Balanced** | ~50% | ~50% | Real somatic variant | ✅ Trust it |
+| **F1R2-biased** | >80% | <20% | Oxidation, 5' damage | ❌ Filter out |
+| **F2R1-biased** | <20% | >80% | FFPE, 3' damage | ❌ Filter out |
+| **All F1R2** | 100% | 0% | Clear artifact | ❌ Definitely filter |
+| **All F2R1** | 0% | 100% | Clear artifact | ❌ Definitely filter |
+
+
+
+
 
 ---
 
