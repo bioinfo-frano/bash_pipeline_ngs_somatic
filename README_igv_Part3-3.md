@@ -960,8 +960,6 @@ Observations:
 
 ### **Problem 4 - Figure 10** 
 
-![Figure 10](images/IGV_lowcomplreg_3.png)
-
 <p align="center">
   <img src="images/IGV_lowcomplreg_3.png" alt="Figure 10" width="60%">
 </p>
@@ -982,7 +980,7 @@ Qualities: 41, 41
 
 This concludes Part III of the tutorial on visualization of somatic variant by IGV.
 
-Final Remarks
+**Final Remarks**
 
 In this part of the tutorial, we used Integrative Genomics Viewer (IGV) to visually inspect somatic variant calls derived from a targeted DNA-NGS dataset. By integrating read-level evidence (coverage, allele balance, strand representation, base and mapping quality) with variant-level metrics (TLOD, filter status) and genomic context (coding vs non-coding regions vs low-complexity regions), we demonstrated how IGV serves as a critical quality-control step in somatic variant analysis.
 
