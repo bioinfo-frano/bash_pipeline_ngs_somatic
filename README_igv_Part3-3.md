@@ -590,6 +590,7 @@ When reviewing variants in IGV, document:
 
 
 ---
+---
 
 ## Pop-up information: Read-level fields
 
@@ -738,50 +739,23 @@ You usually don’t need them for visual inspection, but they contribute to qual
 
 **F1R2 / F2R1** describe which read in a paired-end fragment supports the variant and on which strand.
 
-```markdown
-Paired-end fragment orientation (Illumina-style)
-
-Fragment DNA:
-5' -------------------------------------- 3'
-3' -------------------------------------- 5'
-
-Read 1 (R1) → sequenced first
-Read 2 (R2) → sequenced second
-
-------------------------------------------------
-F1R2 orientation:
-- Read 1 (R1): Forward strand
-- Read 2 (R2): Reverse strand
-
-   ---> R1 (forward)
-<--- R2 (reverse)
-
-------------------------------------------------
-F2R1 orientation:
-- Read 2 (R2): Forward strand
-- Read 1 (R1): Reverse strand
-
-   ---> R2 (forward)
-<--- R1 (reverse)
-```
-
 ### F1R2 Pattern:
-```html
-<!-- F1R2 - Forward Read 1, Reverse Read 2 -->
-<style>
-  .base-F { color: #FF6B6B; font-weight: bold; }  /* Forward - Red */
-  .base-R { color: #4ECDC4; font-weight: bold; }  /* Reverse - Teal */
-  .ref { color: #666; }
-</style>
 
-<div style="font-family: monospace; line-height: 1.5;">
-  <div class="ref">REFERENCE FORWARD (+): 5' - A T G C C T G A T T G G A C G T - 3'</div>
-  <div class="ref">REFERENCE REVERSE (-): 3' - T A C G G A C T A A C C T G C A - 5'</div>
-  <br>
-  <div><span class="base-F">F1</span>: 5' - <span class="base-F">A T G C C T G A</span> - 3' <em>(Forward strand)</em></div>
-  <div><span class="base-R">R2</span>: 5' - <span class="base-R">A C G T C C A A</span> - 3' <em>(Reverse strand)</em></div>
-</div>
-```
+REFERENCE FORWARD (+): 5' - A T G C C T G A T T G G A C G T - 3'
+REFERENCE REVERSE (-): 3' - T A C G G A C T A A C C T G C A - 5'
+
+🔴 **F1**: 5' - **A T G C C T G A** - 3' _(Forward strand)_  
+🔵 **R2**: 5' - **A C G T C C A A** - 3' _(Reverse strand)_
+
+### F2R1 Pattern
+
+REFERENCE REVERSE (-): 5' - A C G T C C A A T C A G G C A T - 3'
+REFERENCE FORWARD (+): 3' - T A C G G A C T A A C C T G C A - 5'
+
+🔵 **R1**: 5' - **A C G T C C A A** - 3' _(Reverse strand)_  
+🔴 **F2**: 5' - **A T G C C T G A** - 3' _(Forward strand)_
+
+
 ### Temporal Order Summary Table
 
 | Time | Step | What Happens | Resulting Read | Orientation |
@@ -801,20 +775,11 @@ F2R1 orientation:
 | **R1** | Read 1 on - strand | First synthesis cycle | 🔵 Blue/Teal |
 | **F2** | Read 2 on + strand | Second synthesis cycle | 🔴 Red/Pink |
 
-**Why this matters for variant calling**
-
-- Balanced F1R2 and F2R1 support indicates no strand- or read-pair bias
-
-- Variants supported only by one orientation may indicate:
-
-   - PCR artifacts
-   - Strand-specific damage
-   - Alignment bias
 
 
-INTERPRETATION MATRIX:
+## Interpretation matrix of strands
 
-```markdown
+
            F1R2   F2R1   CONCLUSION
           ┌──────┬──────┬─────────────────────────┐
 Good:     │  50  │  50  │ ✅ REAL VARIANT          │
@@ -825,7 +790,7 @@ Artifact: │  95  │   5  │ ❌ LIKELY ARTIFACT       │
           ├──────┼──────┼─────────────────────────┤
 Artifact: │   5  │  95  │ ❌ LIKELY ARTIFACT       │
           └──────┴──────┴─────────────────────────┘
-```
+
 
 ### Quick Reference Table - Strand Bias Patterns
 
@@ -837,10 +802,19 @@ Artifact: │   5  │  95  │ ❌ LIKELY ARTIFACT       │
 | **All F1R2** | 100% | 0% | Clear artifact | ❌ Definitely filter |
 | **All F2R1** | 0% | 100% | Clear artifact | ❌ Definitely filter |
 
+**Why this matters for variant calling**
+
+- Balanced F1R2 and F2R1 support indicates no strand- or read-pair bias
+
+- Variants supported only by one orientation may indicate:
+
+   - PCR artifacts
+   - Strand-specific damage
+   - Alignment bias
 
 
 
-
+---
 ---
 
 ## Visualizing apparent SNVs and artifacts
