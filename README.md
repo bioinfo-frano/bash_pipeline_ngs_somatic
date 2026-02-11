@@ -112,4 +112,4 @@ Screenshots and outputs are shown for educational and demonstration purposes onl
 
 © 2026 **bioinfo-frano**
 
-This project is licensed under the **MIT License** – see the `LICENSE` file for details.
+This project is licensed under the **MIT License** – see the [LICENSE](#) file for details.
