@@ -110,6 +110,6 @@ Screenshots and outputs are shown for educational and demonstration purposes onl
 
 ## 📜 License
 
-© 2026 Your Name  
+© 2026 **bioinfo-frano**
 
 This project is licensed under the **MIT License** – see the `LICENSE` file for details.
