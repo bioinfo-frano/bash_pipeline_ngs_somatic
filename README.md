@@ -77,3 +77,39 @@ This tutorial is intended for:
 ---
 
 Happy sequencing analysis! 🚀
+
+---
+
+## ⚠️ Disclaimer
+
+This repository is intended for **educational and research purposes only**.  
+It is not validated for clinical diagnostic use and should not be used for medical decision-making.
+
+All analyses are performed on publicly available research datasets.
+
+---
+
+## 🔎 Third-Party Tools & Resources
+
+This tutorial uses and displays output or screenshots generated from the following tools and databases:
+
+- IGV (Broad Institute)
+- GATK (Broad Institute)
+- Ensembl
+- OncoKB
+- CIViC
+- PanDrugs2
+- FastQC
+- MultiQC
+- NCBI SRA
+
+All trademarks, software, and database contents belong to their respective owners.  
+Screenshots and outputs are shown for educational and demonstration purposes only.
+
+---
+
+## 📜 License
+
+© 2026 Your Name  
+
+This project is licensed under the **MIT License** – see the `LICENSE` file for details.

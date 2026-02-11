@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# Conda
+.env
+.envs/
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+
+# IGV session files (optional)
+*.xml
